@@ -11,25 +11,21 @@ package projektarbete;
  */
 public class VisibleObject {
     
-    public VisibleObject() {
+    public VisibleObject(Stage stage) {
         
         System.out.println("VisibleObject Started");
 
-        addThing();
+        addThing(stage);
         
     }
 
-    public void addThing(){
-        System.out.println(this);
-        System.out.println(Main.class);
-        System.out.println(Main.stage);
-        Main.stage.addVisibleObject(this);
-        System.out.println(this);
+    public void addThing(Stage stage){
+        stage.addVisibleObject(this);
     }
 
-    public void remove(){
+    public void remove(Stage stage){
 	
-        Main.stage.removeVisibleObject(this);
+        stage.removeVisibleObject(this);
         
     }
     
