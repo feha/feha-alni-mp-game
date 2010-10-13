@@ -10,44 +10,34 @@ package projektarbete;
  * @author felix.hallqvist
  */
 public class VisibleObject {
-    
-    public VisibleObject(Stage stage) {
-        
-        System.out.println("VisibleObject Started");
 
-        addThing(stage);
-        
+    public VisibleObject() {
+
+        System.out.println("VisibleObject Initializing");
+
+        initComponents();
+
+        System.out.println("VisibleObject Initialized");
+
     }
 
-    public void addThing(Stage stage){
-        stage.addVisibleObject(this);
+    private void initComponents() {
+
+        addToStage();
+
     }
 
-    public void remove(Stage stage){
-	
-        stage.removeVisibleObject(this);
-        
+    public void addToStage(){
+
+        //Tell the Stage that this instance wants to be in the display list.
+        Stage.getInstance().addVisibleObject(this);
+
     }
-    
-    public static void removeObject( VisibleObject[] visibleObjects, VisibleObject visibleObject ) {
 
-        int lastIndex = -1;
+    public void removeFromStage(){
 
-        for (int i = 0; i < visibleObjects.length; i++) {
-
-            if (lastIndex != -1) {
-                if (visibleObjects[i] != visibleObject | visibleObjects[i] != null) {
-                    visibleObjects[lastIndex] = visibleObjects[i];
-                    lastIndex++;
-                }
-            }
-
-            if (visibleObjects[i] == visibleObject | visibleObjects[i] == null) {
-                visibleObjects[i] = null;
-                lastIndex = i;
-            }
-
-        }
+        //Tell the Stage to remove this instance from the display list.
+        Stage.getInstance().removeVisibleObject(this);
 
     }
 

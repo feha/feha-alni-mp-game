@@ -43,7 +43,7 @@ class UpAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Up");
-        Main.stage.movePolygon(0, 0, -5);
+        Stage.getInstance().movePolygon(0, 0, -5);
     }
 
 }
@@ -56,7 +56,7 @@ class DownAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Down");
-        Main.stage.movePolygon(0, 0, 5);
+        Stage.getInstance().movePolygon(0, 0, 5);
     }
 
 }
@@ -69,7 +69,7 @@ class LeftAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Left");
-        Main.stage.movePolygon(0, -5, 0);
+        Stage.getInstance().movePolygon(0, -5, 0);
     }
 
 }
@@ -82,7 +82,7 @@ class RightAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Right");
-        Main.stage.movePolygon(0, 5, 0);
+        Stage.getInstance().movePolygon(0, 5, 0);
     }
 
 }
