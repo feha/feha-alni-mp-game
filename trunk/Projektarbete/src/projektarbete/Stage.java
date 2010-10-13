@@ -48,7 +48,8 @@ public class Stage {
 
         Container container = jFrame.getContentPane();
         container.add(painter);
-        jFrame.add(new Input());
+        //apparently, input blocks the painter
+        //jFrame.add(new Input());
 
         Polygon poly1 = new Polygon();
             poly1.addPoint(0,0);
