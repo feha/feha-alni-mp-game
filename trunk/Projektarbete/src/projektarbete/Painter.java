@@ -13,6 +13,8 @@ package projektarbete;
 
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -35,10 +37,20 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
         super.paintComponent(g);
         
         int count = Main.stage.getPolygonCount();
-        
+
+        //code to manage delays between updating the picture
         for (int i = 0; i < count; i++) {
             g.drawPolygon( Main.stage.getPolygon(i) );
         }
+        try {
+            //Thread.sellp is set to the amount of time you want between the updates of the screen
+            //zero means that it's updated as much as possible
+            Thread.sleep(0);
+        } catch (InterruptedException ex) {
+            //catches exceptions but doesn't do anything
+        }
+        //updates the picture
+        repaint();
 
     }
 

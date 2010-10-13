@@ -34,6 +34,8 @@ public class Stage {
         jFrame.setVisible(true);
 
         jFrame.setSize(500, 500);
+
+        jFrame.setResizable(false);
         
 
         jFrame.addWindowListener(new WindowAdapter() {
@@ -45,6 +47,7 @@ public class Stage {
 
 
         painter = new Painter();
+        //adds a frame to handle keyboard input
         jFrame.add(new Input());
         Container container = jFrame.getContentPane();
         container.add(painter);
@@ -63,8 +66,8 @@ public class Stage {
         createPolygon(poly1);
         createPolygon(poly2);
         
-        movePolygon(0);
-        movePolygon(1);
+        movePolygon(0, 100, 100);
+        movePolygon(1, 100, 100);
 
         
         
@@ -140,18 +143,17 @@ public class Stage {
         count++;
     }
 
-    public void movePolygon( int index ) {
+    public void movePolygon( int index, int x, int y) {
 
         Polygon poly = polygons[index];
 
         //translate is a move function for polygons
         //They lack positioning, but this is same thing except local to the poly
-        poly.translate(100, 100);
+        poly.translate(x, y);
 
     }
 
     public Polygon getPolygon( int index ) {
-        
         return polygons[index];
 
     }

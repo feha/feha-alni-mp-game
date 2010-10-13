@@ -32,6 +32,9 @@ public class Input extends JPanel {
     }
 }
 
+/*all of these actions currently moves one of the polygons. This is purely for
+ testing and will be replaced later. As of now, only one key can be pressed at a time.*/
+
 class UpAction extends AbstractAction {
 
     public UpAction(String name) {
@@ -39,7 +42,8 @@ class UpAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Up");
+        //System.out.println("Up");
+        Main.stage.movePolygon(0, 0, -5);
     }
 
 }
@@ -51,7 +55,8 @@ class DownAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Down");
+        //System.out.println("Down");
+        Main.stage.movePolygon(0, 0, 5);
     }
 
 }
@@ -63,7 +68,8 @@ class LeftAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Left");
+        //System.out.println("Left");
+        Main.stage.movePolygon(0, -5, 0);
     }
 
 }
@@ -75,7 +81,8 @@ class RightAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Right");
+        //System.out.println("Right");
+        Main.stage.movePolygon(0, 5, 0);
     }
 
 }
