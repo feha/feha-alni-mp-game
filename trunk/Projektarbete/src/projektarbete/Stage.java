@@ -68,7 +68,7 @@ public class Stage {
 
         
         
-        VisibleObject v1 = new VisibleObject();
+        VisibleObject v1 = new VisibleObject(this);
         /*VisibleObject v2 = new VisibleObject();
         VisibleObject v3 = new VisibleObject();
         VisibleObject v4 = new VisibleObject();
@@ -84,7 +84,7 @@ public class Stage {
                 break;
             }
 
-            System.out.println(visibleObjects[i]);
+            //System.out.println(visibleObjects[i]);
         }
 
         //VisibleObject.removeObject(visibleObjects, v4);
@@ -94,7 +94,7 @@ public class Stage {
                 break;
             }
 
-            System.out.println(visibleObjects[i]);
+            //System.out.println(visibleObjects[i]);
         }
 
     }
@@ -103,7 +103,7 @@ public class Stage {
     int objectCount = 0; //arrays start at 0 in java
 
     public void addVisibleObject( VisibleObject visibleObject ) {
-        System.out.println(visibleObject);
+        //System.out.println(visibleObject);
         visibleObjects[objectCount] = visibleObject;
 
         objectCount++;
