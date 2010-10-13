@@ -18,8 +18,8 @@ import javax.swing.JPanel;
  * @author felix.hallqvist
  */
 public class Main {
-    
-    public static Stage stage;
+
+    //public static Stage stage;
 
     /**
      * @param args the command line arguments
@@ -27,9 +27,11 @@ public class Main {
     public static void main(String[] args) {
         // TODO code application logic here
 
-        System.out.println("Main Started");
+        System.out.println("Main Initializing");
 
-        stage = new Stage();
+        Stage stage = new Stage();
+
+        System.out.println("Main Initialized");
 
     }
 

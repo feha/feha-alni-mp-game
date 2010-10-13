@@ -19,24 +19,43 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 public class Stage {
-    
-    //Networked variables
-    private Painter painter;
-    //private Reference visibleStuff;
 
     //Constructor
     public Stage () {
-        System.out.println("Stage Started");
 
+        System.out.println("Stage Initializing");
+        //If I do not init globals before I init components I cause an infinite
+        //loop, as components create a painter, which try to get the global
+        //instance, which doesnt exist so it creates a new Stage.
+        initGlobals();
+        initComponents();
+        initTesting();
+
+        System.out.println("Stage Initialized");
+
+    }
+
+
+    //Global variables
+    private static Stage _instance;
+
+    //Networked variables
+    private Painter painter;
+    
+
+    private void initGlobals() {
+
+        _instance = this;
+
+    }
+
+    private void initComponents() {
 
         JFrame jFrame = new JFrame();
 
         jFrame.setVisible(true);
-
         jFrame.setSize(500, 500);
-
         jFrame.setResizable(false);
-        
 
         jFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -47,11 +66,15 @@ public class Stage {
 
 
         painter = new Painter();
+
+        jFrame.getContentPane().add(painter);
+
         //adds a frame to handle keyboard input
         jFrame.add(new Input());
-        Container container = jFrame.getContentPane();
-        container.add(painter);
-        
+
+    }
+
+    private void initTesting() {
 
         Polygon poly1 = new Polygon();
             poly1.addPoint(0,0);
@@ -65,62 +88,78 @@ public class Stage {
 
         createPolygon(poly1);
         createPolygon(poly2);
-        
+
         movePolygon(0, 100, 100);
         movePolygon(1, 100, 100);
 
-        
-        
-        VisibleObject v1 = new VisibleObject(this);
-        /*VisibleObject v2 = new VisibleObject();
+
+
+        VisibleObject v0 = new VisibleObject();
+        VisibleObject v1 = new VisibleObject();
+        VisibleObject v2 = new VisibleObject();
         VisibleObject v3 = new VisibleObject();
         VisibleObject v4 = new VisibleObject();
+        v4.addToStage();
         VisibleObject v5 = new VisibleObject();
         VisibleObject v6 = new VisibleObject();
         VisibleObject v7 = new VisibleObject();
         VisibleObject v8 = new VisibleObject();
+        v4.addToStage();
         VisibleObject v9 = new VisibleObject();
-        VisibleObject v0 = new VisibleObject();*/
 
         for (int i = 0; i < visibleObjects.length; i++) {
             if (visibleObjects[i] == null) {
                 break;
             }
 
-            //System.out.println(visibleObjects[i]);
+            System.out.println("[" + i + "] " + visibleObjects[i]);
         }
 
-        //VisibleObject.removeObject(visibleObjects, v4);
+        System.out.println("Removing");
+        VisibleObject.removeVObjectFromTable(visibleObjects, v4);
+        System.out.println("Removed");
 
         for (int i = 0; i < visibleObjects.length; i++) {
             if (visibleObjects[i] == null) {
                 break;
             }
 
-            //System.out.println(visibleObjects[i]);
+            System.out.println("[" + i + "] " + visibleObjects[i]);
         }
 
     }
 
-    VisibleObject[] visibleObjects = new VisibleObject[10^6]; //should check into making it have unlimited length
+    public static Stage getInstance() {
+
+        //Double Check Locking pattern makes it only create new stage if it does
+        //not exist already, and stops threading from beign able to mess it up.
+        if (_instance == null) {
+            synchronized(Stage.class) {
+                if (_instance == null) {
+                    _instance = new Stage();
+                }
+            }
+        }
+
+        return _instance;
+
+    }
+
+    //Something like this, will make it work soon
+    LinkedList<VisibleObject> visibleObjects = new LinkedList<VisibleObject>(); //should check into making it have unlimited length
     int objectCount = 0; //arrays start at 0 in java
 
     public void addVisibleObject( VisibleObject visibleObject ) {
-        //System.out.println(visibleObject);
-        visibleObjects[objectCount] = visibleObject;
-
+        
+        visibleObjects.add(visibleObject);
+        
         objectCount++;
 
     }
 
     public void removeVisibleObject( VisibleObject visibleObject ) {
 
-        for (int i = 0; i < visibleObjects.length; i++) {
-            if (visibleObjects[i] == visibleObject) {
-                visibleObjects[i] = null;
-                break;
-            }
-        }
+        while (visibleObjects.remove(visibleObject)) {}
 
         objectCount--;
 

@@ -25,23 +25,29 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
 
     /** Creates new form Painter */
     public Painter() {
-        System.out.println("Painter Started");
+
+        System.out.println("Painter Initializing");
 
         initComponents();
+
+        System.out.println("Painter Initialized");
+        
     }
 
+    private Stage stage = Stage.getInstance();
     
     @Override //This function clears the screen and then loops trough the polygons to paint them.
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
         
-        int count = Main.stage.getPolygonCount();
+        int count = stage.getPolygonCount();
 
         //code to manage delays between updating the picture
         for (int i = 0; i < count; i++) {
-            g.drawPolygon( Main.stage.getPolygon(i) );
+            g.drawPolygon( stage.getPolygon(i) );
         }
+
         try {
             //Thread.sellp is set to the amount of time you want between the updates of the screen
             //zero means that it's updated as much as possible
@@ -49,6 +55,7 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
         } catch (InterruptedException ex) {
             //catches exceptions but doesn't do anything
         }
+
         //updates the picture
         repaint();
 
