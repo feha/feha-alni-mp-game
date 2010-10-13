@@ -15,6 +15,7 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 
@@ -107,24 +108,24 @@ public class Stage {
         v4.addToStage();
         VisibleObject v9 = new VisibleObject();
 
-        for (int i = 0; i < visibleObjects.length; i++) {
-            if (visibleObjects[i] == null) {
+        for (int i = 0; i < visibleObjects.size(); i++) {
+            if (visibleObjects.get(i) == null) {
                 break;
             }
 
-            System.out.println("[" + i + "] " + visibleObjects[i]);
+            System.out.println("[" + i + "] " + visibleObjects.get(i));
         }
 
         System.out.println("Removing");
-        VisibleObject.removeVObjectFromTable(visibleObjects, v4);
+        while(visibleObjects.remove(v4)) ;
         System.out.println("Removed");
 
-        for (int i = 0; i < visibleObjects.length; i++) {
-            if (visibleObjects[i] == null) {
+        for (int i = 0; i < visibleObjects.size(); i++) {
+            if (visibleObjects.get(i) == null) {
                 break;
             }
 
-            System.out.println("[" + i + "] " + visibleObjects[i]);
+            System.out.println("[" + i + "] " + visibleObjects.get(i));
         }
 
     }
