@@ -45,11 +45,10 @@ public class Stage {
 
 
         painter = new Painter();
-
+        jFrame.add(new Input());
         Container container = jFrame.getContentPane();
         container.add(painter);
-        //apparently, input blocks the painter
-        //jFrame.add(new Input());
+        
 
         Polygon poly1 = new Polygon();
             poly1.addPoint(0,0);
