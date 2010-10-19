@@ -13,6 +13,8 @@ package projektarbete;
 
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,18 +29,30 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
     public Painter() {
 
         System.out.println("Painter Initializing");
-
+        
         initComponents();
-
+        
         System.out.println("Painter Initialized");
         
     }
-
+    
     private Stage stage = Stage.getInstance();
+    private boolean timerStarted = false;
+    private Timer timer = new Timer();
+    private TimerTask timerTask = new TimerTask() {
+        public void run() {
+            repaint();
+        }
+    };
     
     @Override //This function clears the screen and then loops trough the polygons to paint them.
     public void paintComponent(Graphics g) {
 
+        if (!timerStarted) {
+            timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
+            timerStarted = true;
+        }
+        
         super.paintComponent(g);
         
         int count = stage.getVisibleObjectCount();
@@ -47,19 +61,6 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
         for (int i = 0; i < count; i++) {
             stage.getVisibleObject(i).draw(g);
         }
-
-        try {
-            //Thread.sellp is set to the amount of time you want between the updates of the screen
-            //zero means that it's updated as much as possible
-            Thread.sleep(0);
-        } catch (InterruptedException ex) {
-            System.out.println(ex);
-            repaint();
-            //catches exceptions but doesn't do anything
-        }
-
-        //updates the picture
-        repaint();
 
     }
 
