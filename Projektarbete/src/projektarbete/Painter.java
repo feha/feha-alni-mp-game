@@ -41,11 +41,11 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
 
         super.paintComponent(g);
         
-        int count = stage.getPolygonCount();
-
+        int count = stage.getVisibleObjectCount();
+        
         //code to manage delays between updating the picture
         for (int i = 0; i < count; i++) {
-            g.drawPolygon( stage.getPolygon(i) );
+            stage.getVisibleObject(i).draw(g);
         }
 
         try {
@@ -53,6 +53,7 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
             //zero means that it's updated as much as possible
             Thread.sleep(0);
         } catch (InterruptedException ex) {
+            repaint();
             //catches exceptions but doesn't do anything
         }
 

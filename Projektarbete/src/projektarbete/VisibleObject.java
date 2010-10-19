@@ -5,39 +5,104 @@
 
 package projektarbete;
 
+import java.awt.Graphics;
+import java.util.LinkedList;
+
 /**
  *
  * @author felix.hallqvist
  */
 public class VisibleObject {
 
+    //Make parent be visibleobject, and have a special visibleobject subclass instead of stage.
+    VisibleObject parent;
+    boolean fixed;
+    int x;
+    int y;
+
+    
     public VisibleObject() {
 
         System.out.println("VisibleObject Initializing");
 
+        //initComponents();
+
+        System.out.println("VisibleObject Initialized");
+
+    }
+    
+    
+    public VisibleObject(VisibleObject visibleObject) {
+
+        System.out.println("VisibleObject Initializing");
+        
         initComponents();
 
         System.out.println("VisibleObject Initialized");
 
     }
-
+    
+    
     private void initComponents() {
 
-        addToStage();
+        parent = Camera.getInstance();
+        addToParent();
 
     }
 
-    public void addToStage(){
-
+    public void addToParent(){
+        
         //Tell the Stage that this instance wants to be in the display list.
-        Stage.getInstance().addVisibleObject(this);
+        parent.addVisibleObject(this);
 
     }
 
-    public void removeFromStage(){
+    public void removeFromParent(){
 
         //Tell the Stage to remove this instance from the display list.
-        Stage.getInstance().removeVisibleObject(this);
+        parent.removeVisibleObject(this);
+
+    }
+
+    //Makes a list of visibleobjects, which is good because of its remove functions.
+    LinkedList<VisibleObject> visibleObjects = new LinkedList<VisibleObject>();
+    int objectCount = 0; //arrays start at 0 in java
+
+    public void addVisibleObject( VisibleObject visibleObject ) {
+
+        visibleObjects.add(visibleObject);
+
+        objectCount++;
+
+    }
+
+    public void removeVisibleObject( VisibleObject visibleObject ) {
+
+        while (visibleObjects.remove(visibleObject)) {}
+
+        objectCount--;
+
+    }
+
+    public VisibleObject getVisibleObject( int index ) {
+        return visibleObjects.get(index);
+
+    }
+
+    public int getVisibleObjectCount() {
+
+        return objectCount;
+
+    }
+    
+    public void draw(Graphics g){
+
+        int count = getVisibleObjectCount();
+
+        //code to manage delays between updating the picture
+        for (int i = 0; i < count; i++) {
+            getVisibleObject(i).draw(g);
+        }
 
     }
 

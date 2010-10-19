@@ -10,9 +10,7 @@ package projektarbete;
  * @author felix.hallqvist
  */
 
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Polygon;
+//import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -69,6 +67,8 @@ public class Stage {
         painter = new Painter();
 
         jFrame.getContentPane().add(painter);
+        
+        Camera camera = new Camera();
 
         //adds a frame to handle keyboard input
         jFrame.add(new Input());
@@ -77,56 +77,7 @@ public class Stage {
 
     private void initTesting() {
 
-        Polygon poly1 = new Polygon();
-            poly1.addPoint(0,0);
-            poly1.addPoint(50,0);
-            poly1.addPoint(25,50);
-
-        Polygon poly2 = new Polygon();
-            poly2.addPoint(75,75);
-            poly2.addPoint(125,75);
-            poly2.addPoint(100,125);
-
-        createPolygon(poly1);
-        createPolygon(poly2);
-
-        movePolygon(0, 100, 100);
-        movePolygon(1, 100, 100);
-
-
-
-        VisibleObject v0 = new VisibleObject();
-        VisibleObject v1 = new VisibleObject();
-        VisibleObject v2 = new VisibleObject();
-        VisibleObject v3 = new VisibleObject();
-        VisibleObject v4 = new VisibleObject();
-        v4.addToStage();
-        VisibleObject v5 = new VisibleObject();
-        VisibleObject v6 = new VisibleObject();
-        VisibleObject v7 = new VisibleObject();
-        VisibleObject v8 = new VisibleObject();
-        v4.addToStage();
-        VisibleObject v9 = new VisibleObject();
-
-        for (int i = 0; i < visibleObjects.size(); i++) {
-            if (visibleObjects.get(i) == null) {
-                break;
-            }
-
-            System.out.println("[" + i + "] " + visibleObjects.get(i));
-        }
-
-        System.out.println("Removing");
-        while(visibleObjects.remove(v4)) ;
-        System.out.println("Removed");
-
-        for (int i = 0; i < visibleObjects.size(); i++) {
-            if (visibleObjects.get(i) == null) {
-                break;
-            }
-
-            System.out.println("[" + i + "] " + visibleObjects.get(i));
-        }
+        MyPolygon v0 = new MyPolygon();
 
     }
 
@@ -146,9 +97,9 @@ public class Stage {
 
     }
 
-    //Something like this, will make it work soon
-    LinkedList<VisibleObject> visibleObjects = new LinkedList<VisibleObject>(); //should check into making it have unlimited length
-    int objectCount = 0; //arrays start at 0 in java
+    //Makes a list of visibleobjects, which is good because of its remove functions.
+    private LinkedList<VisibleObject> visibleObjects = new LinkedList<VisibleObject>();
+    private int objectCount = 0; //arrays start at 0 in java
 
     public void addVisibleObject( VisibleObject visibleObject ) {
         
@@ -166,42 +117,15 @@ public class Stage {
 
     }
 
-    Polygon[] polygons = new Polygon[10^6]; //should check into making it have unlimited length
-    int count = 0; //arrays start at 0 in java
-
-    public void createPolygon( Polygon poly ) {
-        //debugging
-        /*
-        System.out.println(polygons);
-        System.out.println(polygons.length);
-        System.out.println(count);
-        */
-
-        //fill the array with new polys already created so we can create them in a class outside this
-        polygons[count] = poly;
-
-        count++;
-    }
-
-    public void movePolygon( int index, int x, int y) {
-
-        Polygon poly = polygons[index];
-
-        //translate is a move function for polygons
-        //They lack positioning, but this is same thing except local to the poly
-        poly.translate(x, y);
+    public VisibleObject getVisibleObject( int index ) {
+        return visibleObjects.get(index);
 
     }
 
-    public Polygon getPolygon( int index ) {
-        return polygons[index];
+    public int getVisibleObjectCount() {
+
+        return objectCount;
 
     }
-
-    public int getPolygonCount() {
-
-        return count;
-
-    }
-
+    
 }
