@@ -17,7 +17,9 @@ public class MyPolygon extends VisibleObject {
     private Polygon polygon;
 
     
-    public MyPolygon() {
+    public MyPolygon(VisibleObject visibleObject) {
+
+        super(visibleObject);
 
         System.out.println("MyPolygon Initializing");
 
@@ -30,6 +32,7 @@ public class MyPolygon extends VisibleObject {
 
     private void initComponents() {
 
+        //TODO: Everything!!!
         polygon = new Polygon();
             polygon.addPoint(0, 0);
             polygon.addPoint(0, 100);
@@ -39,18 +42,6 @@ public class MyPolygon extends VisibleObject {
 
     @Override
     public void draw(Graphics g) {
-
-        if (fixed) {
-            for (int i = 0; i < polygon.npoints; i++) {
-                System.out.println(polygon.xpoints[i] - parent.x);
-                System.out.println(polygon.ypoints[i] - parent.y);
-            }
-        } else {
-            for (int i = 0; i < polygon.npoints; i++) {
-                System.out.println(polygon.xpoints);
-                System.out.println(polygon.ypoints);
-            }
-        }
 
         g.drawPolygon(polygon);
 

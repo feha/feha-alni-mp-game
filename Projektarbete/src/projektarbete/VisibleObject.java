@@ -23,11 +23,11 @@ public class VisibleObject {
     
     public VisibleObject() {
 
-        System.out.println("VisibleObject Initializing");
+        System.out.println("VisibleObject (Camera) Initializing");
 
         //initComponents();
 
-        System.out.println("VisibleObject Initialized");
+        System.out.println("VisibleObject (Camera) Initialized");
 
     }
     
@@ -98,8 +98,7 @@ public class VisibleObject {
     public void draw(Graphics g){
 
         int count = getVisibleObjectCount();
-
-        //code to manage delays between updating the picture
+        
         for (int i = 0; i < count; i++) {
             getVisibleObject(i).draw(g);
         }

@@ -53,6 +53,7 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
             //zero means that it's updated as much as possible
             Thread.sleep(0);
         } catch (InterruptedException ex) {
+            System.out.println(ex);
             repaint();
             //catches exceptions but doesn't do anything
         }

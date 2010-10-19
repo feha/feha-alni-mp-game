@@ -14,7 +14,7 @@ public class PhysicsEngine {
     static int svy = 0;
 
     public static void physicsLoop () throws InterruptedException {
-        Stage.getInstance().movePolygon(0, svx, svy);
+        //Stage.getInstance().movePolygon(0, svx, svy);
 
 
         Thread.sleep(20);
