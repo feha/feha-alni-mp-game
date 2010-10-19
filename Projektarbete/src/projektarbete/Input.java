@@ -15,7 +15,9 @@ import javax.swing.*;
 public class Input extends JPanel {
 
     public Input() {
+        
         System.out.println("Input started");
+
         //creating arrays for the actions and keystrokes connected to them
         Action[] actions = {new UpAction("up"),  new DownAction("down"), 
         new LeftAction("left"), new RightAction("right"), new UpReleasedAction("released up"),

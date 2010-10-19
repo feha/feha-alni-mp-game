@@ -63,15 +63,15 @@ public class Stage {
             }
         });
 
+        //adds a frame to handle keyboard input. DONT add it after painter!
+        Input input = new Input();
+        jFrame.add(input);
 
+        //Adds a panel to handle painting. DONT add it befor input!
         painter = new Painter();
-
         jFrame.getContentPane().add(painter);
         
         Camera camera = new Camera();
-
-        //adds a frame to handle keyboard input
-        //jFrame.add(new Input()); //Feha - Comment away this line and painter works again
 
     }
 
