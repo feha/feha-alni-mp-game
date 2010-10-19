@@ -71,13 +71,13 @@ public class Stage {
         Camera camera = new Camera();
 
         //adds a frame to handle keyboard input
-        jFrame.add(new Input());
+        //jFrame.add(new Input()); //Feha - Comment away this line and painter works again
 
     }
 
     private void initTesting() {
 
-        MyPolygon v0 = new MyPolygon();
+        MyPolygon v0 = new MyPolygon(Camera.getInstance());
 
     }
 
