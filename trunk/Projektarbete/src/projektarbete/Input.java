@@ -17,9 +17,12 @@ public class Input extends JPanel {
     public Input() {
         System.out.println("Input started");
         //creating arrays for the actions and keystrokes connected to them
-        Action[] actions = {new UpAction("up"),  new DownAction("down"),
-        new LeftAction("left"), new RightAction("right")};
-        String[] strokes = {"UP", "DOWN", "LEFT", "RIGHT"};
+        Action[] actions = {new UpAction("up"),  new DownAction("down"), 
+        new LeftAction("left"), new RightAction("right"), new UpReleasedAction("released up"),
+        new DownReleasedAction("released down"), new LeftReleasedAction("released left"),
+        new RightReleasedAction("released right")};
+        String[] strokes = {"UP", "DOWN", "LEFT", "RIGHT", "released UP",
+        "released DOWN", "released LEFT", "released RIGHT"};
 
         //loops through the arrays
         for (int i=0; i<actions.length; i++) {
@@ -48,6 +51,18 @@ class UpAction extends AbstractAction {
 
 }
 
+class UpReleasedAction extends AbstractAction {
+
+    public UpReleasedAction(String name) {
+        super(name);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Up released");
+    }
+
+}
+
 class DownAction extends AbstractAction {
 
     public DownAction(String name) {
@@ -57,6 +72,18 @@ class DownAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Down");
         Stage.getInstance().movePolygon(0, 0, 5);
+    }
+
+}
+
+class DownReleasedAction extends AbstractAction {
+
+    public DownReleasedAction(String name) {
+        super(name);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Down released");
     }
 
 }
@@ -74,6 +101,18 @@ class LeftAction extends AbstractAction {
 
 }
 
+class LeftReleasedAction extends AbstractAction {
+
+    public LeftReleasedAction(String name) {
+        super(name);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Left released");
+    }
+
+}
+
 class RightAction extends AbstractAction {
 
     public RightAction(String name) {
@@ -87,3 +126,14 @@ class RightAction extends AbstractAction {
 
 }
 
+class RightReleasedAction extends AbstractAction {
+
+    public RightReleasedAction(String name) {
+        super(name);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Right released");
+    }
+
+}
