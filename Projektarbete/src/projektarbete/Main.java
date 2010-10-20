@@ -31,21 +31,7 @@ public class Main {
 
         System.out.println("Main Initializing");
 
-        Runnable physics = new Runnable() {
-            public void run() {
-                //PhysicsEngine pe = new PhysicsEngine();
-                try {
-                    PhysicsEngine.physicsLoop();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-        };
-        physics.run();
-
         Stage stage = new Stage();
-
 
         System.out.println("Main Initialized");
 
