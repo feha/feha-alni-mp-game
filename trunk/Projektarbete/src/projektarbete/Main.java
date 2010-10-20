@@ -42,10 +42,10 @@ public class Main {
             }
 
         };
+        physics.run();
 
         Stage stage = new Stage();
 
-        physics.run();
 
         System.out.println("Main Initialized");
 
