@@ -22,7 +22,7 @@ public class BasePhysics {
         initTesting();
 
         System.out.println("BasePhysics Initialized");
-
+        
     }
 
     double xPos;
@@ -77,6 +77,7 @@ public class BasePhysics {
         gravity = 9.82;
         gravityFlag = true;
 
+        //If you skip converting each number to double it will first count as if its integers, then convert answer to a double.
         deltaTime = ((double)20)/((double)1000);
 
         physicsSimulate();
@@ -87,6 +88,16 @@ public class BasePhysics {
 
         visibleObject = new Hexagon(Camera.getInstance());
 
+        try {
+            Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        Hook.call(1,"test");
+    }
+
+    public void hookTest(String test) {
+        System.out.println(test);
     }
 
     public void updateGraphic() {
@@ -127,7 +138,6 @@ public class BasePhysics {
         yPos+= -yVel * deltaTime;
         pos[0]+= xPos;
         pos[1]+= yPos;
-        System.out.println(yVel);
         
         updateGraphic();
 
