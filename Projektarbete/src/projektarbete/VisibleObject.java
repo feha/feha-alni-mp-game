@@ -97,6 +97,10 @@ public class VisibleObject {
 
     }
 
+    public void setPos(double xPos, double yPos) {
+
+    }
+
     public void draw(Graphics g){
 
         int count = getVisibleObjectCount();

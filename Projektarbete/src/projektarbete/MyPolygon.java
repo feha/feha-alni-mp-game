@@ -38,6 +38,19 @@ public class MyPolygon extends VisibleObject {
     }
 
     @Override
+    public void setPos(double xPos, double yPos) {
+
+        double deltaX = xPos-x;
+        double deltaY = yPos-y;
+
+        x = (int)xPos;
+        y = (int)yPos;
+        
+        polygon.translate((int)deltaX,(int)deltaY);
+        
+    }
+
+    @Override
     public void draw(Graphics g) {
 
         g.drawPolygon(polygon);

@@ -77,7 +77,7 @@ public class Stage {
 
     private void initTesting() {
 
-        Hexagon v0 = new Hexagon(Camera.getInstance());
+        BasePhysics v0 = new BasePhysics();
 
     }
 
