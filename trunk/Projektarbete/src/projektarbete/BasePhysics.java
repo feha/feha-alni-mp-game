@@ -5,6 +5,9 @@
 
 package projektarbete;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  *
  * @author felix.hallqvist
@@ -16,17 +19,29 @@ public class BasePhysics {
         System.out.println("BasePhysics Initializing");
 
         initComponents();
+        initTesting();
 
         System.out.println("BasePhysics Initialized");
 
     }
 
-    private double xPos;
-    private double yPos;
-    private double[] pos;
-    private double xVel;
-    private double yVel;
-    private double friction;
+    double xPos;
+    double yPos;
+    double[] pos;
+    double xVel;
+    double yVel;
+    double friction;
+
+    VisibleObject visibleObject;
+
+
+    boolean timerStarted = false;
+    Timer timer = new Timer();
+    TimerTask timerTask = new TimerTask() {
+        public void run() {
+            physicsSimulate();
+        }
+    };
 
     private void initComponents() {
 
@@ -42,15 +57,37 @@ public class BasePhysics {
 
         friction = 0.75;
 
+        physicsSimulate();
+
     }
 
-    public void PhysicsSimulate() {
+    private void initTesting() {
+
+        visibleObject = new Hexagon(Camera.getInstance());
+
+    }
+
+    public void updateGraphic() {
+
+        visibleObject.x = (int)xPos;
+        visibleObject.y = (int)yPos;
+        
+    }
+
+    public void physicsSimulate() {
+
+        if (!timerStarted) {
+            timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
+            timerStarted = true;
+        }
 
         xVel-= friction * xVel;
         yVel-= friction * yVel;
 
         xPos+= xVel;
         yPos+= yVel;
+
+        updateGraphic();
 
     }
 
@@ -62,6 +99,8 @@ public class BasePhysics {
         pos[0]+= x;
         pos[1]+= y;
 
+        updateGraphic();
+
     }
 
     public void setPos(double x, double y) {
@@ -71,6 +110,8 @@ public class BasePhysics {
 
         pos[0] = x;
         pos[1] = y;
+
+        updateGraphic();
 
     }
 
