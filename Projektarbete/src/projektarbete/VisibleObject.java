@@ -19,6 +19,8 @@ public class VisibleObject {
     boolean fixed;
     int x;
     int y;
+    int offsetX;
+    int offsetY;
 
 
     public VisibleObject() {
@@ -102,6 +104,13 @@ public class VisibleObject {
         for (int i = 0; i < count; i++) {
             getVisibleObject(i).draw(g);
         }
+
+    }
+
+    public void offset(double x, double y) {
+
+        offsetX = (int)x;
+        offsetY = (int)y;
 
     }
 

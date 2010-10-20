@@ -77,7 +77,7 @@ public class Stage {
 
     private void initTesting() {
 
-        MyPolygon v0 = new MyPolygon(Camera.getInstance());
+        Hexagon v0 = new Hexagon(Camera.getInstance());
 
     }
 
