@@ -52,11 +52,11 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
             timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
             timerStarted = true;
         }
-        
+
         super.paintComponent(g);
-        
+
         int count = stage.getVisibleObjectCount();
-        
+
         //code to manage delays between updating the picture
         for (int i = 0; i < count; i++) {
             stage.getVisibleObject(i).draw(g);

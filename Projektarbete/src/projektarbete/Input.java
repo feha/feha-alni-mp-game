@@ -49,7 +49,7 @@ class UpAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Up");
         //Stage.getInstance().movePolygon(0, 0, -5);
-        PhysicsEngine.svy = -5;
+        PhysicsEngine.vvy = -10;
     }
 
 }
@@ -62,7 +62,7 @@ class UpReleasedAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         System.out.println("Up released");
-        PhysicsEngine.svy = 0;
+        PhysicsEngine.vvy = 0;
     }
 
 }
@@ -76,7 +76,7 @@ class DownAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Down");
         //Stage.getInstance().movePolygon(0, 0, 5);
-        PhysicsEngine.svy = 5;
+        PhysicsEngine.vvy = 10;
     }
 
 }
@@ -89,7 +89,7 @@ class DownReleasedAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         System.out.println("Down released");
-        PhysicsEngine.svy = 0;
+        PhysicsEngine.vvy = 0;
     }
 
 }
@@ -103,7 +103,7 @@ class LeftAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Left");
         //Stage.getInstance().movePolygon(0, -5, 0);
-        PhysicsEngine.svx = -5;
+        PhysicsEngine.vvx = -10;
     }
 
 }
@@ -116,7 +116,7 @@ class LeftReleasedAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         System.out.println("Left released");
-        PhysicsEngine.svx = 0;
+        PhysicsEngine.vvx = 0;
     }
 
 }
@@ -130,7 +130,7 @@ class RightAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         //System.out.println("Right");
         //Stage.getInstance().movePolygon(0, 5, 0);
-        PhysicsEngine.svx = 5;
+        PhysicsEngine.vvx = 10;
     }
 
 }
@@ -143,7 +143,7 @@ class RightReleasedAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         System.out.println("Right released");
-        PhysicsEngine.svx = 0;
+        PhysicsEngine.vvx = 0;
     }
 
 }

@@ -20,7 +20,7 @@ public class VisibleObject {
     int x;
     int y;
 
-    
+
     public VisibleObject() {
 
         System.out.println("VisibleObject (Camera) Initializing");
@@ -30,19 +30,19 @@ public class VisibleObject {
         System.out.println("VisibleObject (Camera) Initialized");
 
     }
-    
-    
+
+
     public VisibleObject(VisibleObject visibleObject) {
 
         System.out.println("VisibleObject Initializing");
-        
+
         initComponents();
 
         System.out.println("VisibleObject Initialized");
 
     }
-    
-    
+
+
     private void initComponents() {
 
         parent = Camera.getInstance();
@@ -51,7 +51,7 @@ public class VisibleObject {
     }
 
     public void addToParent(){
-        
+
         //Tell the Stage that this instance wants to be in the display list.
         parent.addVisibleObject(this);
 
@@ -94,11 +94,11 @@ public class VisibleObject {
         return objectCount;
 
     }
-    
+
     public void draw(Graphics g){
 
         int count = getVisibleObjectCount();
-        
+
         for (int i = 0; i < count; i++) {
             getVisibleObject(i).draw(g);
         }

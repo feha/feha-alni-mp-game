@@ -40,7 +40,7 @@ public class Stage {
 
     //Networked variables
     private Painter painter;
-    
+
 
     private void initGlobals() {
 
@@ -70,7 +70,7 @@ public class Stage {
         //Adds a panel to handle painting. DONT add it befor input!
         painter = new Painter();
         jFrame.getContentPane().add(painter);
-        
+
         Camera camera = new Camera();
 
     }
@@ -102,9 +102,9 @@ public class Stage {
     private int objectCount = 0; //arrays start at 0 in java
 
     public void addVisibleObject( VisibleObject visibleObject ) {
-        
+
         visibleObjects.add(visibleObject);
-        
+
         objectCount++;
 
     }
@@ -127,5 +127,5 @@ public class Stage {
         return objectCount;
 
     }
-    
+
 }
