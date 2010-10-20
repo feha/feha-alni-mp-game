@@ -14,7 +14,7 @@ import java.awt.Polygon;
  */
 public class MyPolygon extends VisibleObject {
 
-    private Polygon polygon;
+    public Polygon polygon;
 
     
     public MyPolygon(VisibleObject visibleObject) {
@@ -34,9 +34,6 @@ public class MyPolygon extends VisibleObject {
 
         //TODO: Everything!!!
         polygon = new Polygon();
-            polygon.addPoint(0, 0);
-            polygon.addPoint(0, 100);
-            polygon.addPoint(100, 50);
 
     }
 
