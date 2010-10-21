@@ -17,7 +17,12 @@ public static TestUserObject tester = new TestUserObject();
     public Input() {
         
         System.out.println("Input started");
-
+        Flags.addFlag("pressed", true);
+        Flags.addFlag("released", false);
+        Flags.addFlag("up", false);
+        Flags.addFlag("down", false);
+        Flags.addFlag("left", false);
+        Flags.addFlag("right", false);
 
         Keybind[] keybinds = {new Keybind(new FlagAction("up pressed"), "UP"),
         new Keybind(new FlagAction("up released"), "released UP"),
@@ -40,16 +45,21 @@ public static TestUserObject tester = new TestUserObject();
 }
 
 class FlagAction extends AbstractAction {
+String input;
 String name;
+boolean value;
 
     public FlagAction(String n) {
         super(n);
-        name = n;
+        input = n;
     }
 
     public void actionPerformed(ActionEvent e) {
-        String[] flag = name.split(" ");
+        String[] flag = input.split(" ");
         name = flag[0];
+        value = Flags.getFlag(flag[1]);
+        Flags.setFlag(name, value);
+        System.out.println("Up: "+Flags.getFlag("up")+", Down: "+Flags.getFlag("down")+", Left: "+Flags.getFlag("left")+", Right: "+Flags.getFlag("right"));
     }
 
 }

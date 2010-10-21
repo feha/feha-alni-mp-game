@@ -12,9 +12,10 @@ import java.util.LinkedList;
  * @author niclas.alexandersso
  */
 public class Flags {
-    LinkedList<Flag> flags = new LinkedList<Flag>();
-    int count = 0;
-    public boolean addFlag(String name, boolean value) {
+    private static LinkedList<Flag> flags = new LinkedList<Flag>();
+    private static int count = 0;
+
+    public static boolean addFlag(String name, boolean value) {
         boolean exists = false;
 
         for (int i = 0; i < count; i++) {
@@ -28,6 +29,29 @@ public class Flags {
         }
 
         return !exists;
+    }
+    public static void setFlag(String name, boolean value) {
+        for (int i = 0; i < count; i++) {
+            if (flags.get(i).getName().matches(name)) {
+                flags.get(i).setValue(value);
+            }
+        }
+    }
+    public static void removeFlag(String name) {
+        for (int i = 0; i < count; i++) {
+            if (flags.get(i).getName().matches(name)) {
+                flags.remove(i);
+                count--;
+            }
+        }
+    }
+    public static boolean getFlag(String name) {
+        for (int i = 0; i < count; i++) {
+            if (flags.get(i).getName().matches(name)) {
+                return flags.get(i).getValue();
+            }
+        }
+        return false;
     }
 }
 
