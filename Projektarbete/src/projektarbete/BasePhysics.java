@@ -25,19 +25,20 @@ public class BasePhysics {
         
     }
 
-    double xPos;
-    double yPos;
-    double[] pos;
-    double xVel;
-    double yVel;
-    double[] vel;
-    double xAcc;
-    double yAcc;
-    double[] acc;
-    double mass;
-    double airFriction;
-    double gravity;
-    boolean gravityFlag;
+    protected double xPos;
+    protected double yPos;
+    protected double[] pos;
+    protected double xVel;
+    protected double yVel;
+    protected double[] vel;
+    protected double xAcc;
+    protected double yAcc;
+    protected double[] acc;
+    protected double mass;
+    protected double airFriction;
+    protected double gravity;
+    protected boolean gravityFlag;
+    protected boolean frozenFlag;
     double deltaTime;
 
     VisibleObject visibleObject;
@@ -73,9 +74,10 @@ public class BasePhysics {
         acc[1] = yAcc;
 
         mass = 100;
-        airFriction = 0.5;
+        airFriction = 0.25;
         gravity = 9.82;
         gravityFlag = true;
+        frozenFlag = false;
 
         //If you skip converting each number to double it will first count as if its integers, then convert answer to a double.
         deltaTime = ((double)20)/((double)1000);
@@ -87,7 +89,7 @@ public class BasePhysics {
     private void initTesting() {
 
         visibleObject = new Hexagon(Camera.getInstance());
-
+        visibleObject.offset(250, 0);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -115,30 +117,32 @@ public class BasePhysics {
             timerStarted = true;
         }
 
-        if (gravityFlag) {
-            yAcc-= gravity * deltaTime;
+        if (!frozenFlag) {
+            if (gravityFlag) {
+                yAcc-= gravity * deltaTime;
+            }
+
+            //Velocity and accerelation
+            xAcc-= (airFriction * xVel)/mass;
+            yAcc-= (airFriction * yVel)/mass;
+
+            xVel+= xAcc;
+            yVel+= yAcc;
+            vel[0] = xVel;
+            vel[1] = yVel;
+
+            xAcc = 0;
+            yAcc = 0;
+            acc[0] = xAcc;
+            acc[1] = yAcc;
+
+            //Position
+            xPos+= xVel * deltaTime;
+            yPos+= -yVel * deltaTime;
+            pos[0]+= xPos;
+            pos[1]+= yPos;
         }
 
-        //Velocity and accerelation
-        xAcc-= (airFriction * xVel)/mass;
-        yAcc-= (airFriction * yVel)/mass;
-        
-        xVel+= xAcc;
-        yVel+= yAcc;
-        vel[0] = xVel;
-        vel[1] = yVel;
-        
-        xAcc = 0;
-        yAcc = 0;
-        acc[0] = xAcc;
-        acc[1] = yAcc;
-
-        //Position
-        xPos+= xVel * deltaTime;
-        yPos+= -yVel * deltaTime;
-        pos[0]+= xPos;
-        pos[1]+= yPos;
-        
         updateGraphic();
 
     }

@@ -15,21 +15,19 @@ import java.util.LinkedList;
 public class VisibleObject {
 
     //Make parent be visibleobject, and have a special visibleobject subclass instead of stage.
-    VisibleObject parent;
+    protected VisibleObject parent;
     boolean fixed;
-    int x;
-    int y;
-    int offsetX;
-    int offsetY;
+    protected int x;
+    protected int y;
+    protected int offsetX;
+    protected int offsetY;
 
 
     public VisibleObject() {
 
-        System.out.println("VisibleObject (Camera) Initializing");
+        System.out.println("VisibleObject (Screen) Initializing");
 
-        //initComponents();
-
-        System.out.println("VisibleObject (Camera) Initialized");
+        System.out.println("VisibleObject (Screen) Initialized");
 
     }
 
@@ -38,6 +36,7 @@ public class VisibleObject {
 
         System.out.println("VisibleObject Initializing");
 
+        parent = Camera.getInstance();
         initComponents();
 
         System.out.println("VisibleObject Initialized");
@@ -47,9 +46,16 @@ public class VisibleObject {
 
     private void initComponents() {
 
-        parent = Camera.getInstance();
         addToParent();
 
+    }
+
+    public void setParent(VisibleObject newParent) {
+        parent = newParent;
+    }
+    
+    public VisibleObject getParent() {
+        return parent;
     }
 
     public void addToParent(){
@@ -97,10 +103,6 @@ public class VisibleObject {
 
     }
 
-    public void setPos(double xPos, double yPos) {
-
-    }
-
     public void draw(Graphics g){
 
         int count = getVisibleObjectCount();
@@ -108,6 +110,10 @@ public class VisibleObject {
         for (int i = 0; i < count; i++) {
             getVisibleObject(i).draw(g);
         }
+
+    }
+    
+    public void setPos(double xPos, double yPos) {
 
     }
 
