@@ -86,9 +86,9 @@ public class VisibleObject {
 
     public void removeVisibleObject( VisibleObject visibleObject ) {
 
-        while (visibleObjects.remove(visibleObject)) {}
-
-        objectCount--;
+        while (visibleObjects.remove(visibleObject)) {
+            objectCount--;
+        }
 
     }
 
