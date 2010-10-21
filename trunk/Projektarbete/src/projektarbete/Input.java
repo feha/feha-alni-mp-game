@@ -17,13 +17,12 @@ public static TestUserObject tester = new TestUserObject();
     public Input() {
         
         System.out.println("Input started");
+
+        //adds flags for later use. Allows identifying boolean valyes with a string
         Flags.addFlag("pressed", true);
         Flags.addFlag("released", false);
-        Flags.addFlag("up", false);
-        Flags.addFlag("down", false);
-        Flags.addFlag("left", false);
-        Flags.addFlag("right", false);
 
+        //creates an array of keybinds
         Keybind[] keybinds = {new Keybind(new FlagAction("up pressed"), "UP"),
         new Keybind(new FlagAction("up released"), "released UP"),
         new Keybind(new FlagAction("down pressed"), "DOWN"),
@@ -34,10 +33,12 @@ public static TestUserObject tester = new TestUserObject();
         new Keybind(new FlagAction("right released"), "released RIGHT")};
 
         for (int i=0; i<keybinds.length; i++) {
-            //adds the keystrokes in the array to the input map
+
+            //adds the keystrokes in the keybind array to the input map
             getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keybinds[i].getStroke()),
             keybinds[i].getAction().getValue(Action.NAME));
-            //adds the actions in the array to the action map
+
+            //adds the actions in the keybind array to the action map
             getActionMap().put(keybinds[i].getAction().getValue(Action.NAME),
                     keybinds[i].getAction());
         }
@@ -55,11 +56,18 @@ boolean value;
     }
 
     public void actionPerformed(ActionEvent e) {
+
+        //splits the input string into an array
         String[] flag = input.split(" ");
+
+        //the first element of the array is the name
         name = flag[0];
+
+        //the second element of the array is a boolean value, identified by a flag
         value = Flags.getFlag(flag[1]);
+        
+        //the flag for this key is set to the value of the input string
         Flags.setFlag(name, value);
-        System.out.println("Up: "+Flags.getFlag("up")+", Down: "+Flags.getFlag("down")+", Left: "+Flags.getFlag("left")+", Right: "+Flags.getFlag("right"));
     }
 
 }
