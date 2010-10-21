@@ -42,9 +42,12 @@ public class MyPolygon extends VisibleObject {
 
         double deltaX = xPos-x;
         double deltaY = yPos-y;
+        System.out.println(deltaX+" , "+deltaY);
+        System.out.println("Position: "+x+" , "+y);
 
         x = (int)xPos;
         y = (int)yPos;
+
         
         polygon.translate((int)deltaX,(int)deltaY);
         
