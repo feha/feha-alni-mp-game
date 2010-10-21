@@ -13,44 +13,62 @@ import java.util.LinkedList;
  */
 public class Flags {
     private static LinkedList<Flag> flags = new LinkedList<Flag>();
-    private static int count = 0;
 
     public static boolean addFlag(String name, boolean value) {
         boolean exists = false;
 
-        for (int i = 0; i < count; i++) {
+        //checks if the name of the flag about to be added already exists
+        for (int i = 0; i < flags.size(); i++) {
             if (flags.get(i).getName().matches(name)) {
                 exists = true;
+                break;
             }
         }
+        //if no flag with that name exists, a flag with that name is added
         if (!exists) {
-            flags.add(count, new Flag(name, value));
-            count++;
+            flags.add(flags.size(), new Flag(name, value));
         }
 
+        //returns true if the flag was added
         return !exists;
     }
     public static void setFlag(String name, boolean value) {
-        for (int i = 0; i < count; i++) {
+        boolean exists = false;
+        //loops until a flag with a name matiching the input string is found
+        for (int i = 0; i < flags.size(); i++) {
             if (flags.get(i).getName().matches(name)) {
+                //sets the flag's value to the input value and breaks the loop
                 flags.get(i).setValue(value);
+                exists = true;
+                break;
             }
+        }
+        //if no flag with that name exists, a flag with that name is added
+        if (!exists) {
+            flags.add(flags.size(), new Flag(name, value));
         }
     }
     public static void removeFlag(String name) {
-        for (int i = 0; i < count; i++) {
+
+        //loops until a flag with a name matching the input string is found
+        for (int i = 0; i < flags.size(); i++) {
             if (flags.get(i).getName().matches(name)) {
+                //removes that flag
                 flags.remove(i);
-                count--;
+                break;
             }
         }
     }
     public static boolean getFlag(String name) {
-        for (int i = 0; i < count; i++) {
+
+        //loops until a flag with a name matching the input string is found
+        for (int i = 0; i < flags.size(); i++) {
             if (flags.get(i).getName().matches(name)) {
+                //returns the value of the flag
                 return flags.get(i).getValue();
             }
         }
+        //if no flag with a matching name is found, it returns false
         return false;
     }
 }
@@ -68,7 +86,7 @@ class Flag {
     public boolean getValue() {
         return value;
     }
-        public void setName(String n) {
+    public void setName(String n) {
         name = n;
     }
     public void setValue(boolean v) {
