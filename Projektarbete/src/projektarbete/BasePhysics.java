@@ -22,19 +22,20 @@ public class BasePhysics {
         
     }
 
-    protected double xPos;
-    protected double yPos;
-    protected double[] pos;
-    protected double xVel;
-    protected double yVel;
-    protected double[] vel;
-    protected double xAcc;
-    protected double yAcc;
-    protected double[] acc;
+    protected double x;
+    protected double y;
+    protected double[] coordinates;
+    protected double horizontalVelocity;
+    protected double verticalVelocity;
+    protected double[] velocity;
+    protected double horizontalAcceleration;
+    protected double verticalAcceleration;
+    protected double[] acceleration;
     protected double mass;
     protected double airFriction;
     protected double gravity;
     protected boolean gravityFlag;
+    protected boolean airFrictionFlag;
     protected boolean frozenFlag;
     double deltaTime;
 
@@ -46,28 +47,22 @@ public class BasePhysics {
         PhysicsEngine.getInstance().addBasePhysics(this);
 
         //Initializing variables
-        xPos = 0;
-        yPos = 0;
-        pos = new double[2];
-        pos[0] = xPos;
-        pos[1] = yPos;
+        x = 0;
+        y = 0;
+        coordinates = new double[] {x, y};
+        horizontalVelocity = 0;
+        verticalVelocity = 0;
+        velocity = new double[] {horizontalVelocity, verticalVelocity};
 
-        xVel = 0;
-        yVel = 0;
-        vel = new double[2];
-        vel[0] = xVel;
-        vel[1] = yVel;
-
-        xAcc = 0;
-        yAcc = 0;
-        acc = new double[2];
-        acc[0] = xAcc;
-        acc[1] = yAcc;
+        horizontalAcceleration = 0;
+        verticalAcceleration = 0;
+        acceleration = new double[] {horizontalAcceleration, verticalAcceleration};
 
         mass = 100;
-        airFriction = 0.25;
+        airFriction = 0.10;
         gravity = 9.82;
         gravityFlag = true;
+        airFrictionFlag = true;
         frozenFlag = false;
         
     }
@@ -91,7 +86,7 @@ public class BasePhysics {
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(xPos, yPos);
+            visibleObject.setPos(x, y);
         }
 
     }
@@ -100,29 +95,33 @@ public class BasePhysics {
         
         if (!frozenFlag) {
             if (gravityFlag) {
-                yAcc-= gravity * deltaTime;
+                applyForce(0, -gravity);
+                //verticalAcceleration-= gravity * deltaTime;
             }
-            
+            System.out.println("Position: "+y+"Velocity: "+verticalVelocity);
             //Velocity and accerelation
-            xAcc-= (airFriction * xVel);
-            yAcc-= (airFriction * yVel);
+            /*horizontalAcceleration-= (airFriction * horizontalVelocity);
+            verticalAcceleration-= (airFriction * verticalVelocity);*/
+            if (airFrictionFlag) {
+                applyForce(-(airFriction*horizontalVelocity*mass), -(airFriction*verticalVelocity*mass));
+            }
+            System.out.println("Position: "+y+"Velocity: "+verticalVelocity);
             
-            xVel+= xAcc;
-            yVel+= yAcc;
-            vel[0] = xVel;
-            vel[1] = yVel;
-            System.out.println(yVel);
-            xAcc = 0;
-            yAcc = 0;
-            acc[0] = xAcc;
-            acc[1] = yAcc;
+            horizontalVelocity+= horizontalAcceleration;
+            verticalVelocity+= verticalAcceleration;
+            velocity[0] = horizontalVelocity;
+            velocity[1] = verticalVelocity;
+            horizontalAcceleration = 0;
+            verticalAcceleration = 0;
+            acceleration[0] = horizontalAcceleration;
+            acceleration[1] = verticalAcceleration;
 
             //Position
-            xPos+= xVel * deltaTime;
-            yPos+= -yVel * deltaTime;
+            x+= horizontalVelocity * deltaTime;
+            y+= -verticalVelocity * deltaTime;
             
-            pos[0]+= xPos;
-            pos[1]+= yPos;
+            coordinates[0]+= x;
+            coordinates[1]+= y;
         }
 
         updateGraphic();
@@ -131,11 +130,11 @@ public class BasePhysics {
     
     public void move(double x, double y) {
 
-        xPos+= x;
-        yPos+= y;
+        this.x+= x;
+        this.y+= y;
 
-        pos[0]+= xPos;
-        pos[1]+= yPos;
+        coordinates[0]+= this.x;
+        coordinates[1]+= this.y;
 
         updateGraphic();
 
@@ -144,11 +143,11 @@ public class BasePhysics {
     //Position
     public void setPos(double x, double y) {
 
-        xPos = x;
-        yPos = y;
+        this.x = x;
+        this.y = y;
 
-        pos[0] = xPos;
-        pos[1] = yPos;
+        coordinates[0] = this.x;
+        coordinates[1] = this.y;
 
         updateGraphic();
 
@@ -156,61 +155,58 @@ public class BasePhysics {
 
     public double[] getPos() {
 
-        return pos;
+        return coordinates;
 
     }
 
     //Velocity
     public void setVel(double x, double y) {
 
-        xVel = x;
-        yVel = y;
+        horizontalVelocity = x;
+        verticalVelocity = y;
 
-        vel[0] = xVel;
-        vel[1] = yVel;
+        velocity[0] = horizontalVelocity;
+        velocity[1] = verticalVelocity;
         
     }
 
     public double[] getVel() {
 
-        return vel;
+        return velocity;
 
     }
 
     //Accerelation and force.
-    public void applyForce(double x, double y) {
+    public void applyForce(double horizontalForce, double verticalForce) {
 
-        xAcc+= x / mass;
-        xAcc+= y / mass;
-
-        acc[0] = xAcc;
-        acc[1] = yAcc;
+        horizontalVelocity+= horizontalForce /* *  deltaTime */ / mass;
+        verticalVelocity+= verticalForce /* * deltaTime */ / mass;
 
     }
 
     public void AddAcc(double x, double y) {
 
-        xAcc+= x;
-        xAcc+= y;
+        horizontalAcceleration+= x;
+        horizontalAcceleration+= y;
 
-        acc[0] = xAcc;
-        acc[1] = yAcc;
+        acceleration[0] = horizontalAcceleration;
+        acceleration[1] = verticalAcceleration;
 
     }
 
     public void setAcc(double x, double y) {
 
-        xAcc = x;
-        xAcc = y;
+        horizontalAcceleration = x;
+        horizontalAcceleration = y;
 
-        acc[0] = xAcc;
-        acc[1] = yAcc;
+        acceleration[0] = horizontalAcceleration;
+        acceleration[1] = verticalAcceleration;
 
     }
 
     public double[] getAcc() {
 
-        return acc;
+        return acceleration;
 
     }
 
