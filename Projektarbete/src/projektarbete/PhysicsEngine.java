@@ -5,47 +5,117 @@
 
 package projektarbete;
 
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  *
  * @author niclas.alexandersso
  */
 class PhysicsEngine  {
-    static int svx = 0;
-    static int svy = 0;
-    static double vvx = 0;
-    static double vvy = 0;
-    static double xs = 0;
-    static double ys = 0;
-    static long oldTime = System.nanoTime();
+
+    public PhysicsEngine() {
+
+        System.out.println("PhysicsEngine Initializing");
+
+        initGlobals();
+        initComponents();
+
+        System.out.println("PhysicsEngine Initialized");
+
+    }
+
+    boolean timerStarted = false;
+    Timer timer = new Timer();
+    TimerTask timerTask = new TimerTask() {
+        public void run() {
+            physicsLoop();
+        }
+    };
+
+    LinkedList<BasePhysics> basePhysicsList = new LinkedList<BasePhysics>();
+    int count = 0; //arrays start at 0 in java
+
+    long oldTime = System.nanoTime();
+
+    //Global variables
+    private static PhysicsEngine _instance;
 
 
-    public static void physicsLoop (){
-        long deltaTime;
-        deltaTime = System.nanoTime()-oldTime;
-        svx = 0;
-        svy = 0;
-        xs = xs + vvx/(deltaTime*10);
-        ys = ys + vvy/(deltaTime*10);
-        while (xs > 1) {
-            xs--;
-            svx++;
+    private void initComponents() {
+        
+        physicsLoop();
+
+    }
+    
+
+    private void initGlobals() {
+
+        _instance = this;
+
+    }
+
+    public static PhysicsEngine getInstance() {
+
+        //Double Check Locking pattern makes it only create new stage if it does
+        //not exist already, and stops threading from beign able to mess it up.
+        if (_instance == null) {
+            synchronized(PhysicsEngine.class) {
+                if (_instance == null) {
+                    _instance = new PhysicsEngine();
+                }
+            }
         }
-        while (xs < 1) {
-            xs++;
-            svx--;
+
+        return _instance;
+
+    }
+
+    public void addBasePhysics( BasePhysics basePhysics ) {
+
+        basePhysicsList.add(basePhysics);
+
+        count++;
+
+    }
+
+    public void removeBasePhysics( BasePhysics basePhysics ) {
+
+        while (basePhysicsList.remove(basePhysics)) {
+            count--;
         }
-        while (ys > 1) {
-            ys--;
-            svy++;
+
+    }
+
+    public BasePhysics getBasePhysics( int index ) {
+        return basePhysicsList.get(index);
+
+    }
+
+    public int getBasePhysicsCount() {
+
+        return count;
+
+    }
+
+    public void physicsLoop (){
+
+        if (!timerStarted) {
+            timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
+            timerStarted = true;
         }
-        while (ys < 1) {
-            ys++;
-            svy--;
+        
+        long deltaNanoTime;
+        deltaNanoTime = (System.nanoTime()-oldTime);
+        double deltaTime = (double)deltaNanoTime/1000000000;
+
+        //code to manage delays between updating the picture
+        for (int i = 0; i < getBasePhysicsCount(); i++) {
+            getBasePhysics(i).physicsSimulate(deltaTime);
         }
-        //Stage.getInstance().movePolygon(0, svx, svy);
-        //Stage.repaint();
-        System.out.println("Running loop");
+
         oldTime = System.nanoTime();
     }
 

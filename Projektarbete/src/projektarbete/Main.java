@@ -5,16 +5,6 @@
 
 package projektarbete;
 
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Polygon;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 /**
  *
  * @author felix.hallqvist

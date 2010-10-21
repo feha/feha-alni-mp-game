@@ -5,9 +5,6 @@
 
 package projektarbete;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  *
  * @author felix.hallqvist
@@ -42,17 +39,11 @@ public class BasePhysics {
     double deltaTime;
 
     VisibleObject visibleObject;
-
-
-    boolean timerStarted = false;
-    Timer timer = new Timer();
-    TimerTask timerTask = new TimerTask() {
-        public void run() {
-            physicsSimulate();
-        }
-    };
+    
 
     private void initComponents() {
+
+        PhysicsEngine.getInstance().addBasePhysics(this);
 
         //Initializing variables
         xPos = 0;
@@ -78,11 +69,6 @@ public class BasePhysics {
         gravity = 9.82;
         gravityFlag = true;
         frozenFlag = false;
-
-        //If you skip converting each number to double it will first count as if its integers, then convert answer to a double.
-        deltaTime = ((double)20)/((double)1000);
-
-        physicsSimulate();
         
     }
 
@@ -110,27 +96,22 @@ public class BasePhysics {
 
     }
 
-    public void physicsSimulate() {
-
-        if (!timerStarted) {
-            timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
-            timerStarted = true;
-        }
-
+    public void physicsSimulate(double deltaTime) {
+        
         if (!frozenFlag) {
             if (gravityFlag) {
                 yAcc-= gravity * deltaTime;
             }
-
+            
             //Velocity and accerelation
-            xAcc-= (airFriction * xVel)/mass;
-            yAcc-= (airFriction * yVel)/mass;
-
+            xAcc-= (airFriction * xVel);
+            yAcc-= (airFriction * yVel);
+            
             xVel+= xAcc;
             yVel+= yAcc;
             vel[0] = xVel;
             vel[1] = yVel;
-
+            System.out.println(yVel);
             xAcc = 0;
             yAcc = 0;
             acc[0] = xAcc;
@@ -139,6 +120,7 @@ public class BasePhysics {
             //Position
             xPos+= xVel * deltaTime;
             yPos+= -yVel * deltaTime;
+            
             pos[0]+= xPos;
             pos[1]+= yPos;
         }

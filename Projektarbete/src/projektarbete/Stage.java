@@ -73,6 +73,8 @@ public class Stage {
 
         Camera camera = new Camera();
 
+        PhysicsEngine physicsEngine = new PhysicsEngine();
+
     }
 
     private void initTesting() {
