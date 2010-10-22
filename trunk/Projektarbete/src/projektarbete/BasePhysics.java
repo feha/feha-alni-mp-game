@@ -43,7 +43,7 @@ public class BasePhysics {
         //Initializing variables
 
         coordinates = new Coordinate(0,0);
-        velocity = new Coordinate(0,0);
+        velocity = new Coordinate(10,20);
         force = new Coordinate(0,0);
 
 
@@ -60,7 +60,7 @@ public class BasePhysics {
     private void initTesting() {
 
         visibleObject = new Hexagon(Camera.getInstance());
-        visibleObject.offset(250, 0);
+        visibleObject.offset(250, 200);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -85,18 +85,18 @@ public class BasePhysics {
         
         if (!frozenFlag) {
             if (gravityFlag) {
-                force.offset(0, -gravity*mass);
+                applyForce(0, gravity*mass*deltaTime);
                 //verticalAcceleration-= gravity * deltaTime;
             }
-            System.out.println("Position: "+velocity.y()+" Velocity: "+velocity.y());
-            //Velocity and accerelation
-            /*horizontalAcceleration-= (airFriction * horizontalVelocity);
-            verticalAcceleration-= (airFriction * verticalVelocity);*/
+            System.out.println("Position: "+coordinates.y()+" Force: "+force.y()+" Velocity: "+velocity.y());
 
 
             //Position
-            coordinates.offset(velocity.x() * deltaTime, -velocity.y() * deltaTime);
-            
+            simulateForce();
+            Coordinate step = new Coordinate(velocity);
+            step.multiply(deltaTime);
+            coordinates.add(step);
+            System.out.println("Position: "+coordinates.y()+"");
         }
 
         updateGraphic();
@@ -115,7 +115,7 @@ public class BasePhysics {
     //Position
     public void setPos(double x, double y) {
 
-        this.coordinates.set(x, y);
+        this.coordinates.setPos(x, y);
 
         updateGraphic();
 
@@ -135,7 +135,7 @@ public class BasePhysics {
     }
     public void setVel(Coordinate vel) {
 
-        velocity.set(vel.x(), vel.y());
+        velocity.setPos(vel.x(), vel.y());
 
     }
 
@@ -145,17 +145,21 @@ public class BasePhysics {
 
     }
 
-    //Accerelation and force.
+    //Accerelation and forces
+    private void simulateForce() {
+
+        force.subtract(force.getMul(airFriction));
+        velocity.offset(force.x() / mass, force.y() / mass);
+        force.setPos(0, 0);
+    }
     public void applyForce(double hF, double vF) {
         applyForce(new Coordinate(hF,vF));
 
     }
     public void applyForce(Coordinate F) {
 
-        velocity.offset(F.x()  *  deltaTime  / mass,
-            F.y()  * deltaTime  / mass);
+        force.add(F);
 
     }
-
 
 }
