@@ -13,6 +13,10 @@ public class Coordinate {
 private double x;
 private double y;
 
+    public Coordinate(double number) {
+        x = number;
+        y = number;
+    }
     public Coordinate(double xPos, double yPos) {
         x = xPos;
         y = yPos;
@@ -25,20 +29,24 @@ private double y;
         return x;
     }
     public void x(double xPos) {
-        x=xPos;
+        x= xPos;
     }
     public double y() {
         return y;
     }
     public void y(double yPos) {
-        y=yPos;
+        y= yPos;
     }
-    public double[] get() {
+    public double[] getPos() {
         return new double[] {x, y};
     }
-    public void set(double xPos, double yPos) {
-        x=xPos;
-        y=yPos;
+    public void setPos(double xPos, double yPos) {
+        x= xPos;
+        y =yPos;
+    }
+    public void setPos(Coordinate coordinate) {
+        x=coordinate.x();
+        y=coordinate.y();
     }
     public void offset(double xOffset, double yOffset) {
         x+=xOffset;
@@ -52,40 +60,73 @@ private double y;
     }
 
     
+    public Coordinate getAdd(Coordinate coordinate) {
+        double[] pos = coordinate.getPos();
+        
+        return new Coordinate( x+pos[0], y+pos[1] );
+    }
+    public Coordinate getAdd(double number) {
+        return new Coordinate( x+number, y+number );
+    }
     public void add(Coordinate coordinate) {
-        double[] xy = coordinate.get();
-        x=x+xy[0];
-        y=y+xy[1];
+        double[] pos = coordinate.getPos();
+        x= x+pos[0];
+        y= y+pos[1];
     }
     public void add(double number) {
         x+= number;
         y+= number;
     }
 
+    public Coordinate getSub(Coordinate coordinate) {
+        double[] pos = coordinate.getPos();
+
+        return new Coordinate( x-pos[0], y-pos[1] );
+    }
+    public Coordinate getSub(double number) {
+        return new Coordinate( x-number, y-number );
+    }
     public void subtract(Coordinate coordinate) {
-        double[] xy = coordinate.get();
-        x=x-xy[0];
-        y=y-xy[1];
+        double[] pos = coordinate.getPos();
+        x= x-pos[0];
+        y= y-pos[1];
     }
     public void subtract(double number) {
         x-= number;
         y-= number;
     }
 
+    public Coordinate getMul(Coordinate coordinate) {
+        double[] pos = coordinate.getPos();
+
+        return new Coordinate( x*pos[0], y*pos[1] );
+    }
+    public Coordinate getMul(double number) {
+        return new Coordinate( x*number, y*number );
+    }
     public void multiply(Coordinate coordinate) {
-        double[] xy = coordinate.get();
-        x*= xy[0];
-        y*= xy[1];
+        double[] pos = coordinate.getPos();
+        x*= pos[0];
+        y*= pos[1];
     }
     public void multiply(double number) {
+        
         x*= number;
         y*= number;
     }
 
+    public Coordinate getDiv(Coordinate coordinate) {
+        double[] pos = coordinate.getPos();
+
+        return new Coordinate( x/pos[0], y/pos[1] );
+    }
+    public Coordinate getDiv(double number) {
+        return new Coordinate( x/number, y/number );
+    }
     public void divide(Coordinate coordinate) {
-        double[] xy = coordinate.get();
-        x=x*xy[0];
-        y=y*xy[1];
+        double[] pos = coordinate.getPos();
+        x= x*pos[0];
+        y= y*pos[1];
     }
     public void divide(double number) {
         x/= number;
