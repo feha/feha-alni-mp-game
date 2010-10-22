@@ -34,22 +34,21 @@ public class MyPolygon extends VisibleObject {
 
         //TODO: Everything!!!
         polygon = new Polygon();
+        coordinate = new Coordinate(0,0);
 
     }
 
     @Override
-    public void setPos(double xPos, double yPos) {
+    public void setPos(Coordinate position) {
 
-        double deltaX = xPos-x;
-        double deltaY = yPos-y;
-        System.out.println(deltaX+" , "+deltaY);
-        System.out.println("Position: "+x+" , "+y);
+        Coordinate delta = new Coordinate(coordinate.x(),coordinate.y());
+        delta.subtract(position);
 
-        x = (int)xPos;
-        y = (int)yPos;
+
+        coordinate = position;
 
         
-        polygon.translate((int)deltaX,(int)deltaY);
+        polygon.translate((int)delta.x(),(int)delta.y());
         
     }
 
