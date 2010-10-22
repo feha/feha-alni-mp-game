@@ -39,13 +39,13 @@ public class MyPolygon extends VisibleObject {
     }
 
     @Override
-    public void setPos(Coordinate position) {
+    public void setPos(Coordinate coordinate) {
 
-        Coordinate delta = new Coordinate(coordinate.x(),coordinate.y());
-        delta.subtract(position);
+        Coordinate delta = new Coordinate(position.x(),position.y());
+        delta.subtract(coordinate);
 
 
-        coordinate = position;
+        position = coordinate;
 
         
         polygon.translate((int)delta.x(),(int)delta.y());

@@ -14,8 +14,12 @@ private double x;
 private double y;
 
     public Coordinate(double xPos, double yPos) {
-        x=xPos;
-        y=yPos;
+        x = xPos;
+        y = yPos;
+    }
+    public Coordinate(Coordinate coordinate) {
+        x = coordinate.x();
+        y = coordinate.y();
     }
     public double x() {
         return x;
