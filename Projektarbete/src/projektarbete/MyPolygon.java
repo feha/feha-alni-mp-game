@@ -34,20 +34,32 @@ public class MyPolygon extends VisibleObject {
 
         //TODO: Everything!!!
         polygon = new Polygon();
-        coordinate = new Coordinate(0,0);
+        position = new Coordinate(0,0);
 
     }
+
+    //Add a new point in the polygon
+     public void addPoint(double xPos, double yPos) {
+
+        polygon.addPoint( (int)xPos, (int)yPos );
+
+    }
+
+    public void addPoint(Coordinate coordinate) {
+
+        addPoint( coordinate.x(), coordinate.y() );
+
+    }
+
 
     @Override
     public void setPos(Coordinate coordinate) {
 
-        Coordinate delta = new Coordinate(position.x(),position.y());
+        Coordinate delta = new Coordinate(position);
         delta.subtract(coordinate);
-
-
+        
         position = coordinate;
 
-        
         polygon.translate((int)delta.x(),(int)delta.y());
         
     }
@@ -55,8 +67,8 @@ public class MyPolygon extends VisibleObject {
     @Override
     public void offset(double xPos, double yPos) {
 
-        double deltaX = xPos-x;
-        double deltaY = yPos-y;
+        double deltaX = xPos-position.x();
+        double deltaY = yPos-position.y();
 
         polygon.translate((int)deltaX, (int)deltaY);
 
@@ -70,7 +82,7 @@ public class MyPolygon extends VisibleObject {
         int parentX = 0;
         int parentY = 0;
 
-        polygon.translate((int)x-parentX, (int)y-parentY);
+        polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
 
         g.drawPolygon(polygon);
 

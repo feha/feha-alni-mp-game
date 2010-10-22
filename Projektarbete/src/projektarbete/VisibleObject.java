@@ -17,12 +17,8 @@ public class VisibleObject {
     //Make parent be visibleobject, and have a special visibleobject subclass instead of stage.
     protected VisibleObject parent;
     boolean fixed;
-    protected int x;
-    protected int y;
-    protected Coordinate position;
-    protected int offsetX;
-    protected int offsetY;
-    protected Coordinate offset;
+    protected Coordinate position = new Coordinate(0,0);
+    protected Coordinate offset = new Coordinate(0,0);
 
 
     public VisibleObject() {
@@ -121,10 +117,15 @@ public class VisibleObject {
 
     public void setPos(Coordinate coordinate) {
 
-         position = coordinate;
+        position = coordinate;
 
     }
-    
+
+    public Coordinate getPos() {
+        return position;
+    }
+
+
     public void offset(double x, double y) {
 
         offset(new Coordinate(x,y));
@@ -135,6 +136,10 @@ public class VisibleObject {
 
         offset = coordinate;
 
+    }
+
+    public Coordinate getOffset() {
+        return offset;
     }
 
 }
