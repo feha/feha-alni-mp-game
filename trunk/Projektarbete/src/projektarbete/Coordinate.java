@@ -50,24 +50,45 @@ private double y;
     public void yOffset(double yOffset) {
         y+=yOffset;
     }
+
+    
     public void add(Coordinate coordinate) {
         double[] xy = coordinate.get();
         x=x+xy[0];
         y=y+xy[1];
     }
+    public void add(double number) {
+        x+= number;
+        y+= number;
+    }
+
     public void subtract(Coordinate coordinate) {
         double[] xy = coordinate.get();
         x=x-xy[0];
         y=y-xy[1];
     }
+    public void subtract(double number) {
+        x-= number;
+        y-= number;
+    }
+
     public void multiply(Coordinate coordinate) {
         double[] xy = coordinate.get();
-        x=x*xy[0];
-        y=y*xy[1];
+        x*= xy[0];
+        y*= xy[1];
     }
+    public void multiply(double number) {
+        x*= number;
+        y*= number;
+    }
+
     public void divide(Coordinate coordinate) {
         double[] xy = coordinate.get();
         x=x*xy[0];
         y=y*xy[1];
+    }
+    public void divide(double number) {
+        x/= number;
+        y/= number;
     }
 }

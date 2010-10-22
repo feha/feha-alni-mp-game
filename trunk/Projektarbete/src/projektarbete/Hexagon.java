@@ -24,14 +24,14 @@ public class Hexagon extends MyPolygon {
     }
 
     private void initComponents() {
-        polygon.addPoint(0, 35);
-        polygon.addPoint(0, 85);
-        polygon.addPoint(35, 120);
-        polygon.addPoint(85, 120);
-        polygon.addPoint(120, 85);
-        polygon.addPoint(120, 35);
-        polygon.addPoint(85, 0);
-        polygon.addPoint(35, 0);
+        addPoint(0, 35);
+        addPoint(0, 85);
+        addPoint(35, 120);
+        addPoint(85, 120);
+        addPoint(120, 85);
+        addPoint(120, 35);
+        addPoint(85, 0);
+        addPoint(35, 0);
     }
 
 }
