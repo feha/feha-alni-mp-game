@@ -19,8 +19,10 @@ public class VisibleObject {
     boolean fixed;
     protected int x;
     protected int y;
+    protected Coordinate coordinate;
     protected int offsetX;
     protected int offsetY;
+    protected Coordinate offset;
 
 
     public VisibleObject() {
@@ -114,13 +116,22 @@ public class VisibleObject {
     }
     
     public void setPos(double xPos, double yPos) {
+        setPos(new Coordinate(xPos, yPos));
+    }
+
+    public void setPos(Coordinate position) {
+
+    }
+    
+    public void offset(double x, double y) {
+
+        offset(new Coordinate(x,y));
 
     }
 
-    public void offset(double x, double y) {
+    public void offset(Coordinate position) {
 
-        offsetX = (int)x;
-        offsetY = (int)y;
+        offset = position;
 
     }
 

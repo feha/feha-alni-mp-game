@@ -22,15 +22,9 @@ public class BasePhysics {
         
     }
 
-    protected double x;
-    protected double y;
-    protected double[] coordinates;
-    protected double horizontalVelocity;
-    protected double verticalVelocity;
-    protected double[] velocity;
-    protected double horizontalAcceleration;
-    protected double verticalAcceleration;
-    protected double[] acceleration;
+    protected Coordinate coordinates;
+    protected Coordinate velocity;
+    protected Coordinate force;
     protected double mass;
     protected double airFriction;
     protected double gravity;
@@ -47,16 +41,12 @@ public class BasePhysics {
         PhysicsEngine.getInstance().addBasePhysics(this);
 
         //Initializing variables
-        x = 0;
-        y = 0;
-        coordinates = new double[] {x, y};
-        horizontalVelocity = 0;
-        verticalVelocity = 0;
-        velocity = new double[] {horizontalVelocity, verticalVelocity};
 
-        horizontalAcceleration = 0;
-        verticalAcceleration = 0;
-        acceleration = new double[] {horizontalAcceleration, verticalAcceleration};
+        coordinates = new Coordinate(0,0);
+        velocity = new Coordinate(0,0);
+        force = new Coordinate(0,0);
+
+
 
         mass = 100;
         airFriction = 0.10;
@@ -86,7 +76,7 @@ public class BasePhysics {
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(x, y);
+            visibleObject.setPos(coordinates);
         }
 
     }
@@ -95,33 +85,18 @@ public class BasePhysics {
         
         if (!frozenFlag) {
             if (gravityFlag) {
-                applyForce(0, -gravity);
+                force.offset(0, -gravity*mass);
                 //verticalAcceleration-= gravity * deltaTime;
             }
-            System.out.println("Position: "+y+"Velocity: "+verticalVelocity);
+            System.out.println("Position: "+velocity.y()+" Velocity: "+velocity.y());
             //Velocity and accerelation
             /*horizontalAcceleration-= (airFriction * horizontalVelocity);
             verticalAcceleration-= (airFriction * verticalVelocity);*/
-            if (airFrictionFlag) {
-                applyForce(-(airFriction*horizontalVelocity*mass), -(airFriction*verticalVelocity*mass));
-            }
-            System.out.println("Position: "+y+"Velocity: "+verticalVelocity);
-            
-            horizontalVelocity+= horizontalAcceleration;
-            verticalVelocity+= verticalAcceleration;
-            velocity[0] = horizontalVelocity;
-            velocity[1] = verticalVelocity;
-            horizontalAcceleration = 0;
-            verticalAcceleration = 0;
-            acceleration[0] = horizontalAcceleration;
-            acceleration[1] = verticalAcceleration;
+
 
             //Position
-            x+= horizontalVelocity * deltaTime;
-            y+= -verticalVelocity * deltaTime;
+            coordinates.offset(velocity.x() * deltaTime, -velocity.y() * deltaTime);
             
-            coordinates[0]+= x;
-            coordinates[1]+= y;
         }
 
         updateGraphic();
@@ -130,11 +105,8 @@ public class BasePhysics {
     
     public void move(double x, double y) {
 
-        this.x+= x;
-        this.y+= y;
+        this.coordinates.offset(x, y);
 
-        coordinates[0]+= this.x;
-        coordinates[1]+= this.y;
 
         updateGraphic();
 
@@ -143,17 +115,13 @@ public class BasePhysics {
     //Position
     public void setPos(double x, double y) {
 
-        this.x = x;
-        this.y = y;
-
-        coordinates[0] = this.x;
-        coordinates[1] = this.y;
+        this.coordinates.set(x, y);
 
         updateGraphic();
 
     }
 
-    public double[] getPos() {
+    public Coordinate getPos() {
 
         return coordinates;
 
@@ -162,52 +130,32 @@ public class BasePhysics {
     //Velocity
     public void setVel(double x, double y) {
 
-        horizontalVelocity = x;
-        verticalVelocity = y;
+        setVel(new Coordinate(x,y));
 
-        velocity[0] = horizontalVelocity;
-        velocity[1] = verticalVelocity;
-        
+    }
+    public void setVel(Coordinate vel) {
+
+        velocity.set(vel.x(), vel.y());
+
     }
 
-    public double[] getVel() {
+    public Coordinate getVel() {
 
         return velocity;
 
     }
 
     //Accerelation and force.
-    public void applyForce(double horizontalForce, double verticalForce) {
+    public void applyForce(double hF, double vF) {
+        applyForce(new Coordinate(hF,vF));
 
-        horizontalVelocity+= horizontalForce /* *  deltaTime */ / mass;
-        verticalVelocity+= verticalForce /* * deltaTime */ / mass;
+    }
+    public void applyForce(Coordinate F) {
+
+        velocity.offset(F.x()  *  deltaTime  / mass,
+            F.y()  * deltaTime  / mass);
 
     }
 
-    public void AddAcc(double x, double y) {
-
-        horizontalAcceleration+= x;
-        horizontalAcceleration+= y;
-
-        acceleration[0] = horizontalAcceleration;
-        acceleration[1] = verticalAcceleration;
-
-    }
-
-    public void setAcc(double x, double y) {
-
-        horizontalAcceleration = x;
-        horizontalAcceleration = y;
-
-        acceleration[0] = horizontalAcceleration;
-        acceleration[1] = verticalAcceleration;
-
-    }
-
-    public double[] getAcc() {
-
-        return acceleration;
-
-    }
 
 }
