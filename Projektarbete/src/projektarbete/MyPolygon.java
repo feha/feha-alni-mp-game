@@ -78,10 +78,7 @@ public class MyPolygon extends VisibleObject {
 
     @Override
     public void draw(Graphics g) {
-
-        int parentX = 0;
-        int parentY = 0;
-
+        
         polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
 
         g.drawPolygon(polygon);
