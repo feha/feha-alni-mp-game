@@ -27,6 +27,7 @@ public class BasePhysics {
     protected Coordinate force;
     protected double mass;
     protected double airFriction;
+    protected Coordinate gravityDir;
     protected double gravity;
     protected boolean gravityFlag;
     protected boolean airFrictionFlag;
@@ -42,14 +43,15 @@ public class BasePhysics {
 
         //Initializing variables
 
-        coordinates = new Coordinate(0,0);
-        velocity = new Coordinate(10,20);
+        coordinates = new Coordinate(0,-100);
+        velocity = new Coordinate(10,25);
         force = new Coordinate(0,0);
 
 
 
         mass = 100;
         airFriction = 0.10;
+        gravityDir = new Coordinate(0,1);
         gravity = 9.82;
         gravityFlag = true;
         airFrictionFlag = true;
@@ -60,7 +62,7 @@ public class BasePhysics {
     private void initTesting() {
 
         visibleObject = new Hexagon(Camera.getInstance());
-        visibleObject.offset(250, 200);
+        visibleObject.offset(0, 0);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -76,7 +78,7 @@ public class BasePhysics {
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(coordinates);
+            visibleObject.setPos(coordinates.getMul(1,-1));
         }
 
     }
@@ -85,22 +87,30 @@ public class BasePhysics {
         
         if (!frozenFlag) {
             if (gravityFlag) {
-                applyForce(0, gravity*mass*deltaTime);
+                applyForce(0, -gravity * mass * deltaTime);
                 //verticalAcceleration-= gravity * deltaTime;
             }
-            System.out.println("Position: "+coordinates.y()+" Force: "+force.y()+" Velocity: "+velocity.y());
+            System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
 
             //Position
             simulateForce();
-            Coordinate step = new Coordinate(velocity);
-            step.multiply(deltaTime);
-            coordinates.add(step);
-            System.out.println("Position: "+coordinates.y()+"");
+            
+            coordinates.add(velocity.getMul(deltaTime));
+            
+            System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
         }
 
         updateGraphic();
 
+    }
+
+    //Accerelation and forces
+    private void simulateForce() {
+
+        force.subtract(force.getMul(airFriction));
+        velocity.add(force.getDiv(mass));
+        force.setPos(0, 0);
     }
     
     public void move(double x, double y) {
@@ -145,13 +155,6 @@ public class BasePhysics {
 
     }
 
-    //Accerelation and forces
-    private void simulateForce() {
-
-        force.subtract(force.getMul(airFriction));
-        velocity.offset(force.x() / mass, force.y() / mass);
-        force.setPos(0, 0);
-    }
     public void applyForce(double hF, double vF) {
         applyForce(new Coordinate(hF,vF));
 
@@ -160,6 +163,20 @@ public class BasePhysics {
 
         force.add(F);
 
+    }
+
+    public void setGravityDir(Coordinate dir) {
+        gravityDir = dir;
+    }
+    public void setGravity(double magnitude) {
+        gravity = magnitude;
+    }
+    public void setGravity(Coordinate gravForce) {
+        gravityDir = Coordinate.normalized(gravForce);
+        gravity = Coordinate.length(gravForce);
+    }
+    public void enableGravity(boolean enabled) {
+        gravityFlag = enabled;
     }
 
 }

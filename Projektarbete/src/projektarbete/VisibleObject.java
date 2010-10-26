@@ -117,7 +117,8 @@ public class VisibleObject {
 
     public void setPos(Coordinate coordinate) {
 
-        position = coordinate;
+        //As position is a double, we need to make sure int still rounds well.
+        position = Coordinate.round(coordinate);
 
     }
 

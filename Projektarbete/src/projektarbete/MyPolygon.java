@@ -55,13 +55,17 @@ public class MyPolygon extends VisibleObject {
     @Override
     public void setPos(Coordinate coordinate) {
 
-        Coordinate delta = new Coordinate(position);
-        delta.subtract(coordinate);
-        
-        position = coordinate;
+        //As polygon cant setpos, but only move, we get the delta.
+        Coordinate delta = coordinate.getSub(position);
+        delta = Coordinate.round(delta);
 
+        //Converting to int rounds (?) the number.
         polygon.translate((int)delta.x(),(int)delta.y());
-        
+
+        //Run the superclass code which sets position variable (floored).
+        super.setPos(coordinate);
+        System.out.println("Hex Pos: " + position);
+        System.out.println("Hex Vel: " + delta);
     }
 
     @Override
@@ -79,10 +83,10 @@ public class MyPolygon extends VisibleObject {
     @Override
     public void draw(Graphics g) {
 
-        polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
+        //polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
 
         g.drawPolygon(polygon);
-
+        
     }
 
 }
