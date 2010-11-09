@@ -115,7 +115,7 @@ class PhysicsEngine  {
         for (int i = 0; i < getBasePhysicsCount(); i++) {
             getBasePhysics(i).physicsSimulate(deltaTime);
         }
-        Stage.getInstance().repaint();
+
         oldTime = System.nanoTime();
     }
 

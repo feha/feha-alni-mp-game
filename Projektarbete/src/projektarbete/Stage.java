@@ -130,8 +130,5 @@ public class Stage {
 
     }
 
-    public void repaint() {
-        painter.repaint();
-    }
 
 }
