@@ -15,6 +15,7 @@ import java.awt.Polygon;
 public class MyPolygon extends VisibleObject {
 
     protected Polygon polygon;
+    protected Coordinate[] points;
 
     
     public MyPolygon(VisibleObject visibleObject) {
@@ -57,10 +58,10 @@ public class MyPolygon extends VisibleObject {
 
         //As polygon cant setpos, but only move, we get the delta.
         Coordinate delta = coordinate.getSub(position);
-        delta = Coordinate.round(delta);
+        delta = Coordinate.round(delta.getMul(scale));
 
         //Converting to int rounds (?) the number.
-        polygon.translate((int)delta.x(),(int)delta.y());
+        //polygon.translate((int)delta.x(),(int)delta.y());
 
         //Run the superclass code which sets position variable (floored).
         super.setPos(coordinate);
@@ -74,7 +75,7 @@ public class MyPolygon extends VisibleObject {
         double deltaX = xPos-position.x();
         double deltaY = yPos-position.y();
 
-        polygon.translate((int)deltaX, (int)deltaY);
+        //polygon.translate((int)deltaX, (int)deltaY);
 
         super.offset(xPos, yPos);
 
@@ -84,9 +85,14 @@ public class MyPolygon extends VisibleObject {
     public void draw(Graphics g) {
 
         //polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
-
+        if (points != null) {
+            for (int i=0; i < points.length; i++) {
+                polygon.addPoint((int) ((points[i].x()+position.x())*scale.x()), (int) ((points[i].y()+position.y())*scale.y()));
+            }
+        }
         g.drawPolygon(polygon);
-        
+        polygon.reset();
+ 
     }
 
 }

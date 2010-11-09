@@ -16,9 +16,9 @@ public class VisibleObject {
 
     //Make parent be visibleobject, and have a special visibleobject subclass instead of stage.
     protected VisibleObject parent;
-    boolean fixed;
     protected Coordinate position = new Coordinate(0,0);
     protected Coordinate offset = new Coordinate(0,0);
+    static Coordinate scale = new Coordinate(2.00,2.00);
 
 
     public VisibleObject() {
@@ -118,12 +118,12 @@ public class VisibleObject {
     public void setPos(Coordinate coordinate) {
 
         //As position is a double, we need to make sure int still rounds well.
-        position = Coordinate.round(coordinate);
+        position = Coordinate.round(coordinate/*.getMul(scale)*/);
 
     }
 
     public Coordinate getPos() {
-        return position;
+        return position/*.getDiv(scale)*/;
     }
 
 
@@ -135,12 +135,19 @@ public class VisibleObject {
 
     public void offset(Coordinate coordinate) {
 
-        offset = coordinate;
+        offset = coordinate/*.getMul(scale)*/;
 
     }
 
     public Coordinate getOffset() {
-        return offset;
+        return offset/*.getDiv(scale)*/;
+    }
+
+    public static void setScale(Coordinate newScale) {
+        scale = newScale;
+    }
+    public static void setScale(double newScale) {
+        scale.setPos(newScale, newScale);
     }
 
 }

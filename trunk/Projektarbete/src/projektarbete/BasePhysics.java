@@ -33,6 +33,7 @@ public class BasePhysics {
     protected boolean airFrictionFlag;
     protected boolean frozenFlag;
     double deltaTime;
+    protected double scale;
 
     VisibleObject visibleObject;
     
@@ -44,18 +45,19 @@ public class BasePhysics {
         //Initializing variables
 
         coordinates = new Coordinate(0,-100);
-        velocity = new Coordinate(10,25);
+        velocity = new Coordinate(5,10);
         force = new Coordinate(0,0);
 
 
 
         mass = 100;
-        airFriction = 0.10;
+        airFriction = 0;
         gravityDir = new Coordinate(0,1);
         gravity = 9.82;
         gravityFlag = true;
         airFrictionFlag = true;
         frozenFlag = false;
+        scale = 1;
         
     }
 
@@ -96,7 +98,7 @@ public class BasePhysics {
             //Position
             simulateForce();
             
-            coordinates.add(velocity.getMul(deltaTime));
+            coordinates.add(velocity.getMul(deltaTime).getDiv(scale));
             
             System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
         }
@@ -108,7 +110,8 @@ public class BasePhysics {
     //Accerelation and forces
     private void simulateForce() {
 
-        force.subtract(force.getMul(airFriction));
+        force.subtract(force.getAdd(velocity.getMul(mass)).getMul(airFriction));
+        
         velocity.add(force.getDiv(mass));
         force.setPos(0, 0);
     }
