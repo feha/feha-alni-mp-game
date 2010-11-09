@@ -16,9 +16,11 @@ public class VisibleObject {
 
     //Make parent be visibleobject, and have a special visibleobject subclass instead of stage.
     protected VisibleObject parent;
+    protected Coordinate drawPos;
+    protected Coordinate sizeScale;
     protected Coordinate position = new Coordinate(0,0);
     protected Coordinate offset = new Coordinate(0,0);
-    static Coordinate scale = new Coordinate(10.0,10.0);
+    protected Coordinate scale = new Coordinate(1.0,1.0);
 
 
     public VisibleObject() {
@@ -34,7 +36,7 @@ public class VisibleObject {
 
         System.out.println("VisibleObject Initializing");
 
-        parent = Camera.getInstance();
+        parent = visibleObject;
         initComponents();
 
         System.out.println("VisibleObject Initialized");
@@ -101,7 +103,20 @@ public class VisibleObject {
 
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g) {
+
+        if (parent != null) {
+            //put it at its right pos, within the parents coord systems size scale
+            drawPos = (position.getAdd(offset)).getMul(parent.sizeScale);
+            //Add it to the parent pos, so it is drawn in a local coord system
+            drawPos = drawPos.getAdd(parent.drawPos).getAdd(parent.offset);
+
+            sizeScale = scale.getMul(parent.sizeScale);
+        } else {
+            drawPos = (position.getAdd(offset));
+            
+            sizeScale = scale;
+        }
 
         int count = getVisibleObjectCount();
 
@@ -116,9 +131,8 @@ public class VisibleObject {
     }
 
     public void setPos(Coordinate coordinate) {
-
-        //As position is a double, we need to make sure int still rounds well.
-        position = /*Coordinate.round(*/coordinate/*.getMul(scale)*//*)*/;
+        
+        position = coordinate;
 
     }
 
@@ -135,7 +149,7 @@ public class VisibleObject {
 
     public void offset(Coordinate coordinate) {
 
-        offset = coordinate/*.getMul(scale)*/;
+        offset = coordinate;
 
     }
 
@@ -143,10 +157,10 @@ public class VisibleObject {
         return offset/*.getDiv(scale)*/;
     }
 
-    public static void setScale(Coordinate newScale) {
+    public void setScale(Coordinate newScale) {
         scale = newScale;
     }
-    public static void setScale(double newScale) {
+    public void setScale(double newScale) {
         scale.setPos(newScale, newScale);
     }
 

@@ -54,35 +54,28 @@ public class MyPolygon extends VisibleObject {
 
 
 
+    //Currently, scale affect both size and position of polygon.
+    //Should it maybe start affect only size and sub polygons local coord system?
 
+    //Scale affects the size of the polygon, and the child visible objects position
     public void updatePolygon() {
         polygon.reset();
+        
         if (points != null) {
             for (int i=0; i < points.length; i++) {
-                polygon.addPoint((int) ((points[i].x()+position.x())*scale.x()), (int) ((points[i].y()+position.y())*scale.y()));
+                Coordinate pointPos = drawPos.getAdd(points[i].getMul(sizeScale)); //size poly with scale
+                polygon.addPoint((int) pointPos.x(), (int) pointPos.y());
             }
         }
     }
 
     @Override
-    public void offset(double xPos, double yPos) {
-
-        double deltaX = xPos-position.x();
-        double deltaY = yPos-position.y();
-
-        //polygon.translate((int)deltaX, (int)deltaY);
-
-        super.offset(xPos, yPos);
-
-    }
-
-    @Override
     public void draw(Graphics g) {
-
-        //polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
+        super.draw(g);
+        
         updatePolygon();
         g.drawPolygon(polygon);
- 
+
     }
 
 }

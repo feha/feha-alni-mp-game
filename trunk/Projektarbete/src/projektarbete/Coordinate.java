@@ -142,15 +142,15 @@ private double y;
 
     public Coordinate getMul(Coordinate coordinate) {
         double[] pos = coordinate.getPos();
-
+        
         return new Coordinate( x*pos[0], y*pos[1] );
     }
     public Coordinate getMul(double number) {
-        return new Coordinate( x*number, y*number );
+        return getMul(new Coordinate( number, number ));
     }
     public Coordinate getMul(double xNum, double yNum) {
 
-        return new Coordinate( x*xNum, y*yNum );
+        return getMul(new Coordinate( xNum, yNum ));
 
     }
     public void multiply(Coordinate coordinate) {

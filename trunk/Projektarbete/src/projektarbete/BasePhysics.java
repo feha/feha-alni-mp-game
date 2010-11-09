@@ -62,8 +62,8 @@ public class BasePhysics {
 
     private void initTesting() {
 
-        visibleObject = new Hexagon(Camera.getInstance());
-        visibleObject.offset(0, 0);
+        visibleObject = new Smiley(Camera.getInstance());
+        visibleObject.setScale(5);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -92,15 +92,15 @@ public class BasePhysics {
                 //verticalAcceleration-= gravity * deltaTime;
             }
             if (Flags.getFlag("up")) {
-                applyForce(0, 20 * mass * deltaTime);
+                applyForce(0, 50 * mass * deltaTime);
             }
             if (Flags.getFlag("down")) {
-                applyForce(0, -20 * mass * deltaTime);
+                applyForce(0, -50 * mass * deltaTime);
             }
             if (Flags.getFlag("left")) {
-                applyForce(-20 * mass * deltaTime, 0);
+                applyForce(-50 * mass * deltaTime, 0);
             }if (Flags.getFlag("right")) {
-                applyForce(20 * mass * deltaTime, 0);
+                applyForce(50 * mass * deltaTime, 0);
             }
             //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
