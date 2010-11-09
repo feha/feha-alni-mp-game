@@ -67,7 +67,7 @@ public class Stage {
         Input input = new Input();
         jFrame.add(input);
 
-        //Adds a panel to handle painting. DONT add it befor input!
+        //Adds a panel to handle painting. DONT add it before input!
         painter = new Painter();
         jFrame.getContentPane().add(painter);
 
