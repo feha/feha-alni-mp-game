@@ -49,12 +49,11 @@ public class BasePhysics {
         force = new Coordinate(0,0);
 
 
-
         mass = 100;
-        airFriction = 0;
+        airFriction = 0.02;
         gravityDir = new Coordinate(0,1);
         gravity = 9.82;
-        gravityFlag = true;
+        gravityFlag = false;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
@@ -103,7 +102,7 @@ public class BasePhysics {
             }if (Flags.getFlag("right")) {
                 applyForce(20 * mass * deltaTime, 0);
             }
-            System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
+            //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
 
             //Position
