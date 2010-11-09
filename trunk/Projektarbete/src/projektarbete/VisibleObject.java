@@ -18,7 +18,7 @@ public class VisibleObject {
     protected VisibleObject parent;
     protected Coordinate position = new Coordinate(0,0);
     protected Coordinate offset = new Coordinate(0,0);
-    static Coordinate scale = new Coordinate(2.00,2.00);
+    static Coordinate scale = new Coordinate(10.00,10.00);
 
 
     public VisibleObject() {

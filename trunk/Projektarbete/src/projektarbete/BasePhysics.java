@@ -44,7 +44,7 @@ public class BasePhysics {
 
         //Initializing variables
 
-        coordinates = new Coordinate(0,-100);
+        coordinates = new Coordinate(10,-10);
         velocity = new Coordinate(5,10);
         force = new Coordinate(0,0);
 
@@ -100,7 +100,7 @@ public class BasePhysics {
             
             coordinates.add(velocity.getMul(deltaTime).getDiv(scale));
             
-            System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
+            //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
         }
 
         updateGraphic();
