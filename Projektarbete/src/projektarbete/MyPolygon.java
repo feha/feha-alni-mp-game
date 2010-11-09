@@ -53,20 +53,15 @@ public class MyPolygon extends VisibleObject {
     }
 
 
-    @Override
-    public void setPos(Coordinate coordinate) {
 
-        //As polygon cant setpos, but only move, we get the delta.
-        Coordinate delta = coordinate.getSub(position);
-        delta = Coordinate.round(delta.getMul(scale));
 
-        //Converting to int rounds (?) the number.
-        //polygon.translate((int)delta.x(),(int)delta.y());
-
-        //Run the superclass code which sets position variable (floored).
-        super.setPos(coordinate);
-        System.out.println("Hex Pos: " + position);
-        System.out.println("Hex Vel: " + delta);
+    public void updatePolygon() {
+        polygon.reset();
+        if (points != null) {
+            for (int i=0; i < points.length; i++) {
+                polygon.addPoint((int) ((points[i].x()+position.x())*scale.x()), (int) ((points[i].y()+position.y())*scale.y()));
+            }
+        }
     }
 
     @Override
@@ -85,13 +80,8 @@ public class MyPolygon extends VisibleObject {
     public void draw(Graphics g) {
 
         //polygon.translate((int)(position.x()-parent.getPos().x()), (int)(position.y()-parent.getPos().y()));
-        if (points != null) {
-            for (int i=0; i < points.length; i++) {
-                polygon.addPoint((int) ((points[i].x()+position.x())*scale.x()), (int) ((points[i].y()+position.y())*scale.y()));
-            }
-        }
+        updatePolygon();
         g.drawPolygon(polygon);
-        polygon.reset();
  
     }
 
