@@ -24,14 +24,15 @@ public class Hexagon extends MyPolygon {
     }
 
     private void initComponents() {
-        addPoint(0, 35);
-        addPoint(0, 85);
-        addPoint(35, 120);
-        addPoint(85, 120);
-        addPoint(120, 85);
-        addPoint(120, 35);
-        addPoint(85, 0);
-        addPoint(35, 0);
+        points = new Coordinate[]{
+            new Coordinate(-12, -5),
+            new Coordinate(-12, 5),
+            new Coordinate(-5, 12),
+            new Coordinate(5, 12),
+            new Coordinate(12, 5),
+            new Coordinate(12, -5),
+            new Coordinate(5, -12),
+            new Coordinate(-5, -12)};
     }
 
 }
