@@ -48,10 +48,10 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
     @Override //This function clears the screen and then loops trough the polygons to paint them.
     public void paintComponent(Graphics g) {
 
-        /*if (!timerStarted) {
+        if (!timerStarted) {
             timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
             timerStarted = true;
-        }*/
+        }
 
         super.paintComponent(g);
 

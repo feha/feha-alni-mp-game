@@ -92,6 +92,17 @@ public class BasePhysics {
                 applyForce(0, -gravity * mass * deltaTime);
                 //verticalAcceleration-= gravity * deltaTime;
             }
+            if (Flags.getFlag("up")) {
+                applyForce(0, 20 * mass * deltaTime);
+            }
+            if (Flags.getFlag("down")) {
+                applyForce(0, -20 * mass * deltaTime);
+            }
+            if (Flags.getFlag("left")) {
+                applyForce(-20 * mass * deltaTime, 0);
+            }if (Flags.getFlag("right")) {
+                applyForce(20 * mass * deltaTime, 0);
+            }
             System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
 
