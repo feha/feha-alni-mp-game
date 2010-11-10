@@ -31,6 +31,7 @@ public class Smiley extends VisibleObject {
     private void initComponents() {
 
         face = new Hexagon(this);
+        angle = 0;
 
         eyeR = new Hexagon(face);
         eyeR.setScale(0.25);

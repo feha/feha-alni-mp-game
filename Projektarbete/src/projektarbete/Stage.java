@@ -72,6 +72,7 @@ public class Stage {
         jFrame.getContentPane().add(painter);
 
         Camera camera = new Camera();
+        camera.setScale(50);
 
         PhysicsEngine physicsEngine = new PhysicsEngine();
 

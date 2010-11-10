@@ -44,8 +44,8 @@ public class BasePhysics {
 
         //Initializing variables
 
-        coordinates = new Coordinate(10,-10);
-        velocity = new Coordinate(5,10);
+        coordinates = new Coordinate(0,0);
+        velocity = new Coordinate(0.5,0.10);
         force = new Coordinate(0,0);
 
 
@@ -63,7 +63,7 @@ public class BasePhysics {
     private void initTesting() {
 
         visibleObject = new Smiley(Camera.getInstance());
-        visibleObject.setScale(5);
+        visibleObject.setScale(0.05);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -92,15 +92,15 @@ public class BasePhysics {
                 //verticalAcceleration-= gravity * deltaTime;
             }
             if (Flags.getFlag("up")) {
-                applyForce(0, 500 * mass * deltaTime);
+                applyForce(0, 20 * mass * deltaTime);
             }
             if (Flags.getFlag("down")) {
-                applyForce(0, -500 * mass * deltaTime);
+                applyForce(0, -20 * mass * deltaTime);
             }
             if (Flags.getFlag("left")) {
-                applyForce(-500 * mass * deltaTime, 0);
+                applyForce(-20 * mass * deltaTime, 0);
             }if (Flags.getFlag("right")) {
-                applyForce(500 * mass * deltaTime, 0);
+                applyForce(20 * mass * deltaTime, 0);
             }
             //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
@@ -109,8 +109,6 @@ public class BasePhysics {
             simulateForce();
             
             coordinates.add(velocity.getMul(deltaTime).getDiv(scale));
-            
-            //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
         }
 
         updateGraphic();
