@@ -18,9 +18,11 @@ public class VisibleObject {
     protected VisibleObject parent;
     protected Coordinate drawPos;
     protected Coordinate sizeScale;
+    protected double totalAngle;
     protected Coordinate position = new Coordinate(0,0);
     protected Coordinate offset = new Coordinate(0,0);
     protected Coordinate scale = new Coordinate(1.0,1.0);
+    protected double angle = 0;
 
 
     public VisibleObject() {
@@ -110,11 +112,15 @@ public class VisibleObject {
             drawPos = (position.getAdd(offset)).getMul(parent.sizeScale);
             //Add it to the parent pos, so it is drawn in a local coord system
             drawPos = drawPos.getAdd(parent.drawPos).getAdd(parent.offset);
+            //Rotate with the angle of the coord system (needs fixing)
+            //drawPos = new Coordinate( Math.cos(parent.totalAngle), Math.sin(parent.totalAngle) );
 
+            totalAngle = angle + parent.totalAngle;
             sizeScale = scale.getMul(parent.sizeScale);
         } else {
             drawPos = (position.getAdd(offset));
-            
+
+            totalAngle = angle;
             sizeScale = scale;
         }
 
@@ -137,7 +143,16 @@ public class VisibleObject {
     }
 
     public Coordinate getPos() {
-        return position/*.getDiv(scale)*/;
+        return position;
+    }
+
+
+    public void setAng(double newAngle) {
+        angle = newAngle;
+    }
+
+    public double getAng() {
+        return angle;
     }
 
 
@@ -154,14 +169,19 @@ public class VisibleObject {
     }
 
     public Coordinate getOffset() {
-        return offset/*.getDiv(scale)*/;
+        return offset;
     }
+
 
     public void setScale(Coordinate newScale) {
         scale = newScale;
     }
     public void setScale(double newScale) {
         scale.setPos(newScale, newScale);
+    }
+
+    public Coordinate getScale() {
+        return scale;
     }
 
 }
