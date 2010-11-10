@@ -50,10 +50,10 @@ public class BasePhysics {
 
 
         mass = 100;
-        airFriction = 0.02;
-        gravityDir = new Coordinate(0,1);
+        airFriction = 0.01;
+        gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
-        gravityFlag = false;
+        gravityFlag = true;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
@@ -88,7 +88,7 @@ public class BasePhysics {
         
         if (!frozenFlag) {
             if (gravityFlag) {
-                applyForce(0, -gravity * mass * deltaTime);
+                applyForce(gravityDir.getMul(gravity * mass * deltaTime));
                 //verticalAcceleration-= gravity * deltaTime;
             }
             if (Flags.getFlag("up")) {
@@ -102,6 +102,18 @@ public class BasePhysics {
             }if (Flags.getFlag("right")) {
                 applyForce(20 * mass * deltaTime, 0);
             }
+
+            //Gravity to center and rotate on vel for LULZ!!!
+            /*
+            Coordinate dirToCenter = new Coordinate(5,-5).getSub(coordinates);
+            setGravityDir(dirToCenter);
+            setGravity(20/Coordinate.length(dirToCenter));
+            
+            if (visibleObject != null) {
+                visibleObject.angle = visibleObject.angle+Coordinate.length(velocity)*deltaTime;
+            }
+            */
+            
             //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 
 
@@ -118,7 +130,9 @@ public class BasePhysics {
     //Accerelation and forces
     private void simulateForce() {
 
-        force.subtract(force.getAdd(velocity.getMul(mass)).getMul(airFriction));
+        if (airFrictionFlag) {
+            force.subtract(force.getAdd(velocity.getMul(mass)).getMul(airFriction));
+        }
         
         velocity.add(force.getDiv(mass));
         force.setPos(0, 0);
@@ -177,13 +191,13 @@ public class BasePhysics {
     }
 
     public void setGravityDir(Coordinate dir) {
-        gravityDir = dir;
+        gravityDir =  Coordinate.normalized(dir);
     }
     public void setGravity(double magnitude) {
         gravity = magnitude;
     }
     public void setGravity(Coordinate gravForce) {
-        gravityDir = Coordinate.normalized(gravForce);
+        setGravityDir(gravForce);
         gravity = Coordinate.length(gravForce);
     }
     public void enableGravity(boolean enabled) {
