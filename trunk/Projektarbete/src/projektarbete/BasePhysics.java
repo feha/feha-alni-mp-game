@@ -50,10 +50,10 @@ public class BasePhysics {
 
 
         mass = 100;
-        airFriction = 0.01;
+        airFriction = 0.02;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
-        gravityFlag = true;
+        gravityFlag = false;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;

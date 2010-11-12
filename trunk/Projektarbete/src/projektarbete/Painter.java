@@ -53,6 +53,7 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
             timerStarted = true;
         }
 
+        
         super.paintComponent(g);
 
         int count = stage.getVisibleObjectCount();
@@ -61,6 +62,7 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
         for (int i = 0; i < count; i++) {
             stage.getVisibleObject(i).draw(g);
         }
+
 
     }
 

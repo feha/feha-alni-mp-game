@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import javax.swing.JFrame;
 
 public class Stage {
-
     //Constructor
     public Stage () {
 
