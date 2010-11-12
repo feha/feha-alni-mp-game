@@ -5,6 +5,8 @@
 
 package projektarbete;
 
+import java.awt.geom.Point2D;
+
 /**
  *
  * @author niclas.alexandersso
@@ -25,11 +27,19 @@ private double y;
         x = coordinate.x();
         y = coordinate.y();
     }
+    public Coordinate(Point2D.Double point) {
+        x = point.x;
+        y = point.y;
+    }
 
     //This lets us print this datatype.
     @Override
     public String toString() {
         return ""+x+","+y;
+    }
+
+    public Point2D.Double toPoint2D() {
+        return new Point2D.Double(x, y);
     }
 
     public static Coordinate round(Coordinate coordinate) {
