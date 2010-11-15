@@ -111,9 +111,8 @@ public class VisibleObject {
             //put it at its right pos, within the parents coord systems size scale
             drawPos = (position.getAdd(offset)).getMul(parent.sizeScale);
             //Rotate with the angle of the coord system (needs fixing)
-            drawPos = new Coordinate(
-                    drawPos.x()*Math.cos(parent.totalAngle)-drawPos.y()*Math.sin(parent.totalAngle),
-                    drawPos.x()*Math.sin(parent.totalAngle)+drawPos.y()*Math.cos(parent.totalAngle));
+            drawPos = drawPos.rotate(parent.totalAngle);
+            
             //Add it to the parent pos, so it is drawn in a local coord system
             drawPos = drawPos.getAdd(parent.drawPos).getAdd(parent.offset);
 

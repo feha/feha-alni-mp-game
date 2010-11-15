@@ -36,6 +36,7 @@ public class BasePhysics {
     protected double scale;
 
     VisibleObject visibleObject;
+    VisibleObject smiley;
     
 
     private void initComponents() {
@@ -53,7 +54,7 @@ public class BasePhysics {
         airFriction = 0.02;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
-        gravityFlag = false;
+        gravityFlag = true;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
@@ -62,8 +63,10 @@ public class BasePhysics {
 
     private void initTesting() {
 
-        visibleObject = new Smiley(Camera.getInstance());
+        visibleObject = new MyRectangle2D(Camera.getInstance());
         visibleObject.setScale(0.05);
+        smiley = new Smiley(visibleObject);
+        smiley.setScale(1);
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
@@ -108,11 +111,11 @@ public class BasePhysics {
             Coordinate dirToCenter = new Coordinate(5,-5).getSub(coordinates);
             setGravityDir(dirToCenter);
             setGravity(20/Coordinate.length(dirToCenter));
-            
-            if (visibleObject != null) {
-                visibleObject.angle = visibleObject.angle+Coordinate.length(velocity)*deltaTime;
-            }
             */
+            if (visibleObject != null) {
+                visibleObject.angle+= Coordinate.length(velocity)*deltaTime;
+            }
+            
             
             //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
 

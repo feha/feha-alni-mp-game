@@ -198,4 +198,17 @@ private double y;
         x/= number;
         y/= number;
     }
+
+    public Coordinate rotate(double angle) {
+        return new Coordinate(
+            x*Math.cos(angle)-y*Math.sin(angle),
+            x*Math.sin(angle)+y*Math.cos(angle)
+        );
+    }
+    public static Coordinate rotate(Coordinate coordinate, double angle) {
+        return new Coordinate(
+            coordinate.x()*Math.cos(angle)-coordinate.y()*Math.sin(angle),
+            coordinate.x()*Math.sin(angle)+coordinate.y()*Math.cos(angle)
+        );
+    }
 }
