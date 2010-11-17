@@ -224,6 +224,14 @@ private double y;
         return length;
     }
 
+    public static double distance2(Coordinate vec1, Coordinate vec2) {
+        return Coordinate.length2(Coordinate.sub(vec1, vec2));
+    }
+
+    public static double distance(Coordinate vec1, Coordinate vec2) {
+        return Coordinate.length(Coordinate.sub(vec1, vec2));
+    }
+
     public static double angle(Coordinate vec1, Coordinate vec2) {
         double lengths = Coordinate.length(vec1)*Coordinate.length(vec2);
         double angle = Math.acos(Coordinate.dot(vec1,vec2)/lengths);
