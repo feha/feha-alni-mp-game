@@ -79,7 +79,7 @@ public class Stage {
 
     private void initTesting() {
 
-        BasePhysics v0 = new BasePhysics();
+        BasePhysics v0 = new TestUserObject();
 
     }
 
@@ -104,7 +104,7 @@ public class Stage {
     private int objectCount = 0; //arrays start at 0 in java
 
     public void addVisibleObject( VisibleObject visibleObject ) {
-
+        
         visibleObjects.add(visibleObject);
 
         objectCount++;

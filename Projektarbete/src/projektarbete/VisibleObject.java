@@ -28,7 +28,7 @@ public class VisibleObject {
     public VisibleObject() {
 
         System.out.println("VisibleObject (Screen) Initializing");
-
+        
         System.out.println("VisibleObject (Screen) Initialized");
 
     }
@@ -106,7 +106,7 @@ public class VisibleObject {
     }
 
     public void draw(Graphics g) {
-
+        
         if (parent != null) {
             //put it at its right pos, within the parents coord systems size scale
             drawPos = (Coordinate.add(position, offset).mul(parent.sizeScale));
