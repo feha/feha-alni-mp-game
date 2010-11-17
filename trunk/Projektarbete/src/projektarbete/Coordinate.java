@@ -206,6 +206,12 @@ private double y;
         return returnCoord;
     }
 
+    public static double dot(Coordinate vec1, Coordinate vec2) {
+        double scalar = vec1.x()*vec2.x()+vec1.y()*vec2.y();
+
+        return scalar;
+    }
+
     public static double length2(Coordinate coordinate) {
         double length2 = Math.pow(coordinate.x(), 2) + Math.pow(coordinate.y(), 2);
 
@@ -216,6 +222,13 @@ private double y;
         double length = Math.sqrt(Coordinate.length2(coordinate));
 
         return length;
+    }
+
+    public static double angle(Coordinate vec1, Coordinate vec2) {
+        double lengths = Coordinate.length(vec1)*Coordinate.length(vec2);
+        double angle = Math.acos(Coordinate.dot(vec1,vec2)/lengths);
+
+        return angle;
     }
 
     //non-static methods
@@ -276,7 +289,7 @@ private double y;
         return div(new Coordinate(pos));
     }
 
-    //other
+    //Other
     public Coordinate rotate(double angle) {
         return Coordinate.rotate(this, angle);
     }
