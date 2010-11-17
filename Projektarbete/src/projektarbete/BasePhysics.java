@@ -32,7 +32,7 @@ public class BasePhysics {
     protected boolean gravityFlag;
     protected boolean airFrictionFlag;
     protected boolean frozenFlag;
-    double deltaTime;
+    protected double deltaTime;
     protected double scale;
 
     VisibleObject visibleObject;
@@ -54,7 +54,7 @@ public class BasePhysics {
         airFriction = 0.02;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
-        gravityFlag = true;
+        gravityFlag = false;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
@@ -82,68 +82,130 @@ public class BasePhysics {
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(coordinates.getMul(1,-1));
+            visibleObject.setPos(coordinates.mul(1,-1));
         }
 
     }
 
-    public void physicsSimulate(double deltaTime) {
+    public void physicsSimulate(double dt) {
+
+        setDeltaTime(dt);
         
         if (!frozenFlag) {
-            if (gravityFlag) {
-                applyForce(gravityDir.getMul(gravity * mass * deltaTime));
-                //verticalAcceleration-= gravity * deltaTime;
-            }
-            if (Flags.getFlag("up")) {
-                applyForce(0, 20 * mass * deltaTime);
-            }
-            if (Flags.getFlag("down")) {
-                applyForce(0, -20 * mass * deltaTime);
-            }
-            if (Flags.getFlag("left")) {
-                applyForce(-20 * mass * deltaTime, 0);
-            }if (Flags.getFlag("right")) {
-                applyForce(20 * mass * deltaTime, 0);
-            }
 
-            //Gravity to center and rotate on vel for LULZ!!!
-            /*
-            Coordinate dirToCenter = new Coordinate(5,-5).getSub(coordinates);
-            setGravityDir(dirToCenter);
-            setGravity(20/Coordinate.length(dirToCenter));
-            */
-            if (visibleObject != null) {
-                visibleObject.angle+= Coordinate.length(velocity)*deltaTime;
-            }
             
-            
-            //System.out.println("Position: "+coordinates+" Force: "+force+" Velocity: "+velocity);
+            physicsUpdate();
 
+            //Forces
+            applyForces();
+            simulateFriction();
 
             //Position
             simulateForce();
-            
-            coordinates.add(velocity.getMul(deltaTime).getDiv(scale));
+            simulateVelocity();
+
+            physicsOnSimulate();
         }
 
         updateGraphic();
 
     }
 
+    public void physicsUpdate() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+         
+         
+         this code is run at the very beginning of the simulation*/
+    }
+    
+    public void physicsOnSimulate() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+         
+         
+         this code is run at the end of the simulation*/
+    }
+
+    public void physicsForces() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+
+
+         this code is run after forces are applied*/
+    }
+
+    public void physicsGravity() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+
+
+         this code is run after gravity is simulated*/
+    }
+
+    public void physicsForce() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+
+
+         this code is run after force is simulated*/
+    }
+
+    public void physicsFriction() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+
+
+         this code is run after friction is simulated*/
+    }
+
+    public void physicsVelocity() {
+        /*this method only exists to be overridden by subclasses of base physics
+        so that subclasses can add their own code to the physics simulation
+         
+         
+         this code is run after velocity is simulated*/
+    }
+
     //Accerelation and forces
+    private void applyForces() {
+        //these are forces which are always applied during the physics simulation
+
+        simulateGravity();
+
+        physicsForces();
+    }
+
     private void simulateForce() {
+        velocity.setPos(velocity.add(force.div(mass)));
+        force.setPos(0, 0);
+        physicsForce();
+    }
+
+    private void simulateFriction() {
 
         if (airFrictionFlag) {
-            force.subtract(force.getAdd(velocity.getMul(mass)).getMul(airFriction));
+            force.setPos(force.sub(force.add(velocity.mul(mass)).mul(airFriction)));
+            physicsFriction();
         }
-        
-        velocity.add(force.getDiv(mass));
-        force.setPos(0, 0);
+
+    }
+
+    private void simulateVelocity() {
+        coordinates.setPos(coordinates.add(velocity.mul(deltaTime).div(scale)));
+        physicsVelocity();
+    }
+
+    private void simulateGravity() {
+        if (gravityFlag) {
+             applyForce(gravityDir.mul(gravity * mass * deltaTime));
+             physicsGravity();
+        }
     }
     
     public void move(double x, double y) {
 
-        this.coordinates.offset(x, y);
+        coordinates.setPos(coordinates.add(x, y));
 
 
         updateGraphic();
@@ -151,11 +213,17 @@ public class BasePhysics {
     }
 
     //Position
-    public void setPos(double x, double y) {
+    public void setPos(Coordinate c) {
 
-        this.coordinates.setPos(x, y);
+        coordinates.setPos(c);
 
         updateGraphic();
+
+    }
+
+    public void setPos(double x, double y) {
+
+        setPos(new Coordinate(x,y));
 
     }
 
@@ -189,7 +257,7 @@ public class BasePhysics {
     }
     public void applyForce(Coordinate F) {
 
-        force.add(F);
+        force.setPos(force.add(F));
 
     }
 
@@ -205,6 +273,14 @@ public class BasePhysics {
     }
     public void enableGravity(boolean enabled) {
         gravityFlag = enabled;
+    }
+
+    //time
+    public void setDeltaTime(double dt) {
+        deltaTime=dt;
+    }
+    public double getDeltaTime() {
+        return deltaTime;
     }
 
 }
