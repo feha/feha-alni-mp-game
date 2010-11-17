@@ -109,17 +109,17 @@ public class VisibleObject {
 
         if (parent != null) {
             //put it at its right pos, within the parents coord systems size scale
-            drawPos = (position.getAdd(offset)).getMul(parent.sizeScale);
+            drawPos = (Coordinate.add(position, offset).mul(parent.sizeScale));
             //Rotate with the angle of the coord system (needs fixing)
             drawPos = drawPos.rotate(parent.totalAngle);
             
             //Add it to the parent pos, so it is drawn in a local coord system
-            drawPos = drawPos.getAdd(parent.drawPos).getAdd(parent.offset);
+            drawPos = drawPos.add(parent.drawPos).add(parent.offset);
 
             totalAngle = angle + parent.totalAngle;
-            sizeScale = scale.getMul(parent.sizeScale);
+            sizeScale = scale.mul(parent.sizeScale);
         } else {
-            drawPos = (position.getAdd(offset));
+            drawPos = (position.add(offset));
 
             totalAngle = angle;
             sizeScale = scale;

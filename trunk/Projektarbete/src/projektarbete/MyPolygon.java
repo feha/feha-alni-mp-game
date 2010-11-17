@@ -66,7 +66,7 @@ public class MyPolygon extends VisibleObject {
 
                 Coordinate pointPos = Coordinate.rotate( points[i], totalAngle );
 
-                pointPos = drawPos.getAdd(pointPos.getMul(sizeScale)); //size poly with scale
+                pointPos = drawPos.add(pointPos.mul(sizeScale)); //size poly with scale
                 polygon.addPoint((int) pointPos.x(), (int) pointPos.y());
             }
         }
