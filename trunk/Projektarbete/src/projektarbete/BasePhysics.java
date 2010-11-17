@@ -16,7 +16,7 @@ public class BasePhysics {
         System.out.println("BasePhysics Initializing");
 
         initComponents();
-        initTesting();
+        //initTesting();
 
         System.out.println("BasePhysics Initialized");
         
@@ -25,6 +25,7 @@ public class BasePhysics {
     protected Coordinate coordinates;
     protected Coordinate velocity;
     protected Coordinate force;
+    protected double angle;
     protected double mass;
     protected double airFriction;
     protected Coordinate gravityDir;
@@ -36,7 +37,6 @@ public class BasePhysics {
     protected double scale;
 
     VisibleObject visibleObject;
-    VisibleObject smiley;
     
 
     private void initComponents() {
@@ -48,6 +48,7 @@ public class BasePhysics {
         coordinates = new Coordinate(0,0);
         velocity = new Coordinate(0.5,0.10);
         force = new Coordinate(0,0);
+        angle = 0;
 
 
         mass = 100;
@@ -63,16 +64,16 @@ public class BasePhysics {
 
     private void initTesting() {
 
-        visibleObject = new MyRectangle2D(Camera.getInstance());
-        visibleObject.setScale(0.05);
-        smiley = new Smiley(visibleObject);
-        smiley.setScale(1);
+        //visibleObject = new MyRectangle2D(Camera.getInstance());
+        //visibleObject.setScale(0.05);
+        /*
         try {
             Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         Hook.call(1,"test");
+        */
     }
 
     public void hookTest(String test) {
@@ -83,6 +84,7 @@ public class BasePhysics {
 
         if (visibleObject != null) {
             visibleObject.setPos(coordinates.mul(1,-1));
+            visibleObject.angle = angle;
         }
 
     }

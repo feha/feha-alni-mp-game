@@ -35,16 +35,17 @@ public class Camera extends VisibleScreen {
     }
     
     private void initComponents() {
-
+        /*
         parent = Stage.getInstance();
         
         addToParent();
-
+        */
     }
 
 
     public static Camera getInstance() {
 
+        /*
         //Double Check Locking pattern makes it only create new stage if it does
         //not exist already, and stops threading from beign able to mess it up.
         if (_instance == null) {
@@ -52,10 +53,12 @@ public class Camera extends VisibleScreen {
                 if (_instance == null) {
                     System.out.println(_instance);
                     _instance = new Camera();
+                    System.out.println(_instance);
                 }
             }
         }
-
+        */
+        
         return _instance;
 
     }

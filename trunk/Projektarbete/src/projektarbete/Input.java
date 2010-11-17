@@ -13,7 +13,6 @@ import javax.swing.*;
  * @author niclas.alexandersso
  */
 public class Input extends JPanel {
-public static TestUserObject tester = new TestUserObject();
     public Input() {
         
         System.out.println("Input started");
