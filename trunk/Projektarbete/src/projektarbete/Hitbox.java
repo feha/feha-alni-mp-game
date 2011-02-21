@@ -5,6 +5,8 @@
 
 package projektarbete;
 import java.awt.geom.*;
+import java.awt.geom.Rectangle2D.Double;
+import java.util.*;
 /**
  *
  * @author niclas.alexandersso
@@ -19,6 +21,9 @@ public Hitbox(){
     position = new Point2D.Double(0,0);
     scale = 1;
     angle = 0;
+    TriangulatedPolygon p = new TriangulatedPolygon(new Point2D.Double(2, 2),
+            new Point2D.Double(2, 0),new Point2D.Double(0, 0));
+    p.addPoint(new Point2D.Double(0, 2));
 }
 
 public Hitbox(Point2D.Double pos, double s, double a){
@@ -104,13 +109,246 @@ public void setShape(Path2D.Double s) {
 }
 
 public AffineTransform getTransformation() {
+
     AffineTransform transformation = AffineTransform.getRotateInstance(angle);
     transformation.concatenate(AffineTransform.getScaleInstance(scale, scale));
+
     return transformation;
+
 }
 
 public void checkCollision() {
     
 }
 
+}
+
+class TriangulatedPolygon {
+
+    private LinkedList<Point2D.Double> points;
+    private LinkedList<PolygonTriangle> triangles;
+
+    public TriangulatedPolygon() {
+        points = new LinkedList<Point2D.Double>();
+        triangles = new LinkedList<PolygonTriangle>();
+    }
+    public TriangulatedPolygon(Point2D.Double p1, Point2D.Double p2,
+                               Point2D.Double p3) {
+
+        points = new LinkedList<Point2D.Double>();
+        triangles = new LinkedList<PolygonTriangle>();
+        points.add(p1);
+        points.add(p2);
+        points.add(p3);
+        triangles.add(new PolygonTriangle(p1, p2, p3));
+    }
+
+    public void addPoint(Point2D.Double point) {
+        points.add(point);
+        triangulate();
+    }
+    public void addPoint(int index, Point2D.Double point) {
+        points.add(index,point);
+        triangulate();
+    }
+    public void removePoint(int index) {
+        points.remove(index);
+        triangulate();
+    }
+    public void removePoint(Point2D.Double point) {
+        points.remove(point);
+        triangulate();
+    }
+    public Point2D.Double getPoint(int index) {
+        return getPoint(index, points);
+    }
+    public static Point2D.Double getPoint(int index, 
+                                          LinkedList<Point2D.Double> p) {
+
+        int highestIndex = p.size();
+        if (index > highestIndex-1) {
+            index -= Math.floor((double)index/(double)highestIndex)
+                    *highestIndex;
+        }
+        if (index < 0) {
+            index -= Math.floor((double)index/(double)highestIndex+1)
+                    *highestIndex-highestIndex;
+        }
+        return p.get(index);
+    }
+    public PolygonTriangle getTriangle(int index) {
+        return getTriangle(index, points);
+    }
+    public Line2D.Double getLine(int index) {
+        return getLine(index, points);
+    }
+    public Line2D.Double getLine(int index1, int index2) {
+        return getLine(index1, index2, points);
+    }
+    public Rectangle2D.Double getBounds(){
+        return getBounds(points);
+    }
+    public int getLineIntersections(Line2D.Double l){
+        return getLineIntersections(l, points);
+    }
+    public void triangulate() {
+        triangles = getTriangulation(points);
+    }
+
+    public static LinkedList<PolygonTriangle> getTriangulation(LinkedList<Point2D.Double> p) {
+
+        LinkedList<Point2D.Double> remainingPoints =
+                (LinkedList<Point2D.Double>)p.clone();
+        PolygonTriangle current = new PolygonTriangle();
+        LinkedList<PolygonTriangle> t = new LinkedList<PolygonTriangle>();
+
+        //triangulation is handled with the ear-clipping method
+        //if there is more than 3 points, there are at least two remaining ears
+        while (remainingPoints.size()>3) {
+
+            //loops through the list of points
+            for (int i = 0; i < remainingPoints.size(); i++) {
+
+                //sets points in the the test triangle to the current point and
+                //the points directly connected to it
+                current=getTriangle(i, remainingPoints);
+
+                //checks if this triangle is inside the polygon
+                if (inside(current.getCentroid(), remainingPoints)) {
+
+                    //makes sure there are no points inside the triangle
+                    if (getLineIntersections(current.getSideA(),
+                            remainingPoints)==0) {
+
+                        //adds the current triangle to the list of triangles
+                        t.add(current);
+                        //removes the current point from the list of points
+                        remainingPoints.remove(i);
+                        //breaks the loop to start over from the beginning
+                        break;
+                    }
+                }
+            }
+        }
+        //if there is exactly one triangle remaining
+        if (remainingPoints.size()==3) {
+            //the triangle is added to the list of triangles
+            t.add(getTriangle(0, remainingPoints));
+        }
+        return t;
+    }
+    public static PolygonTriangle getTriangle(int index,
+                                              LinkedList<Point2D.Double> p){
+
+        //returns a triangle formed by the point at the specified index in the
+        //list, and the points right before and right after it
+        return new PolygonTriangle(getPoint(index, p),
+                getPoint(index+1, p), getPoint(index-1, p));
+    }
+    public static Line2D.Double getLine(int index, 
+                                        LinkedList<Point2D.Double> p) {
+
+        //returns a line between the point at the specified index in the list
+        //and the point right after it
+        return new Line2D.Double(getPoint(index, p), getPoint(index+1, p));
+    }
+    public static Line2D.Double getLine(int index1, int index2, 
+                                        LinkedList<Point2D.Double> p) {
+
+        //returns a line between the points at the specified indexes in the list
+        return new Line2D.Double(getPoint(index1, p), getPoint(index2, p));
+    }
+    public static Rectangle2D.Double getBounds(LinkedList<Point2D.Double> p) {
+
+        //creates a bounding box by combining the bounding boxes of
+        Rectangle2D.Double bounds = (Double) getLine(0, p).getBounds2D();
+        int size = p.size();
+        for (int i = 1; i < size; i++) {
+            bounds.createUnion(getLine(i, p).getBounds2D());
+        }
+        return bounds;
+    }
+    public static int getLineIntersections(Line2D.Double l,
+                                            LinkedList<Point2D.Double> p) {
+        
+        int intersections = 0;
+        int size = p.size();
+        Line2D.Double currentLine;
+
+        //loops through the list to get lines to check intersection with
+        for (int i = 0; i < size; i++) {
+
+            currentLine = getLine(i, p);
+
+            //makes sure the lines do not share any endpoints
+            //and that an intersection isn't counted twice due
+            //to passing through a point
+            if (!currentLine.getP2().equals(l.getP1()) &&
+                    !currentLine.getP2().equals(l.getP2()) && 
+                    !(l.ptSegDist(currentLine.getP1())==0)) {
+
+                //if the lines intersect,
+                //the number of intersections is increased by one
+                if (currentLine.intersectsLine(l)) {
+                    intersections++;
+                }
+
+            }
+        }
+        return intersections;
+    }
+    public static boolean inside(Point2D.Double point,
+                                 LinkedList<Point2D.Double> p){
+
+        //draws a line between the given point and a point right outside
+        //the bounding box of this polygon
+        Rectangle2D.Double bounds = getBounds(p);
+        Line2D.Double intersectionChecker = new Line2D.Double(point,
+                new Point2D.Double(bounds.getMinX()-1, bounds.getMaxY()+1));
+
+        //for simple polygons, if the number of intersections is not even, the
+        //point is inside the polygon
+        if (getLineIntersections(intersectionChecker, p)%2!=0) {
+            return true;
+        }
+        return false;
+    }
+}
+
+class PolygonTriangle {
+    Point2D.Double A;
+    Point2D.Double B;
+    Point2D.Double C;
+
+    public PolygonTriangle() {
+        A = new Point2D.Double(0, 0);
+        B = new Point2D.Double(0, 0);
+        C = new Point2D.Double(0, 0);
+    }
+
+    public PolygonTriangle(Point2D.Double a, Point2D.Double b, Point2D.Double c) {
+        A=a;
+        B=b;
+        C=c;
+    }
+
+    //sides
+    public Line2D.Double getSideA() {
+        return new Line2D.Double(B, C);
+    }
+    public Line2D.Double getSideB() {
+        return new Line2D.Double(C, A);
+    }
+    public Line2D.Double getSideC() {
+        return new Line2D.Double(A, B);
+    }
+    //other
+    public Point2D.Double getCentroid() {
+        return new Point2D.Double((A.x+B.x+C.x)/3, (A.y+B.y+C.y)/3);
+    }
+    public Rectangle2D.Double getBounds() {
+        return (Double)getSideA().getBounds2D()
+                .createUnion(getSideB().getBounds2D())
+                .createUnion(getSideC().getBounds2D());
+    }
 }
