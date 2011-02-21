@@ -9,7 +9,7 @@
  * Created on 2010-sep-28, 10:31:45
  */
 
-package projektarbete;
+package projektarbete.graphics;
 
 import java.awt.Graphics;
 import java.awt.Polygon;
@@ -17,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import projektarbete.Stage;
 
 /**
  *

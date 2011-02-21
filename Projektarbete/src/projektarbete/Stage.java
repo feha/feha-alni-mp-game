@@ -11,6 +11,9 @@ package projektarbete;
  */
 
 //import java.awt.Container;
+import projektarbete.graphics.Painter;
+import projektarbete.graphics.VisibleObject;
+import projektarbete.graphics.Camera;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -38,7 +41,7 @@ public class Stage {
     private static Stage _instance;
 
     //Networked variables
-    private Painter painter;
+    Painter painter;
 
 
     private void initGlobals() {
@@ -80,6 +83,8 @@ public class Stage {
     private void initTesting() {
 
         BasePhysics v0 = new TestUserObject();
+
+        StartMenu m0 = new StartMenu();
 
     }
 

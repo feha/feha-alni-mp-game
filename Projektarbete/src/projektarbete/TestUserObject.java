@@ -5,6 +5,9 @@
 
 package projektarbete;
 
+import projektarbete.graphics.Smiley;
+import projektarbete.graphics.Camera;
+
 /**
  *
  * @author niclas.alexandersso
@@ -37,7 +40,7 @@ public class TestUserObject extends BasePhysics {
         airFriction = 0.02;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
-        gravityFlag = false;
+        gravityFlag = true;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
@@ -46,7 +49,7 @@ public class TestUserObject extends BasePhysics {
 
     private void initTesting() {
 
-        visibleObject = new MyRectangle2D(Camera.getInstance());
+        visibleObject = new Smiley(Camera.getInstance());
         visibleObject.setScale(0.05);
 
     }
