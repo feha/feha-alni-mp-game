@@ -35,6 +35,7 @@ public class BasePhysics {
     protected boolean frozenFlag;
     protected double deltaTime;
     protected double scale;
+    protected Hitbox hitbox;
 
     VisibleObject visibleObject;
     
@@ -49,6 +50,7 @@ public class BasePhysics {
         velocity = new Coordinate(0.5,0.10);
         force = new Coordinate(0,0);
         angle = 0;
+        hitbox = new Hitbox();
 
 
         mass = 100;
