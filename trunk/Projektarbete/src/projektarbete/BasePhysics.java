@@ -5,6 +5,8 @@
 
 package projektarbete;
 
+import projektarbete.graphics.VisibleObject;
+
 /**
  *
  * @author felix.hallqvist
@@ -86,7 +88,7 @@ public class BasePhysics {
 
         if (visibleObject != null) {
             visibleObject.setPos(coordinates.mul(1,-1));
-            visibleObject.angle = angle;
+            visibleObject.setAng(angle);
         }
 
     }

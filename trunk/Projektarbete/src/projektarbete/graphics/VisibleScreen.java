@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
-package projektarbete;
+package projektarbete.graphics;
+
+import projektarbete.Stage;
 
 /**
  *
