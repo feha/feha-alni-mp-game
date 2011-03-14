@@ -45,8 +45,9 @@ public class MyRectangle2D extends MyPolygon {
     @Override
     public void draw(Graphics g) {
         super.draw(g);
-        
-        //g.fillPolygon(polygon);
+
+        g.setColor(color);
+        g.fillPolygon(polygon);
     }
 
 }
