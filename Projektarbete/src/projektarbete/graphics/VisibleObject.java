@@ -5,6 +5,7 @@
 
 package projektarbete.graphics;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.LinkedList;
 import projektarbete.Coordinate;
@@ -24,6 +25,8 @@ public class VisibleObject {
     protected Coordinate offset = new Coordinate(0,0);
     protected Coordinate scale = new Coordinate(1.0,1.0);
     protected double angle = 0;
+    protected Coordinate anchor = new Coordinate(0,0);
+    protected Color color = new Color(0,0,0);
 
 
     public VisibleObject() {
@@ -107,7 +110,7 @@ public class VisibleObject {
     }
 
     public void draw(Graphics g) {
-        
+
         if (parent != null) {
             //put it at its right pos, within the parents coord systems size scale
             drawPos = (Coordinate.add(position, offset).mul(parent.sizeScale));
@@ -184,6 +187,30 @@ public class VisibleObject {
 
     public Coordinate getScale() {
         return scale;
+    }
+
+    public void setColor(Color newColor) {
+        color = newColor;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setImage(String file) {
+
+    }
+
+    public void setAnchor(Coordinate anchor) {
+        this.anchor = anchor;
+    }
+
+    public void centerAnchor() {
+        anchor = new Coordinate(0,0);
+    }
+
+    public void resetAnchor() {
+        anchor = new Coordinate(0,0);
     }
 
 }
