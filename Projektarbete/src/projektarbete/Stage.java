@@ -19,6 +19,10 @@ import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
+import projektarbete.physics.BasePhysics;
+import projektarbete.physics.Floor;
+import projektarbete.physics.PhysicsEngine;
+import projektarbete.physics.TestUserObject;
 
 public class Stage {
     //Constructor
@@ -74,7 +78,7 @@ public class Stage {
         jFrame.getContentPane().add(painter);
 
         Camera camera = new Camera();
-        camera.setScale(1);
+        camera.setScale(50);
 
         PhysicsEngine physicsEngine = new PhysicsEngine();
 
@@ -83,6 +87,7 @@ public class Stage {
     private void initTesting() {
 
         BasePhysics v0 = new TestUserObject();
+        new Floor();
 
         StartMenu m0 = new StartMenu();
 
