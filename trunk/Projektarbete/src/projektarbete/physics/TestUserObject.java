@@ -3,10 +3,15 @@
  * and open the template in the editor.
  */
 
-package projektarbete;
+package projektarbete.physics;
 
-import projektarbete.graphics.Smiley;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+import projektarbete.Coordinate;
+import projektarbete.Flags;
 import projektarbete.graphics.Camera;
+import projektarbete.graphics.MyImage;
 
 /**
  *
@@ -31,7 +36,7 @@ public class TestUserObject extends BasePhysics {
 
         //Initializing variables
 
-        coordinates = new Coordinate(0,0);
+        position = new Coordinate(0,0);
         velocity = new Coordinate(0.5,0.10);
         force = new Coordinate(0,0);
 
@@ -45,12 +50,23 @@ public class TestUserObject extends BasePhysics {
         frozenFlag = false;
         scale = 1;
 
+        hitbox = new Hitbox();
+        List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
+        shape.add(new Point2D.Double(1,0));
+        shape.add(new Point2D.Double(0,0));
+        shape.add(new Point2D.Double(1,1));
+        hitbox.setShape(shape);
+        hitbox.normalizeShape();
+        scale = 0.60;
+
     }
 
     private void initTesting() {
 
-        visibleObject = new Smiley(Camera.getInstance());
-        visibleObject.setScale(0.05);
+        visibleObject = new MyImage(Camera.getInstance());
+        visibleObject.setImage("TrollFace.png");
+        visibleObject.centerAnchor();
+        visibleObject.setScale(0.0043);
 
     }
 
@@ -70,7 +86,7 @@ public class TestUserObject extends BasePhysics {
             applyForce(20 * mass * deltaTime, 0);
         }
 
-        angle+= Coordinate.length(velocity)*deltaTime;
+        angle = this.position.x()+Math.PI;
         
     }
 

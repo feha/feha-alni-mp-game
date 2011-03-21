@@ -3,8 +3,10 @@
  * and open the template in the editor.
  */
 
-package projektarbete;
+package projektarbete.physics;
 
+import java.awt.geom.Rectangle2D;
+import projektarbete.Coordinate;
 import projektarbete.graphics.VisibleObject;
 
 /**
@@ -24,7 +26,8 @@ public class BasePhysics {
         
     }
 
-    protected Coordinate coordinates;
+    protected Coordinate position;
+    protected Coordinate futurePosition;
     protected Coordinate velocity;
     protected Coordinate force;
     protected double angle;
@@ -36,6 +39,7 @@ public class BasePhysics {
     protected boolean airFrictionFlag;
     protected boolean frozenFlag;
     protected double deltaTime;
+    protected double time;
     protected double scale;
     protected Hitbox hitbox;
 
@@ -48,11 +52,12 @@ public class BasePhysics {
 
         //Initializing variables
 
-        coordinates = new Coordinate(0,0);
-        velocity = new Coordinate(0.5,0.10);
+        position = new Coordinate(0,0);
+        futurePosition = new Coordinate(0,0);
+        velocity = new Coordinate(0,0);
         force = new Coordinate(0,0);
         angle = 0;
-        hitbox = new Hitbox();
+        //hitbox = new Hitbox();
 
 
         mass = 100;
@@ -84,10 +89,23 @@ public class BasePhysics {
         System.out.println(test);
     }
 
+    public Rectangle2D.Double getMovementBounds() {
+        double xMin = Math.min(position.x(), futurePosition.x());
+        double yMin = Math.min(position.y(), futurePosition.y());
+        double xMax = Math.max(position.x(), futurePosition.x());
+        double yMax = Math.max(position.y(), futurePosition.y());
+
+        return new Rectangle2D.Double(
+                xMin -(scale*hitbox.getSize()),
+                yMin -(scale*hitbox.getSize()),
+                xMax - xMin + 2 * (scale*hitbox.getSize()),
+                yMax - yMin + 2 * (scale*hitbox.getSize()));
+    }
+
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(coordinates.mul(1,-1));
+            visibleObject.setPos(position.mul(1,-1));
             visibleObject.setAng(angle);
         }
 
@@ -174,7 +192,7 @@ public class BasePhysics {
     }
 
     //Accerelation and forces
-    private void applyForces() {
+    public void applyForces() {
         //these are forces which are always applied during the physics simulation
 
         simulateGravity();
@@ -182,13 +200,14 @@ public class BasePhysics {
         physicsForces();
     }
 
-    private void simulateForce() {
+    public void simulateForce() {
         velocity.setPos(velocity.add(force.div(mass)));
         force.setPos(0, 0);
+        
         physicsForce();
     }
 
-    private void simulateFriction() {
+    public void simulateFriction() {
 
         if (airFrictionFlag) {
             force.setPos(force.sub(force.add(velocity.mul(mass)).mul(airFriction)));
@@ -197,12 +216,21 @@ public class BasePhysics {
 
     }
 
-    private void simulateVelocity() {
-        coordinates.setPos(coordinates.add(velocity.mul(deltaTime).div(scale)));
+    public void simulateVelocity() {
+        //position.setPos(position.add(velocity.mul(deltaTime).div(scale)));
+        futurePosition.setPos(getPosAtTime(deltaTime));
         physicsVelocity();
     }
 
-    private void simulateGravity() {
+    public Coordinate getPosAtTime(double time) {
+        return new Coordinate(position.add(velocity.mul(time)));
+    }
+
+    public void updatePos() {
+        setPos(futurePosition);
+    }
+
+    public void simulateGravity() {
         if (gravityFlag) {
              applyForce(gravityDir.mul(gravity * mass * deltaTime));
              physicsGravity();
@@ -211,7 +239,7 @@ public class BasePhysics {
     
     public void move(double x, double y) {
 
-        coordinates.setPos(coordinates.add(x, y));
+        position.setPos(position.add(x, y));
 
 
         updateGraphic();
@@ -221,7 +249,7 @@ public class BasePhysics {
     //Position
     public void setPos(Coordinate c) {
 
-        coordinates.setPos(c);
+        position.setPos(c);
 
         updateGraphic();
 
@@ -235,7 +263,7 @@ public class BasePhysics {
 
     public Coordinate getPos() {
 
-        return coordinates;
+        return position;
 
     }
 
