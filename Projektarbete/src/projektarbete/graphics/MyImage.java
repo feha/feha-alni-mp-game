@@ -70,10 +70,9 @@ public class MyImage extends VisibleObject {
         //translate must be before rotate as rotate actually rotates, not just sets the angle
         affine.translate(drawPos.x(), drawPos.y());
         //scale must be after translate or it scales the position aswell as size
-        affine.scale(scale.x(), scale.y());
+        affine.scale(sizeScale.x(), sizeScale.y());
         //the anchors is the local position that the image rotates around
-        affine.rotate(angle, anchor.x(), anchor.y());
-        //affine.scale((int) (image.getWidth(null)*scale.x()), (int) (image.getHeight(null)*scale.y()));
+        affine.rotate(totalAngle, anchor.x(), anchor.y());
 
         //g.drawImage(image, (int) drawPos.x(), (int) drawPos.y(), null);
 
