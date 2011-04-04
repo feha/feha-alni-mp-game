@@ -28,7 +28,9 @@ public class BasePhysics {
 
     protected Coordinate position;
     protected Coordinate futurePosition;
+    protected Coordinate oldPos;
     protected Coordinate velocity;
+    protected Coordinate acceleration;
     protected Coordinate force;
     protected double angle;
     protected double mass;
@@ -48,26 +50,29 @@ public class BasePhysics {
 
     private void initComponents() {
 
-        PhysicsEngine.getInstance().addBasePhysics(this);
-
         //Initializing variables
 
+        oldPos = new Coordinate(0,0);
         position = new Coordinate(0,0);
         futurePosition = new Coordinate(0,0);
         velocity = new Coordinate(0,0);
+        acceleration = new Coordinate(0,0);
         force = new Coordinate(0,0);
         angle = 0;
         //hitbox = new Hitbox();
 
 
-        mass = 100;
-        airFriction = 0.02;
+        mass = 1;
+        airFriction = 0.2;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
         gravityFlag = false;
         airFrictionFlag = true;
         frozenFlag = false;
         scale = 1;
+        
+        
+        //PhysicsEngine.getInstance().addBasePhysics(this);
         
     }
 
@@ -121,7 +126,7 @@ public class BasePhysics {
             physicsUpdate();
 
             //Forces
-            applyForces();
+            applyForces(dt);
             simulateFriction();
 
             //Position
@@ -191,17 +196,27 @@ public class BasePhysics {
          this code is run after velocity is simulated*/
     }
 
+    protected void update(double deltaTime) {
+        velocity.setPos(this.getVel(deltaTime));
+        acceleration.setPos(0, 0);
+        force.setPos(0, 0);
+        setDeltaTime(deltaTime);
+        physicsUpdate();
+    }
+
     //Accerelation and forces
-    public void applyForces() {
+    public void applyForces(double deltaTime) {
         //these are forces which are always applied during the physics simulation
 
-        simulateGravity();
+        simulateGravity(deltaTime);
+
 
         physicsForces();
     }
 
     public void simulateForce() {
-        velocity.setPos(velocity.add(force.div(mass)));
+        acceleration.setPos(acceleration.add(force.div(mass)));
+        //System.out.println(this+" acceleration: "+acceleration);
         force.setPos(0, 0);
         
         physicsForce();
@@ -210,7 +225,11 @@ public class BasePhysics {
     public void simulateFriction() {
 
         if (airFrictionFlag) {
-            force.setPos(force.sub(force.add(velocity.mul(mass)).mul(airFriction)));
+            //System.out.println(this+" force before friction: "+force);
+            //force.setPos(force.sub(force.add(velocity.mul(mass)).mul(airFriction)));
+            force.setPos(force.sub(force.mul(airFriction)).sub(velocity.mul(mass).mul(airFriction)));
+            //force.setPos(force.sub(velocity.mul(velocity.div(2)).mul(airFriction)));
+            //System.out.println(this+" force after friction: "+force);
             physicsFriction();
         }
 
@@ -218,22 +237,37 @@ public class BasePhysics {
 
     public void simulateVelocity() {
         //position.setPos(position.add(velocity.mul(deltaTime).div(scale)));
-        futurePosition.setPos(getPosAtTime(deltaTime));
+        /*if (Math.abs(velocity.x())<1/1000) {
+            velocity.x(0);
+        }
+        if (Math.abs(velocity.y())<1/1000) {
+            velocity.y(0);
+        }*/
+        //futurePosition.setPos(getPosAtTime(deltaTime));
         physicsVelocity();
     }
 
     public Coordinate getPosAtTime(double time) {
-        return new Coordinate(position.add(velocity.mul(time)));
+        return new Coordinate(position.add(getVel().mul(time).add(acceleration.mul((time*time)/2))));
     }
 
-    public void updatePos() {
-        setPos(futurePosition);
+    public void setPosAtTime(Coordinate position, double time) {
+        this.position.setPos(position.sub(getVel(time).mul(time).sub(acceleration.mul((time*time)/2))));
     }
 
-    public void simulateGravity() {
+    public void updatePos(double deltaTime) {
+        //setPos(futurePosition);
+        //    System.out.println(this+" velocity: "+velocity);
+        //System.out.println(this+" acceleration: "+acceleration);
+        setPos(this.getPosAtTime(deltaTime));
+    }
+
+    public void simulateGravity(double deltaTime) {
         if (gravityFlag) {
-             applyForce(gravityDir.mul(gravity * mass * deltaTime));
-             physicsGravity();
+             //applyForce(gravityDir.mul(gravity * mass * deltaTime));
+            //acceleration.setPos(acceleration.add(gravityDir.mul(gravity)));
+            this.applyForce(gravityDir.mul(gravity * mass));
+            physicsGravity();
         }
     }
     
@@ -249,6 +283,7 @@ public class BasePhysics {
     //Position
     public void setPos(Coordinate c) {
 
+        oldPos.setPos(position);
         position.setPos(c);
 
         updateGraphic();
@@ -270,28 +305,61 @@ public class BasePhysics {
     //Velocity
     public void setVel(double x, double y) {
 
+        setVel(x, y, 0);
+
+    }
+    public void setVel(double x, double y, double time) {
+
         setVel(new Coordinate(x,y));
 
     }
     public void setVel(Coordinate vel) {
 
-        velocity.setPos(vel.x(), vel.y());
+        setVel(vel, 0);
+
+    }
+    public void setVel(Coordinate vel, double time) {
+
+        velocity.setPos(vel.sub(acceleration.mul(time)));
 
     }
 
     public Coordinate getVel() {
 
-        return velocity;
+        return getVel(0);
 
+    }
+
+    public Coordinate getVel(double time) {
+
+        return velocity.add(acceleration.mul(time));
+
+    }
+
+    public Coordinate getMomentum() {
+        return getMomentum(0);
+    }
+
+    public Coordinate getMomentum(double time) {
+        return getVel(time).mul(mass);
     }
 
     public void applyForce(double hF, double vF) {
         applyForce(new Coordinate(hF,vF));
 
     }
-    public void applyForce(Coordinate F) {
 
-        force.setPos(force.add(F));
+    public void applyForce(Coordinate force) {
+        this.force.setPos(this.force.add(force));
+    }
+
+    public void applyImpulse(double hF, double vF) {
+        applyImpulse(new Coordinate(hF,vF));
+
+    }
+    public void applyImpulse(Coordinate force) {
+
+        this.velocity.setPos(this.velocity.add(force.div(mass)));
 
     }
 

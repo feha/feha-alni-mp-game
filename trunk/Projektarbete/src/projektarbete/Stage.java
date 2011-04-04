@@ -20,11 +20,13 @@ import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import projektarbete.physics.BasePhysics;
+import projektarbete.physics.Bouncer;
 import projektarbete.physics.Floor;
 import projektarbete.physics.PhysicsEngine;
 import projektarbete.physics.TestUserObject;
 
 public class Stage {
+    PhysicsEngine engine;
     //Constructor
     public Stage () {
 
@@ -34,7 +36,9 @@ public class Stage {
         //instance, which doesnt exist so it creates a new Stage.
         initGlobals();
         initComponents();
+        engine = new PhysicsEngine();
         initTesting();
+        engine.start();
 
         System.out.println("Stage Initialized");
 
@@ -80,14 +84,21 @@ public class Stage {
         Camera camera = new Camera();
         camera.setScale(50);
 
-        PhysicsEngine physicsEngine = new PhysicsEngine();
+        //PhysicsEngine physicsEngine = new PhysicsEngine();
 
     }
 
     private void initTesting() {
 
-        BasePhysics v0 = new TestUserObject();
-        new Floor();
+        /*engine.addBasePhysics(new TestUserObject());
+        engine.addBasePhysics(new Floor());
+        
+        engine.addBasePhysics(new Floor(3,-6));
+        engine.addBasePhysics(new Floor(1,-6));*/
+
+        engine.addBasePhysics(new Bouncer(0, -2, 4, 0, 200));
+        engine.addBasePhysics(new Bouncer(5, -2.8, -1, 0, 1));
+        
 
         StartMenu m0 = new StartMenu();
 

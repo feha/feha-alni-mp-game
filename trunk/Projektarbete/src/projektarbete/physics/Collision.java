@@ -7,14 +7,80 @@ package projektarbete.physics;
 
 import java.awt.geom.*;
 import java.awt.geom.Point2D.Double;
+import java.util.List;
 
 /**
  *
  * @author niclas.alexandersso
  */
 public class Collision {
+    private BasePhysics object1;
+    private BasePhysics object2;
+    private double time;
+    private boolean intersecting;
 
-public static Point2D.Double getLineIntersection(Line2D.Double line1, Line2D.Double line2) {
+    public Collision() {
+
+    }
+
+    public Collision(BasePhysics object1, BasePhysics object2, double time,
+            boolean intersecting) {
+        this.object1 = object1;
+        this.object2 = object2;
+        this.time = time;
+        this.intersecting = intersecting;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public BasePhysics getObject2() {
+        return object2;
+    }
+
+
+    public void setObject2(BasePhysics object2) {
+        this.object2 = object2;
+    }
+
+
+    public BasePhysics getObject1() {
+        return object1;
+    }
+
+    public void setObject1(BasePhysics object1) {
+        this.object1 = object1;
+    }
+
+    public void setIntersecting(boolean intersecting) {
+        this.intersecting = intersecting;
+    }
+
+
+    public boolean isIntersecting() {
+        return intersecting;
+    }
+
+
+    public static Collision getEarliest(List<Collision> collisions) {
+        Collision earliest = null;
+        for (Collision collision : collisions) {
+            if (earliest == null) {
+                earliest = collision;
+            }
+            if (earliest.getTime() > collision.getTime()) {
+                earliest = collision;
+            }
+        }
+        return earliest;
+    }
+
+/*public static Point2D.Double getLineIntersection(Line2D.Double line1, Line2D.Double line2) {
 
     if (line1.intersectsLine(line2)) {
 
@@ -79,6 +145,6 @@ public static double getIntersectionTime(double t, Line2D.Double line1,
         }
     }
     return -1;
-}
+}*/
 
 }
