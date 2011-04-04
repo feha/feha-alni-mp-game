@@ -10,22 +10,32 @@ public class GeomUtils {
             Line2D.Double line2) {
 
         double distance;
-        if (line1.intersectsLine(line2)) {
-            distance = 0;
+        boolean l1NonZero = !line1.getP1().equals(line1.getP2());
+        boolean l2NonZero = !line2.getP1().equals(line2.getP2());
+        if (!l1NonZero && !l2NonZero) {
+            distance = line1.getP1().distanceSq(line2.getP1());
         } else {
-            double tempDist;
-            distance = line1.ptLineDistSq(line2.getP1());
-            tempDist = line1.ptLineDistSq(line2.getP2());
-            if (tempDist < distance) {
-                distance = tempDist;
-            }
-            tempDist = line2.ptLineDistSq(line1.getP1());
-            if (tempDist < distance) {
-                distance = tempDist;
-            }
-            tempDist = line2.ptLineDistSq(line1.getP2());
-            if (tempDist < distance) {
-                distance = tempDist;
+            if (line1.intersectsLine(line2)) {
+                distance = 0;
+            } else {
+                double tempDist;
+                distance = Double.POSITIVE_INFINITY;
+                tempDist = line1.ptSegDistSq(line2.getP1());
+                if (tempDist < distance) {
+                    distance = tempDist;
+                }
+                tempDist = line1.ptSegDistSq(line2.getP2());
+                if (tempDist < distance) {
+                    distance = tempDist;
+                }
+                tempDist = line2.ptSegDistSq(line1.getP1());
+                if (tempDist < distance) {
+                    distance = tempDist;
+                }
+                tempDist = line2.ptSegDistSq(line1.getP2());
+                if (tempDist < distance) {
+                    distance = tempDist;
+                }
             }
         }
         return distance;

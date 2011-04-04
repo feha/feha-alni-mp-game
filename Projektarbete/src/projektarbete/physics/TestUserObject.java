@@ -41,8 +41,7 @@ public class TestUserObject extends BasePhysics {
         force = new Coordinate(0,0);
 
 
-        mass = 100;
-        airFriction = 0.02;
+        //mass = 100;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
         gravityFlag = true;
@@ -74,19 +73,19 @@ public class TestUserObject extends BasePhysics {
     public void physicsForces() {
 
         if (Flags.getFlag("up")) {
-            applyForce(0, 20 * mass * deltaTime);
+            applyForce(0, 20 * mass /* deltaTime*/);
         }
         if (Flags.getFlag("down")) {
-            applyForce(0, -20 * mass * deltaTime);
+            applyForce(0, -5 * mass /* deltaTime*/);
         }
         if (Flags.getFlag("left")) {
-            applyForce(-20 * mass * deltaTime, 0);
+            applyForce(-10 * mass /* deltaTime*/, 0);
         }
         if (Flags.getFlag("right")) {
-            applyForce(20 * mass * deltaTime, 0);
+            applyForce(20 * mass/* * deltaTime*/, 0);
         }
 
-        angle = this.position.x()+Math.PI;
+        angle = this.velocity.x()/10/*+Math.PI*/;
         
     }
 
