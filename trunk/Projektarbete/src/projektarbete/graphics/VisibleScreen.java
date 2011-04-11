@@ -17,15 +17,16 @@ public class VisibleScreen extends VisibleObject {
         
         System.out.println("VisibleScreen Initializing");
 
-        parent = Stage.getInstance();
+        stage = Stage.getInstance();
         initGlobals();
         initComponents();
+        this.addToStage();
 
         System.out.println("VisibleScreen Initialized");
         
     }
     
-    protected Stage parent;
+    protected Stage stage;
    //Global variables
     private static VisibleScreen _instance;
 
@@ -37,25 +38,9 @@ public class VisibleScreen extends VisibleObject {
     
     private void initComponents() {
 
-        parent = Stage.getInstance();
+        stage = Stage.getInstance();
 
         addToParent();
-
-    }
-
-    @Override
-    public void addToParent(){
-
-        //Tell the Stage that this instance wants to be in the display list.
-        parent.addVisibleObject(this);
-
-    }
-
-    @Override
-    public void removeFromParent(){
-
-        //Tell the Stage to remove this instance from the display list.
-        parent.removeVisibleObject(this);
 
     }
 
@@ -74,6 +59,10 @@ public class VisibleScreen extends VisibleObject {
 
         return _instance;
 
+    }
+
+    private void addToStage() {
+        stage.addVisibleObject(this);
     }
 
 }

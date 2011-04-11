@@ -28,7 +28,7 @@ public class Bouncer extends BasePhysics {
 
     public Bouncer(double x, double y, double velX, double velY, double mass) {
         this.position = new Coordinate(x,y);
-        //this.gravityFlag = true;
+        this.gravityFlag = true;
         //this.gravity = 1;
         //this.gravityDir = new Coordinate(1,0);
         this.velocity = new Coordinate(velX, velY);
@@ -39,9 +39,8 @@ public class Bouncer extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        scale = 0.5;
-        visibleObject = new MyImage(Camera.getInstance());
-        visibleObject.setImage("TrollFace.png");
+        size = 0.5;
+        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
         visibleObject.centerAnchor();
         visibleObject.setScale(0.0043);
         this.mass = mass;

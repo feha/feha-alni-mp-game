@@ -29,7 +29,9 @@ public class Input extends JPanel {
         new Keybind(new FlagAction("left pressed"), "LEFT"),
         new Keybind(new FlagAction("left released"), "released LEFT"),
         new Keybind(new FlagAction("right pressed"), "RIGHT"),
-        new Keybind(new FlagAction("right released"), "released RIGHT")};
+        new Keybind(new FlagAction("right released"), "released RIGHT"),
+        new Keybind(new FlagAction("enter pressed"), "ENTER"),
+        new Keybind(new FlagAction("enter released"), "released ENTER")};
 
         for (int i=0; i<keybinds.length; i++) {
 

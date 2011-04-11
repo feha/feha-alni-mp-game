@@ -15,20 +15,7 @@ import projektarbete.graphics.VisibleObject;
  */
 public class BasePhysics {
 
-    public BasePhysics () {
-
-        System.out.println("BasePhysics Initializing");
-
-        initComponents();
-        //initTesting();
-
-        System.out.println("BasePhysics Initialized");
-        
-    }
-
     protected Coordinate position;
-    protected Coordinate futurePosition;
-    protected Coordinate oldPos;
     protected Coordinate velocity;
     protected Coordinate acceleration;
     protected Coordinate force;
@@ -39,22 +26,18 @@ public class BasePhysics {
     protected double gravity;
     protected boolean gravityFlag;
     protected boolean airFrictionFlag;
-    protected boolean frozenFlag;
-    protected double deltaTime;
-    protected double time;
-    protected double scale;
+    protected double size;
+    protected double restitution;
     protected Hitbox hitbox;
 
     VisibleObject visibleObject;
     
 
-    private void initComponents() {
+    public BasePhysics() {
 
         //Initializing variables
 
-        oldPos = new Coordinate(0,0);
         position = new Coordinate(0,0);
-        futurePosition = new Coordinate(0,0);
         velocity = new Coordinate(0,0);
         acceleration = new Coordinate(0,0);
         force = new Coordinate(0,0);
@@ -68,11 +51,15 @@ public class BasePhysics {
         gravity = 9.82;
         gravityFlag = false;
         airFrictionFlag = true;
-        frozenFlag = false;
-        scale = 1;
+        size = 1;
+        restitution = 1;
         
         
         //PhysicsEngine.getInstance().addBasePhysics(this);
+        
+    }
+
+    public BasePhysics(PhysicsModel model) {
         
     }
 
@@ -94,18 +81,6 @@ public class BasePhysics {
         System.out.println(test);
     }
 
-    public Rectangle2D.Double getMovementBounds() {
-        double xMin = Math.min(position.x(), futurePosition.x());
-        double yMin = Math.min(position.y(), futurePosition.y());
-        double xMax = Math.max(position.x(), futurePosition.x());
-        double yMax = Math.max(position.y(), futurePosition.y());
-
-        return new Rectangle2D.Double(
-                xMin -(scale*hitbox.getSize()),
-                yMin -(scale*hitbox.getSize()),
-                xMax - xMin + 2 * (scale*hitbox.getSize()),
-                yMax - yMin + 2 * (scale*hitbox.getSize()));
-    }
 
     public void updateGraphic() {
 
@@ -113,30 +88,6 @@ public class BasePhysics {
             visibleObject.setPos(position.mul(1,-1));
             visibleObject.setAng(angle);
         }
-
-    }
-
-    public void physicsSimulate(double dt) {
-
-        setDeltaTime(dt);
-        
-        if (!frozenFlag) {
-
-            
-            physicsUpdate();
-
-            //Forces
-            applyForces(dt);
-            simulateFriction();
-
-            //Position
-            simulateForce();
-            simulateVelocity();
-
-            physicsOnSimulate();
-        }
-
-        updateGraphic();
 
     }
 
@@ -200,7 +151,6 @@ public class BasePhysics {
         velocity.setPos(this.getVel(deltaTime));
         acceleration.setPos(0, 0);
         force.setPos(0, 0);
-        setDeltaTime(deltaTime);
         physicsUpdate();
     }
 
@@ -283,7 +233,6 @@ public class BasePhysics {
     //Position
     public void setPos(Coordinate c) {
 
-        oldPos.setPos(position);
         position.setPos(c);
 
         updateGraphic();
@@ -377,12 +326,24 @@ public class BasePhysics {
         gravityFlag = enabled;
     }
 
-    //time
-    public void setDeltaTime(double dt) {
-        deltaTime=dt;
+    public void applyModel(PhysicsModel model) {
+        airFrictionFlag = model.airFrictionFlag();
+        airFriction = model.getAirFriction();
+        gravity = model.getGravity();
+        gravityDir = model.getGravityDir();
+        gravityFlag = model.gravityFlag();
+        hitbox = model.getHitbox();
+        mass = model.getMass();
+        restitution = model.getRestitution();
+        size = model.getSize();
+        visibleObject = model.getVisibleObject();
     }
-    public double getDeltaTime() {
-        return deltaTime;
+
+    public void applyUpdate(PhysicsUpdate update) {
+        System.out.println("Applying update");
+        position.setPos(update.getPosition());
+        velocity.setPos(update.getVelocity());
+        angle = update.getAngle();
     }
 
 }

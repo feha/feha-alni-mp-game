@@ -21,7 +21,7 @@ public class Main {
 
         System.out.println("Main Initializing");
 
-        Stage stage = new Stage();
+        Stage.getInstance().start();
 
         System.out.println("Main Initialized");
 

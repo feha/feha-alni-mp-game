@@ -17,12 +17,12 @@ import javax.swing.JPanel;
 public class Menu extends JPanel {
 
     public Menu() {
-        System.out.println("Stage Initializing");
+        System.out.println("Menu Initializing");
 
         initComponents();
         initTesting();
 
-        System.out.println("Stage Initialized");
+        System.out.println("Menu Initialized");
     }
 
     private void initComponents() {

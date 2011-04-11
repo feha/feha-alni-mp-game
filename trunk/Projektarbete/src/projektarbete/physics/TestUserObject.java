@@ -20,19 +20,7 @@ import projektarbete.graphics.MyImage;
 
 public class TestUserObject extends BasePhysics {
 
-    public TestUserObject () {
-
-        System.out.println("TestUserObject Initializing");
-
-        initComponents();
-        initTesting();
-
-        System.out.println("TestUserObject Initialized");
-
-    }
-
-
-    private void initComponents() {
+    public TestUserObject() {
 
         //Initializing variables
 
@@ -41,13 +29,12 @@ public class TestUserObject extends BasePhysics {
         force = new Coordinate(0,0);
 
 
-        //mass = 100;
+        mass = 1;
         gravityDir = new Coordinate(0,-1);
         gravity = 9.82;
         gravityFlag = true;
         airFrictionFlag = true;
-        frozenFlag = false;
-        scale = 1;
+        size = 1;
 
         hitbox = new Hitbox();
         List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
@@ -56,14 +43,8 @@ public class TestUserObject extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        scale = 0.60;
-
-    }
-
-    private void initTesting() {
-
-        visibleObject = new MyImage(Camera.getInstance());
-        visibleObject.setImage("TrollFace.png");
+        size = 0.60;
+        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
         visibleObject.centerAnchor();
         visibleObject.setScale(0.0043);
 
@@ -83,6 +64,10 @@ public class TestUserObject extends BasePhysics {
         }
         if (Flags.getFlag("right")) {
             applyForce(20 * mass/* * deltaTime*/, 0);
+        }
+        if (Flags.getFlag("enter")) {
+            this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
+                    new Coordinate(0.5,0.10), 0));
         }
 
         angle = this.velocity.x()/10/*+Math.PI*/;

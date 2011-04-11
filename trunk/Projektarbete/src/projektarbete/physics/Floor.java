@@ -30,10 +30,9 @@ public class Floor extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        scale = 1;
+        size = 1;
         mass = 25;
-        visibleObject = new MyImage(Camera.getInstance());
-        visibleObject.setImage("TrollFace.png");
+        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
         visibleObject.centerAnchor();
         visibleObject.setScale(0.0043);
         //this.gravityFlag = true;
