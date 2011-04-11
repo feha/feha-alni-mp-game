@@ -78,6 +78,8 @@ public class MyPolygon extends VisibleObject {
         super.draw(g);
         
         updatePolygon();
+
+        g.setColor(color);
         g.drawPolygon(polygon);
 
     }
