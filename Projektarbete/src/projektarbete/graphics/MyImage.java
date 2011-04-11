@@ -22,7 +22,7 @@ import projektarbete.Coordinate;
 public class MyImage extends VisibleObject {
 
     protected Image image;
-    protected Coordinate[] points;
+    protected String imageLocation;
 
 
     public MyImage(VisibleObject visibleObject) {
@@ -32,6 +32,26 @@ public class MyImage extends VisibleObject {
         System.out.println("MyImage Initializing");
 
         initComponents();
+
+        System.out.println("MyImage Initialized");
+
+    }
+
+    public MyImage(VisibleObject visibleObject, String image) {
+
+        super(visibleObject);
+
+        System.out.println("MyImage Initializing");
+
+        initComponents();
+        imageLocation = image;
+        if (imageLocation != null && !imageLocation.equals("")) {
+            try {
+                this.image = ImageIO.read(new File(image));
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
 
         System.out.println("MyImage Initialized");
 
@@ -48,7 +68,6 @@ public class MyImage extends VisibleObject {
 
     }
 
-    @Override
     public void setImage(String file) {
         try {
             image = ImageIO.read(new File(file));
@@ -79,6 +98,13 @@ public class MyImage extends VisibleObject {
         Graphics2D g2d = (Graphics2D)g;
         g2d.drawImage(image, affine, null);
 
+    }
+
+    @Override
+    public VisibleObject copy() {
+        MyImage copy = new MyImage(parent, imageLocation);
+        copy.set(this);
+        return copy;
     }
 
 }

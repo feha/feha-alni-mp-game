@@ -37,22 +37,15 @@ public class VisibleObject {
 
     }
 
-
     public VisibleObject(VisibleObject visibleObject) {
 
         System.out.println("VisibleObject Initializing");
 
         parent = visibleObject;
-        initComponents();
-
-        System.out.println("VisibleObject Initialized");
-
-    }
-
-
-    private void initComponents() {
 
         addToParent();
+        System.out.println("VisibleObject Initialized");
+
 
     }
 
@@ -64,14 +57,16 @@ public class VisibleObject {
         return parent;
     }
 
-    public void addToParent(){
+    public final void addToParent(){
 
         //Tell the Stage that this instance wants to be in the display list.
-        parent.addVisibleObject(this);
+        if (parent != null) {
+            parent.addVisibleObject(this);
+        }
 
     }
 
-    public void removeFromParent(){
+    public final void removeFromParent(){
 
         //Tell the Stage to remove this instance from the display list.
         parent.removeVisibleObject(this);
@@ -197,9 +192,9 @@ public class VisibleObject {
         return color;
     }
 
-    public void setImage(String file) {
+    /*public void setImage(String file) {
 
-    }
+    }*/
 
     public void setAnchor(Coordinate anchor) {
         this.anchor = anchor;
@@ -211,6 +206,33 @@ public class VisibleObject {
 
     public void resetAnchor() {
         anchor = new Coordinate(0,0);
+    }
+
+    public VisibleObject copy() {
+        VisibleObject copy = new VisibleObject();
+        copy.set(this);
+        return copy;
+    }
+
+    public void set(VisibleObject visibleObject) {
+        anchor = new Coordinate(visibleObject.anchor);
+        angle = visibleObject.angle;
+        color = visibleObject.getColor();
+        color = new Color(color.getRed(), color.getGreen(),
+                color.getBlue(), color.getAlpha());
+        drawPos = new Coordinate(visibleObject.drawPos);
+        objectCount = visibleObject.objectCount;
+        offset = new Coordinate(visibleObject.offset);
+        parent = visibleObject.parent;
+        addToParent();
+        position = new Coordinate(visibleObject.position);
+        scale = new Coordinate(visibleObject.scale);
+        sizeScale = new Coordinate(visibleObject.sizeScale);
+        totalAngle = visibleObject.totalAngle;
+        visibleObjects = new LinkedList<VisibleObject>();
+        for (VisibleObject element : visibleObject.visibleObjects) {
+            visibleObjects.add(element.copy());
+        }
     }
 
 }

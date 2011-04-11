@@ -7,8 +7,10 @@ package projektarbete.physics;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -43,10 +45,14 @@ public class PhysicsEngine  {
     };
 
     LinkedList<BasePhysics> basePhysicsList = new LinkedList<BasePhysics>();
+    Map<Short, BasePhysics> basePhysics = new HashMap<Short, BasePhysics>();
     LinkedList<Collision> collisions = new LinkedList<Collision>();
+    LinkedList<Update> updates = new LinkedList<Update>();
     int count = 0; //arrays start at 0 in java
 
     long oldTime = System.nanoTime();
+
+    short currentKey;
 
     //Global variables
     private static PhysicsEngine _instance;
@@ -87,35 +93,64 @@ public class PhysicsEngine  {
 
     }
 
-    public void addBasePhysics( BasePhysics basePhysics ) {
+    public synchronized short addBasePhysics( BasePhysics basePhysics ) {
 
-        basePhysicsList.add(basePhysics);
+        synchronized (this) {
+            while (this.basePhysics.containsKey(currentKey)) {
+                currentKey++;
+            }
+            this.basePhysics.put(currentKey, basePhysics);
+        System.out.println("Base Physics added");
+            basePhysicsList.add(basePhysics);
 
-        count++;
-
-    }
-
-    public void removeBasePhysics( BasePhysics basePhysics ) {
-
-        while (basePhysicsList.remove(basePhysics)) {
-            count--;
+            count++;
+            return currentKey;
         }
 
     }
 
-    public BasePhysics getBasePhysics( int index ) {
+    public synchronized boolean addBasePhysics( BasePhysics basePhysics, short key) {
+
+        synchronized (this) {
+        System.out.println("Base Physics added");
+            basePhysicsList.add(basePhysics);
+
+            count++;
+            if (!this.basePhysics.containsKey(key)) {
+                this.basePhysics.put(key, basePhysics);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    public synchronized void removeBasePhysics( BasePhysics basePhysics ) {
+
+        //synchronized (this) {
+            while (this.basePhysics.values().remove(basePhysics))
+                
+            while (basePhysicsList.remove(basePhysics)) {
+                count--;
+            }
+        //}
+
+    }
+
+    public synchronized BasePhysics getBasePhysics( int index ) {
         return basePhysicsList.get(index);
 
     }
 
-    public int getBasePhysicsCount() {
+    public synchronized int getBasePhysicsCount() {
 
         return count;
 
     }
 
-    public void physicsLoop (){
-
+    public synchronized void physicsLoop (){
+        //synchronized(this) {
         /*if (!timerStarted) {
             timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
             timerStarted = true;
@@ -129,6 +164,7 @@ public class PhysicsEngine  {
         /*for (int i = 0; i < getBasePhysicsCount(); i++) {
             getBasePhysics(i).physicsSimulate(deltaTime);
         }*/
+        applyUpdates();
         update(deltaTime);
         force(deltaTime);
         movement();
@@ -138,10 +174,11 @@ public class PhysicsEngine  {
         graphics();
 
         oldTime = System.nanoTime();
+        //}
     }
 
     protected void update(double deltaTime) {
-        for (BasePhysics element : basePhysicsList) {
+        for (BasePhysics element : basePhysics.values()) {
             element.update(deltaTime);
             element.physicsUpdate();
         }
@@ -153,7 +190,7 @@ public class PhysicsEngine  {
     }
 
     protected void force(double deltaTime) {
-        for (BasePhysics element : basePhysicsList) {
+        for (BasePhysics element : basePhysics.values()) {
             element.applyForces(deltaTime);
             element.simulateFriction();
         }
@@ -165,7 +202,7 @@ public class PhysicsEngine  {
     }
 
     protected void movement() {
-        for (BasePhysics element : basePhysicsList) {
+        for (BasePhysics element : basePhysics.values()) {
             element.simulateForce();
             element.simulateVelocity();
         }
@@ -177,9 +214,10 @@ public class PhysicsEngine  {
     }
 
     protected void collisionDetection(double deltaTime) {
-        for (int i = 0; i < basePhysicsList.size()-1; i++) {
-            BasePhysics element = basePhysicsList.get(i);
-            this.detectCollisions(element, basePhysicsList, 0, deltaTime, i);
+        List<BasePhysics> list = new LinkedList(basePhysics.values());
+        for (int i = 0; i < list.size()-1; i++) {
+            BasePhysics element = list.get(i);
+            this.detectCollisions(element, list, 0, deltaTime, i);
         }
     }
 
@@ -233,12 +271,13 @@ public class PhysicsEngine  {
 
     protected boolean collisionIsPossible(BasePhysics object1,
             BasePhysics object2, double time0, double time) {
+
         Coordinate pos1 = object1.getPosAtTime(time);
         Coordinate pos2 = object2.getPosAtTime(time);
         Coordinate v1 = object1.getVel(time);
         Coordinate v2 = object2.getVel(time);
         Coordinate a1 = object1.acceleration;
-        Coordinate a2 = object1.acceleration;
+        Coordinate a2 = object2.acceleration;
         boolean x = ((pos1.x() > pos2.x() && v1.x() >= v2.x() && a1.x() >= a2.x())
                 ||(pos2.x() > pos1.x() && v2.x() >= v1.x() && a2.x() >= a1.x()));
         boolean y = ((pos1.y() > pos2.y() && v1.y() >= v2.y() && a1.y() >= a2.y())
@@ -256,7 +295,7 @@ public class PhysicsEngine  {
                             new Line2D.Double(
                                 object2.getPosAtTime(time0).toPoint2D(),
                                 object2.getPosAtTime(time).toPoint2D())) <= (
-                            Math.pow(object1.scale+object2.scale, 2)));
+                            Math.pow(object1.size+object2.size, 2)));
     }
 
     protected boolean isIntersecting(BasePhysics object1, BasePhysics object2,
@@ -264,7 +303,7 @@ public class PhysicsEngine  {
         return (object1.getPosAtTime(time).toPoint2D().distanceSq(
                 object2.getPosAtTime(time).toPoint2D())
                 <=
-                Math.pow(object1.scale+object2.scale, 2));
+                Math.pow(object1.size+object2.size, 2));
     }
 
     protected void collisionResponse(double deltaTime) {
@@ -286,7 +325,7 @@ public class PhysicsEngine  {
                 double vt2 = Coordinate.dot(tangent, object2.getVel(time));
                 double m1 = object1.mass;
                 double m2 = object2.mass;
-                double cr = 1;
+                double cr = object1.restitution*object2.restitution;
                 double un1 = (cr*m2*(vn2-vn1)+m1*vn1+m2*vn2)/(m1+m2);
                 double un2 = (cr*m1*(vn1-vn2)+m1*vn1+m2*vn2)/(m1+m2);
                 object1.setVel(normal.mul(un1).add(tangent.mul(vt1)), time);
@@ -297,8 +336,8 @@ public class PhysicsEngine  {
                 object2.setPosAtTime(object2Pos, time);
                 if (approxCollisionTime(object1, object2, time, deltaTime) != time) {
                     System.out.println(approxCollisionTime(object1, object2, time, deltaTime) - time);
-                    detectCollisions(object2, basePhysicsList, time, deltaTime);
-                    detectCollisions(object1, basePhysicsList, time, deltaTime);
+                    detectCollisions(object2, new LinkedList<BasePhysics>(basePhysics.values()), time, deltaTime);
+                    detectCollisions(object1, new LinkedList<BasePhysics>(basePhysics.values()), time, deltaTime);
                     System.out.println("Rechecking collisions");
                 } else {
                     Coordinate acceleration1 = object1.acceleration.mul(normal);
@@ -316,15 +355,36 @@ public class PhysicsEngine  {
     }
 
     protected void position(double deltaTime) {
-        for (BasePhysics element : basePhysicsList) {
+        for (BasePhysics element : basePhysics.values()) {
             element.updatePos(deltaTime);
         }
     }
 
     protected void graphics() {
-        for (BasePhysics element : basePhysicsList) {
+        for (BasePhysics element : basePhysics.values()) {
             element.updateGraphic();
         }
+    }
+
+    protected void applyUpdates() {
+        //synchronized (this) {
+            for (Update update : updates) {
+                if (basePhysics.containsKey(update.getId())) {
+                    basePhysics.get(update.getId()).applyUpdate(update.getUpdate());
+                }
+            }
+            updates.clear();
+        //}
+    }
+
+    public void updateObject(PhysicsUpdate update, short id) {
+        updateObject(new Update(update, id));
+    }
+
+    public synchronized void updateObject(Update update) {
+        //synchronized (this) {
+            updates.add(update);
+        //}
     }
 
 }

@@ -6,6 +6,7 @@
 package projektarbete.graphics;
 
 import java.awt.Graphics;
+import projektarbete.Stage;
 
 /**
  *
@@ -14,12 +15,14 @@ import java.awt.Graphics;
 public class Camera extends VisibleScreen {
 
     public Camera() {
-
         System.out.println("Camera Initializing");
 
         initGlobals();
         initComponents();
 
+        //parent = Stage.getInstance();
+        //System.out.println("Parent = " + parent);
+        //addToParent();
         System.out.println("Camera Initialized");
 
     }

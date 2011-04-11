@@ -16,14 +16,19 @@ import projektarbete.graphics.VisibleObject;
 import projektarbete.graphics.Camera;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import projektarbete.physics.BasePhysics;
 import projektarbete.physics.Bouncer;
 import projektarbete.physics.Floor;
 import projektarbete.physics.PhysicsEngine;
+import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.TestUserObject;
+import projektarbete.physics.Update;
+import projektarbete.physics.UpdateTester;
 
 public class Stage {
     PhysicsEngine engine;
@@ -36,9 +41,8 @@ public class Stage {
         //instance, which doesnt exist so it creates a new Stage.
         initGlobals();
         initComponents();
-        engine = new PhysicsEngine();
-        initTesting();
-        engine.start();
+        /*initTesting();
+        engine.start();*/
 
         System.out.println("Stage Initialized");
 
@@ -81,26 +85,41 @@ public class Stage {
         painter = new Painter();
         jFrame.getContentPane().add(painter);
 
-        Camera camera = new Camera();
-        camera.setScale(50);
+        engine = new PhysicsEngine();
+        
 
         //PhysicsEngine physicsEngine = new PhysicsEngine();
 
     }
 
+    public void start() {
+        Camera camera = new Camera();
+        camera.setScale(50);
+        initTesting();
+        engine.start();
+    }
+
     private void initTesting() {
 
-        /*engine.addBasePhysics(new TestUserObject());
-        engine.addBasePhysics(new Floor());
+        engine.addBasePhysics(new TestUserObject());
+        /*engine.addBasePhysics(new Floor());
         
         engine.addBasePhysics(new Floor(3,-6));
         engine.addBasePhysics(new Floor(1,-6));*/
 
-        engine.addBasePhysics(new Bouncer(0, -2, 4, 0, 200));
-        engine.addBasePhysics(new Bouncer(5, -2.8, -1, 0, 1));
+        engine.addBasePhysics(new Bouncer(5, -2, 1, 0, 1), (short)5);
+        engine.addBasePhysics(new Bouncer(5, -3.1, 1, 0, 1), (short)6);
         
 
         StartMenu m0 = new StartMenu();
+
+        List<Update> updates = new ArrayList<Update>();
+
+        updates.add(new Update(new PhysicsUpdate(5, -2, 1, 0, 0), (short)5));
+        updates.add(new Update(new PhysicsUpdate(5, -3.1, 1, 0, 0), (short)6));
+
+        UpdateTester resetter = new UpdateTester(updates, engine);
+        resetter.start(2000);
 
     }
 

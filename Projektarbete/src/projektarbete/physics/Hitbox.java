@@ -13,7 +13,7 @@ import projektarbete.Coordinate;
  * @author niclas.alexandersso
  */
 public class Hitbox {
-    private ArrayList<Point2D.Double> shape;
+    private List<Point2D.Double> shape;
     private Point2D.Double position;
     private double scale;
     private double angle;
@@ -28,6 +28,24 @@ public class Hitbox {
         this.position = position.toPoint2D();
         scale = 1;
         updateShapeSize();
+    }
+
+    public Hitbox(Hitbox hitbox) {
+        shape = cloneShape(hitbox.getShape());
+        position = hitbox.getPos();
+        position = new Point2D.Double(position.x, position.y);
+        scale = hitbox.getScale();
+        angle = hitbox.getAngle();
+        size = hitbox.getSize();
+    }
+
+    public void set(Hitbox hitbox) {
+        shape = cloneShape(hitbox.getShape());
+        position = hitbox.getPos();
+        position = new Point2D.Double(position.x, position.y);
+        scale = hitbox.getScale();
+        angle = hitbox.getAngle();
+        size = hitbox.getSize();
     }
 
     public double getScale() {
@@ -66,7 +84,7 @@ public class Hitbox {
     public void normalizeShape() {
         updateShapeSize();
         for (Point2D.Double point : shape) {
-            point = GeomUtils.pointDiv(point, size);
+            point.setLocation(GeomUtils.pointDiv(point, size));
         }
         updateShapeSize();
     }
@@ -76,30 +94,20 @@ public class Hitbox {
         return size == 1;
     }
 
-    public void updateShapeSize() {
-        double temp = 0;
+    private void updateShapeSize() {
         double magnitude = 0;
         for (Point2D.Double point : shape) {
-            temp = GeomUtils.vectorMagnitude(point);
-            if (temp > magnitude) {
-                magnitude = temp;
-            }
+            magnitude = Math.max(magnitude, GeomUtils.vectorMagnitude(point));
         }
-        System.out.println("Magnitude: "+magnitude);
         size = magnitude;
     }
 
     public double getSize() {
-        //System.out.println(size*scale);
         return size;
     }
 
     public Point2D.Double getPointLocation(Point2D.Double point) {
         Point2D.Double newPoint = new Point2D.Double();
-        /*point.setLocation(shape.get(index));
-        point.setLocation(GeomUtils.pointMul(point, scale));
-        point.setLocation(GeomUtils.pointRotate(point, angle));
-        point.setLocation(GeomUtils.pointAdd(point, position));*/
         newPoint.setLocation(GeomUtils.pointAdd(GeomUtils.pointRotate(
                 GeomUtils.pointMul(point, scale), angle), position));
         return newPoint;
@@ -115,6 +123,14 @@ public class Hitbox {
             hitbox.add(getPointLocation(point));
         }
         return hitbox;
+    }
+
+    public final List<Point2D.Double> cloneShape(List<Point2D.Double> shape) {
+        List<Point2D.Double> clone = new ArrayList();
+        for (Point2D.Double point : shape) {
+            clone.add(new Point2D.Double(point.x, point.y));
+        }
+        return clone;
     }
 
 /*    public List<Integer> indicesByDistance() {
