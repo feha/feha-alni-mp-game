@@ -5,12 +5,17 @@
 
 package projektarbete.physics;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 import projektarbete.Coordinate;
 import projektarbete.Flags;
+import projektarbete.Stage;
 import projektarbete.graphics.Camera;
+import projektarbete.graphics.CameraContainer;
 import projektarbete.graphics.MyImage;
 
 /**
@@ -47,8 +52,15 @@ public class TestUserObject extends BasePhysics {
         visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
         visibleObject.centerAnchor();
         visibleObject.setScale(0.0043);
+        container = new CameraContainer();
+        container.setParent(visibleObject);
+        container.setScale(Camera.getInstance().getScale());
+        container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
+        Camera.getInstance().setContainer(container);
 
     }
+
+    CameraContainer container;
 
     @Override
     public void physicsForces() {
@@ -71,7 +83,11 @@ public class TestUserObject extends BasePhysics {
         }
 
         angle = this.velocity.x()/10/*+Math.PI*/;
-        
+
+        Point mouse = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(mouse,Stage.getInstance().jFrame);
+        container.offset = new Coordinate(mouse.getX()/400,mouse.getY()/400).add(new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2)));
+
     }
 
 }

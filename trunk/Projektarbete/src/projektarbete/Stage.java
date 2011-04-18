@@ -54,6 +54,7 @@ public class Stage {
 
     //Networked variables
     Painter painter;
+    public JFrame jFrame;
 
 
     private void initGlobals() {
@@ -64,7 +65,7 @@ public class Stage {
 
     private void initComponents() {
 
-        JFrame jFrame = new JFrame();
+        jFrame = new JFrame();
 
         jFrame.setVisible(true);
         jFrame.setSize(500, 500);
@@ -118,8 +119,8 @@ public class Stage {
         updates.add(new Update(new PhysicsUpdate(5, -2, 1, 0, 0), (short)5));
         updates.add(new Update(new PhysicsUpdate(5, -3.1, 1, 0, 0), (short)6));
 
-        UpdateTester resetter = new UpdateTester(updates, engine);
-        resetter.start(2000);
+        //UpdateTester resetter = new UpdateTester(updates, engine);
+        //resetter.start(2000);
 
     }
 

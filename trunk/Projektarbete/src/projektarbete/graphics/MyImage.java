@@ -107,4 +107,12 @@ public class MyImage extends VisibleObject {
         return copy;
     }
 
+    public double getWidth() {
+        return image.getWidth(null) * scale.x();
+    }
+
+    public double getHeight() {
+        return image.getHeight(null) * scale.y();
+    }
+
 }
