@@ -55,13 +55,15 @@ public class Painter extends javax.swing.JPanel { //Extend so it is a subclass o
         }
 
         
-        super.paintComponent(g);
+        if (Stage.isRunning()) {
+            super.paintComponent(g);
 
-        int count = stage.getVisibleObjectCount();
-        
-        //code to manage delays between updating the picture
-        for (int i = 0; i < count; i++) {
-            stage.getVisibleObject(i).draw(g);
+            int count = stage.getVisibleObjectCount();
+
+            //code to manage delays between updating the picture
+            for (int i = 0; i < count; i++) {
+                stage.getVisibleObject(i).draw(g);
+            }
         }
 
 

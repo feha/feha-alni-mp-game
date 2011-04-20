@@ -16,13 +16,15 @@ import projektarbete.graphics.MyImage;
  *
  * @author niclas.alexandersso
  */
-public class Floor extends BasePhysics {
+public class Floor extends PhysicsObject {
 
     public Floor() {
-        this(5, -6);
+        this(0, 0);
     }
     public Floor(double x, double y) {
-        position = new Coordinate(x, y);
+        super(Templates.TYPE_ELASTIC_OBSTACLE, 100000, 0.5,
+                new PhysicsUpdate(x, y, 0, 0, 0, 0));
+        /*position = new Coordinate(x, y);
         hitbox = new Hitbox();
         List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
         shape.add(new Point2D.Double(1,0));
@@ -30,12 +32,12 @@ public class Floor extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        size = 1;
-        mass = 25;
-        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
+        size = 0.5;
+        mass = 100000;
+        visibleObject = new MyImage(Camera.getInstance(), "empty.png");
         visibleObject.centerAnchor();
-        visibleObject.setScale(0.0043);
+        visibleObject.setScale(/*0.002364* /(1.0/423.0)*size*2);
         //this.gravityFlag = true;
-        this.gravity = 0.001;
+        this.gravity = 0.001;*/
     }
 }

@@ -23,13 +23,14 @@ import projektarbete.graphics.MyImage;
  * @author niclas.alexandersso
  */
 
-public class TestUserObject extends BasePhysics {
+public class TestUserObject extends PhysicsObject {
 
     public TestUserObject() {
+        super(Templates.TYPE_PLAYER_OBJECT, 1, 1);
 
         //Initializing variables
 
-        position = new Coordinate(0,0);
+        /*position = new Coordinate(0,0);
         velocity = new Coordinate(0.5,0.10);
         force = new Coordinate(0,0);
 
@@ -39,7 +40,7 @@ public class TestUserObject extends BasePhysics {
         gravity = 9.82;
         gravityFlag = true;
         airFrictionFlag = true;
-        size = 1;
+        this.restitution = 0.5;
 
         hitbox = new Hitbox();
         List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
@@ -48,10 +49,10 @@ public class TestUserObject extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        size = 0.60;
-        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
+        size = 1;
+        visibleObject = new MyImage(Camera.getInstance(), "stickman.png");
         visibleObject.centerAnchor();
-        visibleObject.setScale(0.0043);
+        visibleObject.setScale(0.002364*size*2);*/
         container = new CameraContainer();
         container.setParent(visibleObject);
         container.setScale(Camera.getInstance().getScale());
@@ -79,15 +80,24 @@ public class TestUserObject extends BasePhysics {
         }
         if (Flags.getFlag("enter")) {
             this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
-                    new Coordinate(0.5,0.10), 0));
+                    new Coordinate(0.5,0.10), 0, 0));
         }
 
-        angle = this.velocity.x()/10/*+Math.PI*/;
+        angle = (angle*3+this.velocity.x()/10)/4/*+Math.PI*/;
 
         Point mouse = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(mouse,Stage.getInstance().jFrame);
         container.offset = new Coordinate(mouse.getX()/400,mouse.getY()/400).add(new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2)));
 
     }
+
+    /*@Override
+    public void updateGraphic() {
+        super.updateGraphic();
+        Camera.getInstance().setPos(
+                ((this.position.x())-4)*-50,
+                ((this.position.y())+4)*50);
+    }*/
+
 
 }

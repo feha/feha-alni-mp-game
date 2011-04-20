@@ -21,7 +21,8 @@ public class Main {
 
         System.out.println("Main Initializing");
 
-        Stage.getInstance().start();
+        Stage.setServer(true);
+        Stage.start();
 
         System.out.println("Main Initialized");
 
