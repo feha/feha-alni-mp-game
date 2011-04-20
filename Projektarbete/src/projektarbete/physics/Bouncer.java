@@ -16,7 +16,7 @@ import projektarbete.graphics.MyImage;
  *
  * @author niclas.alexandersso
  */
-public class Bouncer extends BasePhysics {
+public class Bouncer extends PhysicsObject {
 
     public Bouncer(){
         this(0,0,0,0,1);
@@ -26,9 +26,11 @@ public class Bouncer extends BasePhysics {
         this(x,y,0,0,1);
     }
 
-    public Bouncer(double x, double y, double velX, double velY, double mass) {
-        this.position = new Coordinate(x,y);
-        this.gravityFlag = true;
+    public Bouncer(double x, double y, double xVel, double yVel, double mass) {
+        super(Templates.TYPE_ELASTIC_OBSTACLE, mass, 1,
+                new PhysicsUpdate(x, y, xVel, yVel, 0, 0));
+        /*this.position = new Coordinate(x,y);
+        //this.gravityFlag = true;
         //this.gravity = 1;
         //this.gravityDir = new Coordinate(1,0);
         this.velocity = new Coordinate(velX, velY);
@@ -39,10 +41,11 @@ public class Bouncer extends BasePhysics {
         shape.add(new Point2D.Double(1,1));
         hitbox.setShape(shape);
         hitbox.normalizeShape();
-        size = 0.5;
-        visibleObject = new MyImage(Camera.getInstance(), "TrollFace.png");
+        size = 1;
+        visibleObject = new MyImage(Camera.getInstance(), "empty.png");
         visibleObject.centerAnchor();
-        visibleObject.setScale(0.0043);
+        visibleObject.setScale(0.002364*size*2);
         this.mass = mass;
+        //this.restitution = 0;*/
     }
 }

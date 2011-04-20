@@ -6,6 +6,8 @@
 package projektarbete.physics;
 
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 import projektarbete.Coordinate;
 import projektarbete.graphics.VisibleObject;
 
@@ -13,31 +15,37 @@ import projektarbete.graphics.VisibleObject;
  *
  * @author felix.hallqvist
  */
-public class BasePhysics {
+public class PhysicsObject {
 
-    protected Coordinate position;
-    protected Coordinate velocity;
-    protected Coordinate acceleration;
-    protected Coordinate force;
+    protected Coordinate position = new Coordinate(0, 0);
+    protected Coordinate velocity = new Coordinate(0, 0);
+    protected Coordinate acceleration = new Coordinate(0, 0);
+    protected Coordinate force = new Coordinate(0, 0);
     protected double angle;
+    protected double angularVelocity;
     protected double mass;
     protected double airFriction;
-    protected Coordinate gravityDir;
+    protected Coordinate gravityDir = new Coordinate(0, 0);
     protected double gravity;
     protected boolean gravityFlag;
     protected boolean airFrictionFlag;
     protected double size;
     protected double restitution;
     protected Hitbox hitbox;
+    protected short template;
 
     VisibleObject visibleObject;
+
+    protected int collisionCount;
+    protected List<Collision> collisions = new ArrayList<Collision>();
     
 
-    public BasePhysics() {
+    public PhysicsObject() {
 
+        this((short) 0);
         //Initializing variables
 
-        position = new Coordinate(0,0);
+        /*position = new Coordinate(0,0);
         velocity = new Coordinate(0,0);
         acceleration = new Coordinate(0,0);
         force = new Coordinate(0,0);
@@ -53,28 +61,31 @@ public class BasePhysics {
         airFrictionFlag = true;
         size = 1;
         restitution = 1;
+        template = 0;*/
         
         
         //PhysicsEngine.getInstance().addBasePhysics(this);
         
     }
 
-    public BasePhysics(PhysicsModel model) {
-        
+    public PhysicsObject(short template) {
+        this(template, 1, 1, new PhysicsUpdate(0, 0, 0, 0, 0, 0));
     }
 
-    private void initTesting() {
+    public PhysicsObject(short template, double mass, double size) {
+        this(template, mass, size, new PhysicsUpdate(0, 0, 0, 0, 0, 0));
+    }
 
-        //visibleObject = new MyRectangle2D(Camera.getInstance());
-        //visibleObject.setScale(0.05);
-        /*
-        try {
-            Hook.add(1, getClass().getMethod("hookTest", new Class[] {String.class}), this);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        Hook.call(1,"test");
-        */
+    public PhysicsObject(PhysicsData data) {
+        this(data.getTemplate(), data.getMass(), data.getSize(), data.getUpdate());
+    }
+
+    public PhysicsObject(short template, double mass, double size,
+                       PhysicsUpdate update) {
+        this.template = template;
+        PhysicsModel model = Templates.getTemplate(template, mass, size);
+        this.applyModel(model);
+        this.applyUpdate(update);
     }
 
     public void hookTest(String test) {
@@ -85,7 +96,7 @@ public class BasePhysics {
     public void updateGraphic() {
 
         if (visibleObject != null) {
-            visibleObject.setPos(position.mul(1,-1));
+            visibleObject.setPos(position.sub(size, -size).mul(1,-1));
             visibleObject.setAng(angle);
         }
 
@@ -148,6 +159,8 @@ public class BasePhysics {
     }
 
     protected void update(double deltaTime) {
+        collisions.clear();
+        collisionCount = 0;
         velocity.setPos(this.getVel(deltaTime));
         acceleration.setPos(0, 0);
         force.setPos(0, 0);
@@ -268,8 +281,9 @@ public class BasePhysics {
 
     }
     public void setVel(Coordinate vel, double time) {
-
+        Coordinate position = getPosAtTime(time);
         velocity.setPos(vel.sub(acceleration.mul(time)));
+        setPosAtTime(position, time);
 
     }
 
@@ -283,6 +297,28 @@ public class BasePhysics {
 
         return velocity.add(acceleration.mul(time));
 
+    }
+
+    public void setAcceleration(Coordinate acceleration, double time) {
+        Coordinate position = getPosAtTime(time);
+        this.acceleration.setPos(acceleration);
+        setPosAtTime(position, time);
+    }
+
+    public void setAcceleration(double xAcc, double yAcc, double time) {
+        setAcceleration(new Coordinate(xAcc, yAcc), time);
+    }
+
+    public void setAcceleration(double xAcc, double yAcc) {
+        setAcceleration(new Coordinate(xAcc, yAcc), 0);
+    }
+
+    public void setAcceleration(Coordinate acceleration) {
+        setAcceleration(acceleration, 0);
+    }
+
+    public Coordinate getAcceleration() {
+        return acceleration;
     }
 
     public Coordinate getMomentum() {
@@ -326,7 +362,11 @@ public class BasePhysics {
         gravityFlag = enabled;
     }
 
-    public void applyModel(PhysicsModel model) {
+    public PhysicsModel getModel() {
+        return Templates.getTemplate(template, mass, size);
+    }
+
+    public final void applyModel(PhysicsModel model) {
         airFrictionFlag = model.airFrictionFlag();
         airFriction = model.getAirFriction();
         gravity = model.getGravity();
@@ -339,11 +379,50 @@ public class BasePhysics {
         visibleObject = model.getVisibleObject();
     }
 
-    public void applyUpdate(PhysicsUpdate update) {
-        System.out.println("Applying update");
+    public void setTemplate(short template) {
+        this.template = template;
+        applyTemplate();
+    }
+
+    public void applyTemplate() {
+        clearVisibleObject();
+        applyModel(getModel());
+    }
+
+    public short getTemplate() {
+        return template;
+    }
+
+    public final void applyUpdate(PhysicsUpdate update) {
         position.setPos(update.getPosition());
         velocity.setPos(update.getVelocity());
         angle = update.getAngle();
+        angularVelocity = update.getAngularVelocity();
     }
+
+    public PhysicsUpdate getUpdate() {
+        return new PhysicsUpdate(position.x(), position.y(),
+                                 velocity.x(), velocity.y(),
+                                 angle, angularVelocity);
+    }
+
+    public void applyData(PhysicsData data) {
+        mass = data.getMass();
+        size = data.getSize();
+        setTemplate(data.getTemplate());
+        applyUpdate(data.getUpdate());
+    }
+
+    public PhysicsData getData() {
+        return new PhysicsData(template, mass, size, getUpdate());
+    }
+
+    public void clearVisibleObject() {
+        visibleObject.removeFromParent();
+    }
+
+    /*public void showVisibleObject() {
+        visibleObject.addToParent();
+    }*/
 
 }

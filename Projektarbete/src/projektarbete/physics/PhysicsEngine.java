@@ -40,19 +40,20 @@ public class PhysicsEngine  {
     Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
         public void run() {
-            physicsLoop();
+            if (Stage.isRunning()) {
+                physicsLoop();
+            }
         }
     };
 
-    LinkedList<BasePhysics> basePhysicsList = new LinkedList<BasePhysics>();
-    Map<Short, BasePhysics> basePhysics = new HashMap<Short, BasePhysics>();
+    Map<Short, PhysicsObject> objects = new HashMap<Short, PhysicsObject>();
     LinkedList<Collision> collisions = new LinkedList<Collision>();
-    LinkedList<Update> updates = new LinkedList<Update>();
-    int count = 0; //arrays start at 0 in java
+    LinkedList<ObjectUpdate> updates = new LinkedList<ObjectUpdate>();
+    int count = 0;
 
-    long oldTime = System.nanoTime();
+    long oldTime = 0;//System.nanoTime();
 
-    short currentKey;
+    short currentKey = 1;
 
     //Global variables
     private static PhysicsEngine _instance;
@@ -93,59 +94,46 @@ public class PhysicsEngine  {
 
     }
 
-    public synchronized short addBasePhysics( BasePhysics basePhysics ) {
+    public synchronized short addObject( PhysicsObject object ) {
 
-        synchronized (this) {
-            while (this.basePhysics.containsKey(currentKey)) {
+            while (this.objects.containsKey(currentKey)) {
                 currentKey++;
             }
-            this.basePhysics.put(currentKey, basePhysics);
-        System.out.println("Base Physics added");
-            basePhysicsList.add(basePhysics);
-
-            count++;
+            this.objects.put(currentKey, object);
             return currentKey;
-        }
 
     }
 
-    public synchronized boolean addBasePhysics( BasePhysics basePhysics, short key) {
+    public synchronized boolean addObject( PhysicsObject object, short key) {
 
-        synchronized (this) {
-        System.out.println("Base Physics added");
-            basePhysicsList.add(basePhysics);
-
-            count++;
-            if (!this.basePhysics.containsKey(key)) {
-                this.basePhysics.put(key, basePhysics);
+            if (!this.objects.containsKey(key)) {
+                this.objects.put(key, object);
                 return true;
             } else {
                 return false;
             }
+
+    }
+
+    public synchronized void removeObject( PhysicsObject object ) {
+
+
+        while (this.objects.values().remove(object));
+        object.clearVisibleObject();
+        collisions.removeAll(object.collisions);
+
+    }
+
+    public synchronized void removeObject(short key) {
+        if (objects.containsKey(key)) {
+            objects.remove(key).clearVisibleObject();
         }
 
     }
 
-    public synchronized void removeBasePhysics( BasePhysics basePhysics ) {
+    public synchronized int getObjectCount() {
 
-        //synchronized (this) {
-            while (this.basePhysics.values().remove(basePhysics))
-                
-            while (basePhysicsList.remove(basePhysics)) {
-                count--;
-            }
-        //}
-
-    }
-
-    public synchronized BasePhysics getBasePhysics( int index ) {
-        return basePhysicsList.get(index);
-
-    }
-
-    public synchronized int getBasePhysicsCount() {
-
-        return count;
+        return objects.size();
 
     }
 
@@ -155,7 +143,6 @@ public class PhysicsEngine  {
             timer.scheduleAtFixedRate(timerTask, 20, 20); //20 ms = 50 fps
             timerStarted = true;
         }*/
-        
         long deltaNanoTime;
         deltaNanoTime = (System.nanoTime()-oldTime);
         double deltaTime = (double)deltaNanoTime/1000000000;
@@ -178,79 +165,83 @@ public class PhysicsEngine  {
     }
 
     protected void update(double deltaTime) {
-        for (BasePhysics element : basePhysics.values()) {
+        for (PhysicsObject element : objects.values()) {
             element.update(deltaTime);
             element.physicsUpdate();
         }
     }
 
-    protected void update(BasePhysics object, double deltaTime) {
+    protected void update(PhysicsObject object, double deltaTime) {
         object.update(deltaTime);
         object.physicsUpdate();
     }
 
     protected void force(double deltaTime) {
-        for (BasePhysics element : basePhysics.values()) {
+        for (PhysicsObject element : objects.values()) {
             element.applyForces(deltaTime);
             element.simulateFriction();
         }
     }
 
-    protected void force(BasePhysics object, double deltaTime) {
+    protected void force(PhysicsObject object, double deltaTime) {
         object.applyForces(deltaTime);
         object.simulateFriction();
     }
 
     protected void movement() {
-        for (BasePhysics element : basePhysics.values()) {
+        for (PhysicsObject element : objects.values()) {
             element.simulateForce();
             element.simulateVelocity();
         }
     }
 
-    protected void movement(BasePhysics element) {
+    protected void movement(PhysicsObject element) {
         element.simulateForce();
         element.simulateVelocity();
     }
 
     protected void collisionDetection(double deltaTime) {
-        List<BasePhysics> list = new LinkedList(basePhysics.values());
+        List<PhysicsObject> list = new LinkedList(objects.values());
         for (int i = 0; i < list.size()-1; i++) {
-            BasePhysics element = list.get(i);
+            PhysicsObject element = list.get(i);
             this.detectCollisions(element, list, 0, deltaTime, i);
         }
     }
 
-    protected void detectCollisions(BasePhysics basePhysics,
-            List<BasePhysics> group, double time0, double time) {
+    protected void detectCollisions(PhysicsObject object,
+            List<PhysicsObject> group, double time0, double time) {
         
-        this.detectCollisions(basePhysics, group, time0, time, 0);
+        this.detectCollisions(object, group, time0, time, 0);
     }
 
-    protected void detectCollisions(BasePhysics basePhysics,
-            List<BasePhysics> group, double time0, double time,
+    protected void detectCollisions(PhysicsObject object,
+            List<PhysicsObject> group, double time0, double time,
             int startIndex) {
 
         for(int i = startIndex; i < group.size(); i++) {
-            BasePhysics element = group.get(i);
-            if (group.get(i) != basePhysics) {
-                if (isColliding(basePhysics, element, time0, time)) {
-                    double t = this.approxCollisionTime(basePhysics, element, time0, time);
+            PhysicsObject element = group.get(i);
+            if (group.get(i) != object) {
+                if (isColliding(object, element, time0, time)) {
+                    double t = this.approxCollisionTime(object, element, time0, time);
                     if (t >= time0 && t <= time) {
-                        collisions.add(new Collision(basePhysics, element, t, false));
+                        Collision collision = new Collision(object, element, t, false);
+                        collisions.add(collision);
+                        object.collisions.add(collision);
+                        element.collisions.add(collision);
                     }
                 }
             }
         }
     }
 
-    protected double approxCollisionTime(BasePhysics object1, BasePhysics object2,
+    protected double approxCollisionTime(PhysicsObject object1, PhysicsObject object2,
             double time0, double time) {
         double t = time0;
         double divisor;
         if (!isIntersecting(object1, object2, time0)
-                && isColliding(object1, object2, time0, time)
-                && collisionIsPossible(object1, object2, time0, time)) {
+                && (isIntersecting(object1, object2, time)
+                ||(isColliding(object1, object2, time0, time)
+                && collisionIsPossible(object1, object2, time0)))) {
             for (int i = 0; i < 10; i++) {
                 divisor = Math.pow(2, i+1);
                 if (!isColliding(object1, object2, t, t+(time-t)/divisor)) {
@@ -269,24 +260,25 @@ public class PhysicsEngine  {
         return time0-1;
     }
 
-    protected boolean collisionIsPossible(BasePhysics object1,
-            BasePhysics object2, double time0, double time) {
+    protected boolean collisionIsPossible(PhysicsObject object1,
+            PhysicsObject object2, double time0) {
 
-        Coordinate pos1 = object1.getPosAtTime(time);
-        Coordinate pos2 = object2.getPosAtTime(time);
-        Coordinate v1 = object1.getVel(time);
-        Coordinate v2 = object2.getVel(time);
+        Coordinate pos1 = object1.getPosAtTime(time0);
+        Coordinate pos2 = object2.getPosAtTime(time0);
+        Coordinate normal = Coordinate.normalized(pos1.sub(pos2));
+        Coordinate v1 = object1.getVel(time0);
+        Coordinate v2 = object2.getVel(time0);
         Coordinate a1 = object1.acceleration;
         Coordinate a2 = object2.acceleration;
-        boolean x = ((pos1.x() > pos2.x() && v1.x() >= v2.x() && a1.x() >= a2.x())
-                ||(pos2.x() > pos1.x() && v2.x() >= v1.x() && a2.x() >= a1.x()));
-        boolean y = ((pos1.y() > pos2.y() && v1.y() >= v2.y() && a1.y() >= a2.y())
-                ||(pos2.y() > pos1.y() && v2.y() >= v1.y() && a2.y() >= a1.y()));
-        return (!x||!y);
-        //return true;
+        double yV1 = Coordinate.dot(normal, v1);
+        double yV2 = Coordinate.dot(normal, v2);
+        double yA1 = Coordinate.dot(normal, a1);
+        double yA2 = Coordinate.dot(normal, a2);
+        
+        return (yV2>yV1||yA2>yA1);
     }
 
-    protected boolean isColliding(BasePhysics object1, BasePhysics object2,
+    protected boolean isColliding(PhysicsObject object1, PhysicsObject object2,
             double time0, double time) {
         return (GeomUtils.lineSegDistSq(
                             new Line2D.Double(
@@ -298,7 +290,7 @@ public class PhysicsEngine  {
                             Math.pow(object1.size+object2.size, 2)));
     }
 
-    protected boolean isIntersecting(BasePhysics object1, BasePhysics object2,
+    protected boolean isIntersecting(PhysicsObject object1, PhysicsObject object2,
             double time) {
         return (object1.getPosAtTime(time).toPoint2D().distanceSq(
                 object2.getPosAtTime(time).toPoint2D())
@@ -311,80 +303,137 @@ public class PhysicsEngine  {
             Collision collision = Collision.getEarliest(collisions);
             collisions.remove(collision);
             if (collision != null) {
-                System.out.println("Collision");
                 double time = collision.getTime();
-                BasePhysics object1 = collision.getObject1();
-                BasePhysics object2 = collision.getObject2();
-                Coordinate object1Pos = object1.getPosAtTime(time);
-                Coordinate object2Pos = object2.getPosAtTime(time);
-                Coordinate normal = Coordinate.normalized(object1Pos.sub(object2Pos));
-                Coordinate tangent = new Coordinate(-normal.y(), normal.x());
-                double vn1 = Coordinate.dot(normal, object1.getVel(time));
-                double vn2 = Coordinate.dot(normal, object2.getVel(time));
-                double vt1 = Coordinate.dot(tangent, object1.getVel(time));
-                double vt2 = Coordinate.dot(tangent, object2.getVel(time));
-                double m1 = object1.mass;
-                double m2 = object2.mass;
-                double cr = object1.restitution*object2.restitution;
-                double un1 = (cr*m2*(vn2-vn1)+m1*vn1+m2*vn2)/(m1+m2);
-                double un2 = (cr*m1*(vn1-vn2)+m1*vn1+m2*vn2)/(m1+m2);
-                object1.setVel(normal.mul(un1).add(tangent.mul(vt1)), time);
-                object2.setVel(normal.mul(un2).add(tangent.mul(vt2)), time);
-                movement(object1);
-                movement(object2);
-                object1.setPosAtTime(object1Pos, time);
-                object2.setPosAtTime(object2Pos, time);
-                if (approxCollisionTime(object1, object2, time, deltaTime) != time) {
-                    System.out.println(approxCollisionTime(object1, object2, time, deltaTime) - time);
-                    detectCollisions(object2, new LinkedList<BasePhysics>(basePhysics.values()), time, deltaTime);
-                    detectCollisions(object1, new LinkedList<BasePhysics>(basePhysics.values()), time, deltaTime);
-                    System.out.println("Rechecking collisions");
-                } else {
-                    Coordinate acceleration1 = object1.acceleration.mul(normal);
-                    Coordinate acceleration2 = object2.acceleration.mul(normal);
-                    Coordinate combined = (acceleration1.mul(m1).add(acceleration2.mul(m2).div(m1+m2)));
-                    System.out.println("Closest distance reached");
-                    /*object1.acceleration = object1.acceleration.add(combined).sub(acceleration1);
-                    object2.acceleration = object2.acceleration.add(combined).sub(acceleration2);
-                    detectCollisions(object2, basePhysicsList, time, deltaTime);
-                    detectCollisions(object1, basePhysicsList, time, deltaTime);*/
-                }
+                PhysicsObject object1 = collision.getObject1();
+                PhysicsObject object2 = collision.getObject2();
+
+                setPostCollisionVelocities(object1, object2, time);
+
+                manageRepeatedCollisions(object1, object2, time, deltaTime);
+                
+                object1.collisionCount++;
+                object2.collisionCount++;
+
+                collisions.removeAll(object1.collisions);
+                collisions.removeAll(object2.collisions);
+                
+                object1.collisions.clear();
+                object2.collisions.clear();
+
+                detectCollisions(object2,
+                        new LinkedList<PhysicsObject>(objects.values()),
+                        time, deltaTime);
+
+
+                detectCollisions(object1,
+                        new LinkedList<PhysicsObject>(objects.values()),
+                        time, deltaTime);
+
             }
         }
 
     }
 
+    private void setPostCollisionVelocities(PhysicsObject object1,
+                                            PhysicsObject object2,
+                                            double time) {
+
+        Coordinate object1Pos = object1.getPosAtTime(time);
+        Coordinate object2Pos = object2.getPosAtTime(time);
+        
+        Coordinate normal = Coordinate.normalized(object1Pos.sub(object2Pos));
+        Coordinate tangent = new Coordinate(-normal.y(), normal.x());
+
+        double vn1 = Coordinate.dot(normal, object1.getVel(time));
+        double vn2 = Coordinate.dot(normal, object2.getVel(time));
+
+        double vt1 = Coordinate.dot(tangent, object1.getVel(time));
+        double vt2 = Coordinate.dot(tangent, object2.getVel(time));
+
+        double m1 = object1.mass;
+        double m2 = object2.mass;
+
+        double cr = object1.restitution*object2.restitution;
+
+        double un1 = (cr*m2*(vn2-vn1)+m1*vn1+m2*vn2)/(m1+m2);
+        double un2 = (cr*m1*(vn1-vn2)+m1*vn1+m2*vn2)/(m1+m2);
+
+        object1.setVel(normal.mul(un1).add(tangent.mul(vt1)), time);
+        object2.setVel(normal.mul(un2).add(tangent.mul(vt2)), time);
+    }
+
+    private void manageRepeatedCollisions(PhysicsObject object1,
+                                          PhysicsObject object2,
+                                          double time, double deltaTime) {
+        
+        if (object1.collisionCount > 10 && object2.collisionCount > 10) {
+            if (object1.collisionCount > 50 && object2.collisionCount > 50) {
+                /*System.out.println("50+ collisions between "+ object1+
+                        " and "+object2);
+                Coordinate vel1 = new Coordinate(object1.getVel(time));
+                double m1 = object1.mass;
+                Coordinate vel2 = new Coordinate(object2.getVel(time));
+                double m2 = object2.mass;
+                Coordinate totalMomentum = vel1.mul(m1).add(vel2.mul(m2));
+                object1.setVel(totalMomentum.div(2).div(m1), time);
+                object2.setVel(totalMomentum.div(2).div(m2), time);*/
+                object1.setVel(0, 0, time);
+                object2.setVel(0, 0, time);
+
+            } else {
+                object1.setAcceleration(0, 0, time);
+                object2.setAcceleration(0, 0, time);
+            }
+        }
+        if (approxCollisionTime(object1, object2, time, deltaTime) == time) {
+            object1.setAcceleration(0, 0, time);
+            object2.setAcceleration(0, 0, time);
+        }
+    }
+
     protected void position(double deltaTime) {
-        for (BasePhysics element : basePhysics.values()) {
+        for (PhysicsObject element : objects.values()) {
             element.updatePos(deltaTime);
         }
     }
 
     protected void graphics() {
-        for (BasePhysics element : basePhysics.values()) {
+        for (PhysicsObject element : objects.values()) {
             element.updateGraphic();
         }
     }
 
     protected void applyUpdates() {
-        //synchronized (this) {
-            for (Update update : updates) {
-                if (basePhysics.containsKey(update.getId())) {
-                    basePhysics.get(update.getId()).applyUpdate(update.getUpdate());
+            for (ObjectUpdate update : updates) {
+                if (objects.containsKey(update.getId())) {
+                    objects.get(update.getId()).applyUpdate(update.getUpdate());
                 }
             }
             updates.clear();
-        //}
     }
 
     public void updateObject(PhysicsUpdate update, short id) {
-        updateObject(new Update(update, id));
+        updateObject(new ObjectUpdate(update, id));
     }
 
-    public synchronized void updateObject(Update update) {
-        //synchronized (this) {
-            updates.add(update);
-        //}
+    public synchronized void updateObject(ObjectUpdate update) {
+        updates.add(update);
+    }
+
+    public synchronized PhysicsUpdate getUpdate(short id) {
+        return objects.get(id).getUpdate();
+    }
+
+    public synchronized void createObject(ObjectData data) {
+        addObject(new PhysicsObject(data.getData()), data.getId());
+    }
+
+    public synchronized short createObject(PhysicsData data) {
+        return addObject(new PhysicsObject(data));
+    }
+
+    public synchronized PhysicsData getData(short id) {
+        return objects.get(id).getData();
     }
 
 }

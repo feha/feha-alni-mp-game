@@ -14,8 +14,8 @@ import java.util.List;
  * @author niclas.alexandersso
  */
 public class Collision {
-    private BasePhysics object1;
-    private BasePhysics object2;
+    private PhysicsObject object1;
+    private PhysicsObject object2;
     private double time;
     private boolean intersecting;
 
@@ -23,7 +23,7 @@ public class Collision {
 
     }
 
-    public Collision(BasePhysics object1, BasePhysics object2, double time,
+    public Collision(PhysicsObject object1, PhysicsObject object2, double time,
             boolean intersecting) {
         this.object1 = object1;
         this.object2 = object2;
@@ -39,21 +39,21 @@ public class Collision {
         this.time = time;
     }
 
-    public BasePhysics getObject2() {
+    public PhysicsObject getObject2() {
         return object2;
     }
 
 
-    public void setObject2(BasePhysics object2) {
+    public void setObject2(PhysicsObject object2) {
         this.object2 = object2;
     }
 
 
-    public BasePhysics getObject1() {
+    public PhysicsObject getObject1() {
         return object1;
     }
 
-    public void setObject1(BasePhysics object1) {
+    public void setObject1(PhysicsObject object1) {
         this.object1 = object1;
     }
 
