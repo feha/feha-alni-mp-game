@@ -11,6 +11,12 @@ package projektarbete;
  */
 
 //import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import projektarbete.graphics.Painter;
 import projektarbete.graphics.VisibleObject;
 import projektarbete.graphics.Camera;
@@ -71,9 +77,11 @@ public class Stage {
 
         jFrame = new JFrame();
 
-        jFrame.setVisible(true);
         jFrame.setSize(500, 500);
+        jFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        jFrame.setUndecorated(true);
         jFrame.setResizable(false);
+        jFrame.setVisible(true);
 
         jFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -82,13 +90,52 @@ public class Stage {
             }
         });
 
+        KeyListener k = new KeyListener() {
+
+            public void keyTyped(KeyEvent e) {
+            }
+
+            public void keyPressed(KeyEvent e) {
+                //System.out.println(e);
+            }
+
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ESCAPE) {
+                    System.exit(0);
+                }
+            }
+        };
+
+        MouseListener m = new MouseListener() {
+
+            public void mouseClicked(MouseEvent e) {
+                //System.out.println(e);
+            }
+
+            public void mousePressed(MouseEvent e) {
+            }
+
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            public void mouseExited(MouseEvent e) {
+            }
+        };
+
+        jFrame.addKeyListener(k);
+        jFrame.addMouseListener(m);
+
         //adds a frame to handle keyboard input. DONT add it after painter!
-        Input input = new Input();
-        jFrame.add(input);
+        
+        //jFrame.add(input);
 
         //Adds a panel to handle painting. DONT add it before input!
         painter = new Painter();
         jFrame.getContentPane().add(painter);
+        Input input = new Input(painter);
 
         engine = new PhysicsEngine();
         SocketListener.setListening(true);
@@ -109,20 +156,26 @@ public class Stage {
 
     private void initTesting() {
 
-        engine.addObject(new TestUserObject());
-        engine.addObject(new Floor(-1, -6));
+        //engine.addObject(new Floor(0, 0, 6));
         
-        engine.addObject(new Floor(3,-6));
-        engine.addObject(new Floor(1,-6));
-
-        double radius = 10;
-        for (double t = 0; t < Math.PI; t += 1.0/radius) {
-            engine.addObject(new Floor(radius*Math.sin(t),radius*Math.cos(t)));
-            engine.addObject(new Floor(radius*-Math.sin(t),radius*-Math.cos(t)));
-        }
+        //engine.addObject(new Floor(3,-6));
+        //engine.addObject(new Floor(1,-6));
 
         //engine.addObject(new Bouncer(5, -2, 0, 0, 1), (short)5);
         //engine.addObject(new Bouncer(6.5, -2, 0, 0, 1), (short)6);
+
+        double radius = 11;
+        for (double m = 0; m <= Math.PI*2; m += 1.0/radius) {
+            engine.addObject(new Floor(radius*Math.sin(m),radius*Math.cos(m)));
+            //engine.addObject(new Floor(radius*-Math.sin(t),radius*-Math.cos(t)));
+        }
+        /*radius = 6;
+        for (double t = 0; t <= Math.PI*2+2.0/radius; t += 1.0/radius) {
+            engine.addObject(new Floor(radius*Math.sin(t),radius*Math.cos(t)));
+            //engine.addObject(new Floor(radius*-Math.sin(t),radius*-Math.cos(t)));
+        }*/
+
+
         
 
         StartMenu m0 = new StartMenu();
@@ -138,10 +191,11 @@ public class Stage {
 
         UpdateTester resetter = new UpdateTester(updates, engine);
         UpdateTester resetter2 = new UpdateTester(dataz, engine, false);
-        resetter2.start(2000);
-        resetter.start(2000);
+        //resetter2.start(2000);
+        //resetter.start(2000);
         //UpdateTester resetter = new UpdateTester(updates, engine);
         //resetter.start(2000);
+        engine.addObject(new TestUserObject());
 
     }
 
@@ -202,6 +256,10 @@ public class Stage {
 
     public static boolean isRunning() {
         return running;
+    }
+
+    public void repaint() {
+        painter.repaint();
     }
 
 }

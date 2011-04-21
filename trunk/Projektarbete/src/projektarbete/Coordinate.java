@@ -301,4 +301,22 @@ private double y;
     public Coordinate rotate(double angle) {
         return Coordinate.rotate(this, angle);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Coordinate) {
+            Coordinate coordinate = (Coordinate) obj;
+            return ((coordinate.x()==x())&&(coordinate.y()==y()));
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 37 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        return hash;
+    }
+
 }

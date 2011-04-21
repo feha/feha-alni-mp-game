@@ -8,11 +8,13 @@ package projektarbete.physics;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import projektarbete.Coordinate;
@@ -46,7 +48,7 @@ public class PhysicsEngine  {
         }
     };
 
-    Map<Short, PhysicsObject> objects = new HashMap<Short, PhysicsObject>();
+    Map<Short, PhysicsObject> objects = new TreeMap<Short, PhysicsObject>();
     LinkedList<Collision> collisions = new LinkedList<Collision>();
     LinkedList<ObjectUpdate> updates = new LinkedList<ObjectUpdate>();
     int count = 0;
@@ -151,33 +153,49 @@ public class PhysicsEngine  {
         /*for (int i = 0; i < getBasePhysicsCount(); i++) {
             getBasePhysics(i).physicsSimulate(deltaTime);
         }*/
+        List<PhysicsObject> list = getPhysicsObjects();
         applyUpdates();
-        update(deltaTime);
-        force(deltaTime);
-        movement();
-        collisionDetection(deltaTime);
+        updateStart(deltaTime, list);
+        force(deltaTime, list);
+        movement(list);
+        collisionDetection(deltaTime, list);
         collisionResponse(deltaTime);
-        position(deltaTime);
-        graphics();
+        position(deltaTime, list);
+        updateEnd(deltaTime, list);
+        graphics(list);
 
         oldTime = System.nanoTime();
         //}
     }
 
-    protected void update(double deltaTime) {
+    protected synchronized List<PhysicsObject> getPhysicsObjects() {
+        List<PhysicsObject> list = new LinkedList();
         for (PhysicsObject element : objects.values()) {
-            element.update(deltaTime);
+            list.add(element);
+        }
+        return list;
+    }
+
+    protected synchronized void updateStart(double deltaTime, List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
+            element.updateStart(deltaTime);
             element.physicsUpdate();
         }
     }
 
+    protected synchronized void updateEnd(double deltaTime, List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
+            element.updateEnd(deltaTime);
+        }
+    }
+
     protected void update(PhysicsObject object, double deltaTime) {
-        object.update(deltaTime);
+        object.updateStart(deltaTime);
         object.physicsUpdate();
     }
 
-    protected void force(double deltaTime) {
-        for (PhysicsObject element : objects.values()) {
+    protected synchronized void force(double deltaTime, List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
             element.applyForces(deltaTime);
             element.simulateFriction();
         }
@@ -188,8 +206,8 @@ public class PhysicsEngine  {
         object.simulateFriction();
     }
 
-    protected void movement() {
-        for (PhysicsObject element : objects.values()) {
+    protected synchronized void movement(List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
             element.simulateForce();
             element.simulateVelocity();
         }
@@ -200,12 +218,112 @@ public class PhysicsEngine  {
         element.simulateVelocity();
     }
 
-    protected void collisionDetection(double deltaTime) {
-        List<PhysicsObject> list = new LinkedList(objects.values());
-        for (int i = 0; i < list.size()-1; i++) {
-            PhysicsObject element = list.get(i);
-            this.detectCollisions(element, list, 0, deltaTime, i);
+    protected void collisionDetection(double deltaTime, List<PhysicsObject> group) {
+        if (group.size()>7) {
+            this.splitCollisionDomain(deltaTime, group);
+        } else {
+            this.detectInternalCollisions(deltaTime, group);
         }
+    }
+
+    protected void detectInternalCollisions(double deltaTime, List<PhysicsObject> group) {
+            for (int i = 0; i < group.size()-1; i++) {
+            PhysicsObject element = group.get(i);
+            this.detectCollisions(element, group, 0, deltaTime, i);
+            }
+    }
+
+    protected void splitCollisionDomain(double deltaTime, List<PhysicsObject> group) {
+        Coordinate center = this.getCenter(group);
+        List<PhysicsObject> upperLeft = new LinkedList<PhysicsObject>();
+        List<PhysicsObject> upperRight = new LinkedList<PhysicsObject>();
+        List<PhysicsObject> lowerLeft = new LinkedList<PhysicsObject>();
+        List<PhysicsObject> lowerRight = new LinkedList<PhysicsObject>();
+
+        double xMid = center.x();
+        double yMid = center.y();
+
+        double xMin;
+        double yMin;
+
+        double xMax;
+        double yMax;
+        
+        for (PhysicsObject element : group) {
+            double size = element.size;
+            xMin = Math.min(
+                    element.getPos().x(),
+                    element.getPosAtTime(deltaTime).x())
+                    -size;
+
+            xMax = Math.max(
+                    element.getPos().x(),
+                    element.getPosAtTime(deltaTime).x())
+                    +size;
+            yMin = Math.min(
+                    element.getPos().y(),
+                    element.getPosAtTime(deltaTime).y())
+                    -size;
+
+            yMax = Math.max(
+                    element.getPos().y(),
+                    element.getPosAtTime(deltaTime).y())
+                    +size;
+
+            if (xMin<=xMid && yMax>=yMid) {
+                upperLeft.add(element);
+            }
+            if (xMax>=xMid && yMax>=yMid) {
+                upperRight.add(element);
+            }
+            if (xMin<=xMid && yMin<=yMid) {
+                lowerLeft.add(element);
+            }
+            if (xMax>=xMid && yMin<=yMid) {
+                lowerRight.add(element);
+            }
+        }
+        if (upperLeft.size()<group.size()) {
+            this.collisionDetection(deltaTime, upperLeft);
+        } else {
+            this.detectInternalCollisions(deltaTime, upperLeft);
+        }
+        if (upperRight.size()<group.size()) {
+            this.collisionDetection(deltaTime, upperRight);
+        } else {
+            this.detectInternalCollisions(deltaTime, upperRight);
+        }
+        if (lowerLeft.size()<group.size()) {
+            this.collisionDetection(deltaTime, lowerLeft);
+        } else {
+            this.detectInternalCollisions(deltaTime, lowerLeft);
+        }
+        if (lowerRight.size()<group.size()) {
+            this.collisionDetection(deltaTime, lowerRight);
+        } else {
+            this.detectInternalCollisions(deltaTime, lowerRight);
+        }
+    }
+
+    protected Coordinate getCenter(List<PhysicsObject> group) {
+        double xMin = Double.POSITIVE_INFINITY;
+        double xMax = Double.NEGATIVE_INFINITY;
+        double xMid = 0;
+        double yMin = Double.POSITIVE_INFINITY;
+        double yMax = Double.NEGATIVE_INFINITY;
+        double yMid = 0;
+        for (int i = 0; i < group.size()-1; i++) {
+            PhysicsObject element = group.get(i);
+            double x = element.getPos().x();
+            xMin = Math.min(xMin, x);
+            xMax = Math.max(xMax, x);
+            double y = element.getPos().y();
+            yMin = Math.min(yMin, y);
+            yMax = Math.max(yMax, y);
+        }
+        xMid = (xMin+xMax)/2;
+        yMid = (yMin+yMax)/2;
+        return new Coordinate(xMid, yMid);
     }
 
     protected void detectCollisions(PhysicsObject object,
@@ -320,6 +438,9 @@ public class PhysicsEngine  {
                 object1.collisions.clear();
                 object2.collisions.clear();
 
+                object1.physicsCollision();
+                object2.physicsCollision();
+
                 detectCollisions(object2,
                         new LinkedList<PhysicsObject>(objects.values()),
                         time, deltaTime);
@@ -338,10 +459,10 @@ public class PhysicsEngine  {
                                             PhysicsObject object2,
                                             double time) {
 
-        Coordinate object1Pos = object1.getPosAtTime(time);
-        Coordinate object2Pos = object2.getPosAtTime(time);
+        Coordinate pos1 = object1.getPosAtTime(time);
+        Coordinate pos2 = object2.getPosAtTime(time);
         
-        Coordinate normal = Coordinate.normalized(object1Pos.sub(object2Pos));
+        Coordinate normal = Coordinate.normalized(pos1.sub(pos2));
         Coordinate tangent = new Coordinate(-normal.y(), normal.x());
 
         double vn1 = Coordinate.dot(normal, object1.getVel(time));
@@ -365,45 +486,45 @@ public class PhysicsEngine  {
     private void manageRepeatedCollisions(PhysicsObject object1,
                                           PhysicsObject object2,
                                           double time, double deltaTime) {
-        
+        Coordinate pos1 = object1.getPosAtTime(time);
+        Coordinate pos2 = object2.getPosAtTime(time);
         if (object1.collisionCount > 10 && object2.collisionCount > 10) {
             if (object1.collisionCount > 50 && object2.collisionCount > 50) {
-                /*System.out.println("50+ collisions between "+ object1+
-                        " and "+object2);
-                Coordinate vel1 = new Coordinate(object1.getVel(time));
-                double m1 = object1.mass;
-                Coordinate vel2 = new Coordinate(object2.getVel(time));
-                double m2 = object2.mass;
-                Coordinate totalMomentum = vel1.mul(m1).add(vel2.mul(m2));
-                object1.setVel(totalMomentum.div(2).div(m1), time);
-                object2.setVel(totalMomentum.div(2).div(m2), time);*/
-                object1.setVel(0, 0, time);
-                object2.setVel(0, 0, time);
-
+                pos1 = object1.getPosAtTime(time);
+                pos2 = object2.getPosAtTime(time);
+                object1.velocity.setPos(0, 0);
+                object2.velocity.setPos(0, 0);
+                object1.position.setPos(pos1);
+                object2.position.setPos(pos2);
             } else {
-                object1.setAcceleration(0, 0, time);
-                object2.setAcceleration(0, 0, time);
+                object1.acceleration.setPos(0, 0);
+                object1.position.setPos(pos1.sub(object1.velocity.mul(time)));
+                object2.acceleration.setPos(0, 0);
+                object2.position.setPos(pos2.sub(object2.velocity.mul(time)));
             }
         }
         if (approxCollisionTime(object1, object2, time, deltaTime) == time) {
-            object1.setAcceleration(0, 0, time);
-            object2.setAcceleration(0, 0, time);
+            object1.acceleration.setPos(0, 0);
+            object1.position.setPos(pos1.sub(object1.velocity.mul(time)));
+            object2.acceleration.setPos(0, 0);
+            object2.position.setPos(pos2.sub(object2.velocity.mul(time)));
         }
     }
 
-    protected void position(double deltaTime) {
-        for (PhysicsObject element : objects.values()) {
+    protected synchronized void position(double deltaTime, List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
             element.updatePos(deltaTime);
         }
     }
 
-    protected void graphics() {
-        for (PhysicsObject element : objects.values()) {
+    protected synchronized void graphics(List<PhysicsObject> objects) {
+        for (PhysicsObject element : objects) {
             element.updateGraphic();
         }
+        Stage.getInstance().repaint();
     }
 
-    protected void applyUpdates() {
+    protected synchronized void applyUpdates() {
             for (ObjectUpdate update : updates) {
                 if (objects.containsKey(update.getId())) {
                     objects.get(update.getId()).applyUpdate(update.getUpdate());

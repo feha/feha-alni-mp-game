@@ -29,11 +29,8 @@ public class MyImage extends VisibleObject {
 
         super(visibleObject);
 
-        System.out.println("MyImage Initializing");
 
         initComponents();
-
-        System.out.println("MyImage Initialized");
 
     }
 
@@ -41,7 +38,6 @@ public class MyImage extends VisibleObject {
 
         super(visibleObject);
 
-        System.out.println("MyImage Initializing");
 
         initComponents();
         imageLocation = image;
@@ -53,7 +49,6 @@ public class MyImage extends VisibleObject {
             }
         }
 
-        System.out.println("MyImage Initialized");
 
     }
 

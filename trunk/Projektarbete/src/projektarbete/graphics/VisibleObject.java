@@ -31,20 +31,14 @@ public class VisibleObject {
 
     public VisibleObject() {
 
-        System.out.println("VisibleObject (Screen) Initializing");
-        
-        System.out.println("VisibleObject (Screen) Initialized");
-
     }
 
     public VisibleObject(VisibleObject visibleObject) {
 
-        System.out.println("VisibleObject Initializing");
 
         parent = visibleObject;
 
         addToParent();
-        System.out.println("VisibleObject Initialized");
 
 
     }
