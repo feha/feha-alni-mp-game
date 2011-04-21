@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import projektarbete.Communication;
 import projektarbete.Coordinate;
 import projektarbete.Flags;
 import projektarbete.Stage;
+import projektarbete.UDPSocket;
 import projektarbete.graphics.Camera;
 import projektarbete.graphics.CameraContainer;
 import projektarbete.graphics.MyImage;
@@ -27,15 +29,16 @@ import projektarbete.graphics.MyImage;
 public class TestUserObject extends PhysicsObject {
 
     public TestUserObject() {
-        this(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1, new PhysicsUpdate()));
+        this(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1, new PhysicsUpdate()), (short) 0);
 
         //Initializing variables
-
-
     }
 
-    public TestUserObject(PhysicsData data) {
+    public TestUserObject(PhysicsData data, short id) {
         super(data);
+
+        serverID = id;
+
         container = new CameraContainer();
         container.setScale(Camera.getInstance().getScale());
         container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
@@ -43,10 +46,14 @@ public class TestUserObject extends PhysicsObject {
     }
 
     CameraContainer container;
+    short serverID;
 
     @Override
     public void physicsForces() {
-        Updates.update(this);
+        //Updates.update(this);
+        ObjectUpdate data = new ObjectUpdate(this.getUpdate(),serverID);
+        System.out.println(serverID);
+        UDPSocket.send(new Communication("127.0.0.1", Communication.writeUpdatePlayer(data)));
 
         //Coordinate offset = new Coordinate(mouse.getX()/400,mouse.getY()/400).add(new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2)));
         //container.offset.setPos(monitorSize.div(-100).add(size).add(mousePos.add(monitorSize.div(2)).div(100)));

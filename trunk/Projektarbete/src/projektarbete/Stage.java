@@ -100,6 +100,8 @@ public class Stage {
 
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ESCAPE) {
+                    System.exit(0);
+                } else if (e.getKeyCode()==KeyEvent.VK_F11) {
                     JFrame jframe = Stage._instance.jFrame;
                     if (jframe.getExtendedState() != Frame.MAXIMIZED_BOTH) {
                         jFrame.dispose();
@@ -115,8 +117,6 @@ public class Stage {
                         jFrame.setResizable(true);
                         jFrame.setVisible(true);
                     }
-                    
-                    //System.exit(0);
                 }
             }
         };
