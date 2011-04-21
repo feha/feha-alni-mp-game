@@ -54,8 +54,8 @@ public class TestUserObject extends PhysicsObject {
         visibleObject = new MyImage(Camera.getInstance(), "stickman.png");
         visibleObject.centerAnchor();
         visibleObject.setScale(0.002364*size*2);*/
+
         container = new CameraContainer();
-        //container.setParent(visibleObject);
         container.setScale(Camera.getInstance().getScale());
         container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
         Camera.getInstance().setContainer(container);
@@ -128,7 +128,7 @@ public class TestUserObject extends PhysicsObject {
                 ((this.position.x()))*-50+(monitorSize.x()/2),
                 ((this.position.y()))*50+(monitorSize.y()/2));
         Coordinate mouseCenterDistance = monitorSize.div(2).sub(mousePos);
-        Camera.getInstance().setPos(center.add(mouseCenterDistance.mul(0.5)));
+        container.setPos(center.add(mouseCenterDistance.mul(0.5)));
     }
 
 

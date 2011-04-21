@@ -28,7 +28,7 @@ public class Camera extends VisibleScreen {
 
     }
 
-    //CameraContainer container;
+    CameraContainer container;
     
     //Global variables
     private static Camera _instance;
@@ -70,17 +70,17 @@ public class Camera extends VisibleScreen {
 
     @Override
     public void draw(Graphics g) {
-        /*if (container != null) {
-            //angle = -container.getAng(); //Lets not use angle, almost made me dizzy
+        if (container != null) {
+            angle = -container.getAng(); //Lets not use angle, almost made me dizzy
             scale = container.getScale();
-            position = container.getPos().mul(scale).mul(-1);
-        }*/
+            position = container.getPos();
+        }
         
         super.draw(g);
     }
 
     public void setContainer(CameraContainer newContainer) {
-        //container = newContainer;
+        container = newContainer;
     }
 
 }
