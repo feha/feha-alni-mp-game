@@ -10,11 +10,12 @@ import projektarbete.physics.PhysicsData;
 import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsEngine;
+import projektarbete.physics.Updates;
 
 public class Communication {
 
     public static final short MESSAGE_TYPE_CONTROL = 1;
-    public static final short MESSAGE_TYPE_OBJECT_DATA = 10;
+    public static final short MESSAGE_TYPE_CREATE_OBJECT = 10;
     public static final short MESSAGE_TYPE_REMOVE_OBJECT = 11;
     public static final short MESSAGE_TYPE_UPDATE_OBJECT = 12;
     public static final short MESSAGE_TYPE_REQUEST_OBJECT_DATA = 13;
@@ -66,9 +67,9 @@ public class Communication {
         
         switch (messageType) {
             case MESSAGE_TYPE_CONTROL:
-                ; break;
+                control(input); break;
 
-            case MESSAGE_TYPE_OBJECT_DATA:
+            case MESSAGE_TYPE_CREATE_OBJECT:
                 createObject(input); break;
 
             case MESSAGE_TYPE_REMOVE_OBJECT:
@@ -136,7 +137,7 @@ public class Communication {
         short id = data.getId();
         PhysicsData physicsData = data.getData();
 
-        output.writeMessageType(MESSAGE_TYPE_OBJECT_DATA);
+        output.writeMessageType(MESSAGE_TYPE_CREATE_OBJECT);
         output.writeId(id);
         output.writePhysicsData(physicsData);
 
@@ -186,15 +187,14 @@ public class Communication {
 
     private static void requestObjectData(InputData data) {
         short id = Communication.readRequestObjectData(data);
-        PhysicsData physicsData = PhysicsEngine.getInstance().getData(id);
+        PhysicsEngine.getInstance().requestData(id);
 
         //more code to be added here
     }
 
     private static void requestUpdate(InputData data) {
         short id = Communication.readRequestUpdate(data);
-        PhysicsUpdate physicsUpdate = PhysicsEngine.getInstance().getUpdate(id);
-
+        PhysicsEngine.getInstance().requestUpdate(id);
         //more code to be added here
     }
 

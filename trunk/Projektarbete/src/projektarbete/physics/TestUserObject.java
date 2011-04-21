@@ -66,6 +66,7 @@ public class TestUserObject extends PhysicsObject {
 
     @Override
     public void physicsForces() {
+        Updates.update(this);
 
         //Coordinate offset = new Coordinate(mouse.getX()/400,mouse.getY()/400).add(new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2)));
         //container.offset.setPos(monitorSize.div(-100).add(size).add(mousePos.add(monitorSize.div(2)).div(100)));

@@ -22,7 +22,7 @@ public class UpdateTester {
     Timer timer = new Timer();
     TimerTask task;
     int counter;
-    private static String ip = "127.0.0.1";
+    private static String ip = "127.0.0.1";//"83.227.204.241";
 
     public UpdateTester(final List<ObjectUpdate> updates, final PhysicsEngine engine) {
         task = new TimerTask() {
@@ -36,6 +36,7 @@ public class UpdateTester {
                         update.getUpdate().setAngle(Math.random()*2*Math.PI);
                         //engine.updateObject(update);
                         UDPSocket.send(new Communication(ip, Communication.writeUpdate(update)));
+                        System.out.println("Update sent");
                     }
                 }
             }
@@ -65,7 +66,8 @@ public class UpdateTester {
 
                                 counter=0; break;
                         }
-                        UDPSocket.send(new Communication(ip, Communication.writeRemoveObject(element.getId())));
+                        element.setId((short)(Math.random()*500));
+                        //UDPSocket.send(new Communication(ip, Communication.writeRemoveObject(element.getId())));
                         UDPSocket.send(new Communication(ip, Communication.writeObjectData(element)));
                     }
                 }

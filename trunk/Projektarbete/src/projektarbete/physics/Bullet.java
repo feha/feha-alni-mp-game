@@ -21,7 +21,7 @@ public class Bullet extends PhysicsObject {
     }
 
     @Override
-    public void physicsCollision() {
+    public void physicsCollision(Collision collision) {
         hitCount++;
         if (hitCount > 3) {
             PhysicsEngine.getInstance().removeObject(this);
