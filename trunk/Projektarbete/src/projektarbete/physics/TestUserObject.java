@@ -27,39 +27,19 @@ import projektarbete.graphics.MyImage;
 public class TestUserObject extends PhysicsObject {
 
     public TestUserObject() {
-        super(Templates.TYPE_PLAYER_OBJECT, 60, 1);
+        this(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1, new PhysicsUpdate()));
 
         //Initializing variables
 
-        position = new Coordinate(-8,0);
-        /*velocity = new Coordinate(0.5,0.10);
-        force = new Coordinate(0,0);
 
+    }
 
-        mass = 1;
-        gravityDir = new Coordinate(0,-1);
-        gravity = 9.82;
-        gravityFlag = true;
-        airFrictionFlag = true;
-        this.restitution = 0.5;
-
-        hitbox = new Hitbox();
-        List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
-        shape.add(new Point2D.Double(1,0));
-        shape.add(new Point2D.Double(0,0));
-        shape.add(new Point2D.Double(1,1));
-        hitbox.setShape(shape);
-        hitbox.normalizeShape();
-        size = 1;
-        visibleObject = new MyImage(Camera.getInstance(), "stickman.png");
-        visibleObject.centerAnchor();
-        visibleObject.setScale(0.002364*size*2);*/
-
+    public TestUserObject(PhysicsData data) {
+        super(data);
         container = new CameraContainer();
         container.setScale(Camera.getInstance().getScale());
         container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
         Camera.getInstance().setContainer(container);
-
     }
 
     CameraContainer container;

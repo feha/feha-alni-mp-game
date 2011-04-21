@@ -551,12 +551,43 @@ public class PhysicsEngine  {
     }
 
     protected synchronized void applyUpdates() {
+        if (!Stage.isServer()) {
             for (ObjectUpdate update : updates) {
                 if (objects.containsKey(update.getId())) {
                     objects.get(update.getId()).applyUpdate(update.getUpdate());
+                } else {
+                    Updates.requestData(update.getId());
                 }
             }
-            updates.clear();
+        } else {
+            for (ObjectUpdate update : updates) {
+                if (objects.containsKey(update.getId())) {
+                    PhysicsObject object = objects.get(update.getId());
+                    PhysicsUpdate physicsUpdate = update.getUpdate();
+                    Coordinate oldPos = object.position;
+                    Coordinate newPos = physicsUpdate.getPosition();
+                    double size = object.size;
+                    for (PhysicsObject element : objects.values()){
+                        if (element != object && !isIntersecting(object, element, 0)) {
+                            Coordinate pos = element.position;
+                            if (Line2D.ptLineDistSq(oldPos.x(), oldPos.y(),
+                                                newPos.x(), newPos.y(),
+                                                pos.x(), pos.y())>=Math.pow(size+element.size, 2)) {
+                                physicsUpdate.setPosition(oldPos);
+                                break;
+                            }
+                        }
+                    }
+                    object.applyUpdate(physicsUpdate);
+                }
+                else {
+                    PhysicsObject object = new PhysicsObject();
+                    object.setId(update.getId());
+                    Updates.remove(object);
+                }
+            }
+        }
+        updates.clear();
     }
 
     public void updateObject(PhysicsUpdate update, short id) {
@@ -580,8 +611,7 @@ public class PhysicsEngine  {
     }
 
     public synchronized void createPlayer(ObjectData data) {
-        addObject(new TestUserObject());
-        updates.add(new ObjectUpdate(data.getData().getUpdate(),data.getId()));
+        addObject(new TestUserObject(data.getData()));
     }
 
     public synchronized void requestData(short id) {
