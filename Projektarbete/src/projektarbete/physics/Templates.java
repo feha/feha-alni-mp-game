@@ -9,9 +9,14 @@ public class Templates {
     public static final short TYPE_PLAYER_OBJECT = 1;
     public static final short TYPE_ELASTIC_OBSTACLE = 2;
     public static final short TYPE_INELASTIC_OBSTACLE = 3;
+    public static final short TYPE_ELASTIC_BASE_NEWTONIAN = 4;
+    public static final short TYPE_ELASTIC_SMALL_NEWTONIAN = 5;
+    
+    public static final short TYPE_BASE_BULLET = 20;
 
     public static final String PLAYER_IMAGE_FILE = "stickman.png";
-    public static final String OBSTACLE_IMAGE_FILE = "empty.png";
+    public static final String BASIC_IMAGE_FILE = "empty.png";
+    public static final String SMALL_BASIC_IMAGE_FILE = "small.png";
 
     public static PhysicsModel getTemplate(short type) {
         return getTemplate(type, 1, 1);
@@ -32,6 +37,15 @@ public class Templates {
 
             case (TYPE_INELASTIC_OBSTACLE):
                 template = inelasticObstacle(template); break;
+
+            case (TYPE_ELASTIC_BASE_NEWTONIAN):
+                template = elasticBaseNewtonian(template); break;
+
+            case (TYPE_ELASTIC_SMALL_NEWTONIAN):
+                template = elasticSmallNewtonian(template); break;
+
+            case (TYPE_BASE_BULLET):
+                template = bullet(template); break;
         }
 
         return template;
@@ -56,10 +70,28 @@ public class Templates {
         return model;
     }
 
+    private static PhysicsModel elasticBaseNewtonian(PhysicsModel model) {
+        image(model, BASIC_IMAGE_FILE, 423, 423);
+        Templates.newtonianPhysics(model, 0.2, 1);
+        return model;
+    }
+
+    private static PhysicsModel elasticSmallNewtonian(PhysicsModel model) {
+        image(model, SMALL_BASIC_IMAGE_FILE, 423, 423);
+        Templates.newtonianPhysics(model, 0.2, 1);
+        return model;
+    }
+
     private static PhysicsModel obstacle(PhysicsModel model) {
-        image(model, OBSTACLE_IMAGE_FILE, 423, 423);
+        image(model, BASIC_IMAGE_FILE, 423, 423);
         model.setAirFrictionFlag(true);
         model.setAirFriction(1);
+        return model;
+    }
+
+    private static PhysicsModel bullet(PhysicsModel model) {
+        image(model, SMALL_BASIC_IMAGE_FILE, 423, 423);
+        Templates.newtonianPhysics(model, 0.1, 0.5);
         return model;
     }
 

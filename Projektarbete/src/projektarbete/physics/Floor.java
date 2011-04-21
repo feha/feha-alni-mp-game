@@ -22,8 +22,7 @@ public class Floor extends PhysicsObject {
         this(0, 0);
     }
     public Floor(double x, double y) {
-        super(Templates.TYPE_ELASTIC_OBSTACLE, 100000, 0.5,
-                new PhysicsUpdate(x, y, 0, 0, 0, 0));
+        this(x, y, 0.5);
         /*position = new Coordinate(x, y);
         hitbox = new Hitbox();
         List<Point2D.Double> shape = new ArrayList<Point2D.Double>();
@@ -39,5 +38,9 @@ public class Floor extends PhysicsObject {
         visibleObject.setScale(/*0.002364* /(1.0/423.0)*size*2);
         //this.gravityFlag = true;
         this.gravity = 0.001;*/
+    }
+    public Floor(double x, double y, double radius) {
+        super(Templates.TYPE_ELASTIC_OBSTACLE, 10000000, radius,
+                new PhysicsUpdate(x, y, 0, 0, 0, 0));
     }
 }

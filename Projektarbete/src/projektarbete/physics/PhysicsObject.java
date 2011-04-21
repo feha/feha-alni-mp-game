@@ -158,7 +158,14 @@ public class PhysicsObject {
          this code is run after velocity is simulated*/
     }
 
-    protected void update(double deltaTime) {
+    public void physicsCollision() {
+    }
+
+    protected void updateStart(double deltaTime) {
+        
+    }
+
+    protected void updateEnd(double deltaTime) {
         collisions.clear();
         collisionCount = 0;
         velocity.setPos(this.getVel(deltaTime));
@@ -211,11 +218,35 @@ public class PhysicsObject {
     }
 
     public Coordinate getPosAtTime(double time) {
-        return new Coordinate(position.add(getVel().mul(time).add(acceleration.mul((time*time)/2))));
+        double x0 = position.x();
+        double xVel = velocity.x();
+        double xAcc = acceleration.x();
+        double x = x0 + xVel*time + (xAcc*time*time)/2;
+        
+        double y0 = position.y();
+        double yVel = velocity.y();
+        double yAcc = acceleration.y();
+        double y = y0 + yVel*time + (yAcc*time*time)/2;
+
+        return new Coordinate(x, y);
+        //return new Coordinate(position.add(getVel().mul(time).add(acceleration.mul((time*time)/2))));
     }
 
     public void setPosAtTime(Coordinate position, double time) {
-        this.position.setPos(position.sub(getVel(time).mul(time).sub(acceleration.mul((time*time)/2))));
+        double x = position.x();
+        double xVel = velocity.x();
+        double xAcc = acceleration.x();
+        double x0 = x - xVel*time - (xAcc*time*time)/2;
+
+        double y = position.y();
+        double yVel = velocity.y();
+        double yAcc = acceleration.y();
+        double y0 = y - yVel*time - (yAcc*time*time)/2;
+
+
+
+        //this.position.setPos(position.sub(getVel().mul(time).sub(acceleration.mul((time*time)/2))));
+        this.position.setPos(x0, y0);
     }
 
     public void updatePos(double deltaTime) {
@@ -239,7 +270,7 @@ public class PhysicsObject {
         position.setPos(position.add(x, y));
 
 
-        updateGraphic();
+        //updateGraphic();
 
     }
 
@@ -248,7 +279,7 @@ public class PhysicsObject {
 
         position.setPos(c);
 
-        updateGraphic();
+        //updateGraphic();
 
     }
 
@@ -275,15 +306,24 @@ public class PhysicsObject {
         setVel(new Coordinate(x,y));
 
     }
+    
     public void setVel(Coordinate vel) {
 
         setVel(vel, 0);
 
     }
+
     public void setVel(Coordinate vel, double time) {
-        Coordinate position = getPosAtTime(time);
-        velocity.setPos(vel.sub(acceleration.mul(time)));
-        setPosAtTime(position, time);
+        Coordinate oldPos = getPosAtTime(time);
+        double xVel = vel.x();
+        double xAcc = acceleration.x();
+        double xVel0 = xVel - xAcc*time;
+
+        double yVel = vel.y();
+        double yAcc = acceleration.y();
+        double yVel0 = yVel - yAcc*time;
+        velocity = new Coordinate(xVel0, yVel0);
+        setPosAtTime(oldPos, time);
 
     }
 
@@ -295,14 +335,22 @@ public class PhysicsObject {
 
     public Coordinate getVel(double time) {
 
-        return velocity.add(acceleration.mul(time));
+        double xVel0 = velocity.x();
+        double xAcc = acceleration.x();
+        double xVel = xVel0 + xAcc*time;
+
+        double yVel0 = velocity.y();
+        double yAcc = acceleration.y();
+        double yVel = yVel0 + yAcc*time;
+
+        return new Coordinate(xVel, yVel);
 
     }
 
     public void setAcceleration(Coordinate acceleration, double time) {
-        Coordinate position = getPosAtTime(time);
+        Coordinate oldPos = getPosAtTime(time);
         this.acceleration.setPos(acceleration);
-        setPosAtTime(position, time);
+        setPosAtTime(oldPos, time);
     }
 
     public void setAcceleration(double xAcc, double yAcc, double time) {

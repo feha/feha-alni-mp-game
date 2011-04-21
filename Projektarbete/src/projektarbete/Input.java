@@ -12,10 +12,50 @@ import javax.swing.*;
  *
  * @author niclas.alexandersso
  */
-public class Input extends JPanel {
-    public Input() {
+public class Input {
+    JPanel window;
+
+    public Input(JPanel window) {
         
         System.out.println("Input started");
+        this.window = window;
+
+        KeyListener k = new KeyListener() {
+
+            public void keyTyped(KeyEvent e) {
+            }
+
+            public void keyPressed(KeyEvent e) {
+            }
+
+            public void keyReleased(KeyEvent e) {
+            }
+        };
+
+        window.addKeyListener(k);
+
+        MouseListener m = new MouseListener() {
+
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton()==MouseEvent.BUTTON1) {
+                    Flags.setFlag("mouse1", true);
+                }
+            }
+
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            public void mouseExited(MouseEvent e) {
+            }
+        };
+
+        window.addMouseListener(m);
 
         //adds flags for later use. Allows identifying boolean valyes with a string
         Flags.addFlag("pressed", true);
@@ -30,19 +70,34 @@ public class Input extends JPanel {
         new Keybind(new FlagAction("left released"), "released LEFT"),
         new Keybind(new FlagAction("right pressed"), "RIGHT"),
         new Keybind(new FlagAction("right released"), "released RIGHT"),
-        new Keybind(new FlagAction("enter pressed"), "ENTER"),
-        new Keybind(new FlagAction("enter released"), "released ENTER")};
+        new Keybind(new FlagAction("enter pressed"), "pressed ENTER"),
+        new Keybind(new FlagAction("enter released"), "released ENTER")/*,
+        new Keybind(new FlagAction("mouse1 pressed"), "BUTTON2"),
+        new Keybind(new FlagAction("mouse1 released"), "released BUTTON2")*/};
 
         for (int i=0; i<keybinds.length; i++) {
 
             //adds the keystrokes in the keybind array to the input map
-            getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keybinds[i].getStroke()),
+            window.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(
+                    KeyStroke.getKeyStroke(keybinds[i].getStroke()),
             keybinds[i].getAction().getValue(Action.NAME));
 
             //adds the actions in the keybind array to the action map
-            getActionMap().put(keybinds[i].getAction().getValue(Action.NAME),
+            window.getActionMap().put(keybinds[i].getAction().getValue(Action.NAME),
                     keybinds[i].getAction());
         }
+        AbstractAction exit = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Escape pressed");
+                System.exit(0);
+            }
+        };
+        window.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(
+                KeyEvent.VK_ESCAPE, 0),
+                exit);
+        window.getActionMap().put(exit.getValue(Action.NAME), exit);
     }
 }
 

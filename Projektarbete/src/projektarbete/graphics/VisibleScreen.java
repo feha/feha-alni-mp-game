@@ -14,15 +14,11 @@ import projektarbete.Stage;
 public class VisibleScreen extends VisibleObject {
     
     public VisibleScreen() {
-        
-        System.out.println("VisibleScreen Initializing");
 
         stage = Stage.getInstance();
         initGlobals();
         initComponents();
         this.addToStage();
-
-        System.out.println("VisibleScreen Initialized");
         
     }
     
