@@ -33,6 +33,7 @@ public class PhysicsObject {
     protected double restitution;
     protected Hitbox hitbox;
     protected short template;
+    private short id;
 
     VisibleObject visibleObject;
 
@@ -86,6 +87,7 @@ public class PhysicsObject {
         PhysicsModel model = Templates.getTemplate(template, mass, size);
         this.applyModel(model);
         this.applyUpdate(update);
+        visibleObject.removeFromParent();
     }
 
     public void hookTest(String test) {
@@ -158,7 +160,7 @@ public class PhysicsObject {
          this code is run after velocity is simulated*/
     }
 
-    public void physicsCollision() {
+    public void physicsCollision(Collision collision) {
     }
 
     protected void updateStart(double deltaTime) {
@@ -467,6 +469,18 @@ public class PhysicsObject {
 
     public void clearVisibleObject() {
         visibleObject.removeFromParent();
+    }
+
+    public void displayVisibleObject() {
+        visibleObject.addToParent();
+    }
+
+    public short getId() {
+        return id;
+    }
+
+    public void setId(short id) {
+        this.id = id;
     }
 
     /*public void showVisibleObject() {

@@ -61,6 +61,7 @@ public class Stage {
     private static Stage _instance;
     private static boolean server;
     private static boolean running;
+    private static String connection = /*"127.0.0.1"*/"83.227.204.241";
 
     //Networked variables
     Painter painter;
@@ -191,7 +192,7 @@ public class Stage {
 
         UpdateTester resetter = new UpdateTester(updates, engine);
         UpdateTester resetter2 = new UpdateTester(dataz, engine, false);
-        //resetter2.start(2000);
+        //resetter2.start(20000);
         //resetter.start(2000);
         //UpdateTester resetter = new UpdateTester(updates, engine);
         //resetter.start(2000);
@@ -260,6 +261,14 @@ public class Stage {
 
     public void repaint() {
         painter.repaint();
+    }
+
+    public static String getConnection() {
+        return connection;
+    }
+
+    public static void setConnection(String connection) {
+        Stage.connection = connection;
     }
 
 }

@@ -17,8 +17,10 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import projektarbete.Communication;
 import projektarbete.Coordinate;
 import projektarbete.Stage;
+import projektarbete.UDPSocket;
 
 
 /**
@@ -101,15 +103,20 @@ public class PhysicsEngine  {
             while (this.objects.containsKey(currentKey)) {
                 currentKey++;
             }
-            this.objects.put(currentKey, object);
+            addObject(object, currentKey);
             return currentKey;
 
     }
 
     public synchronized boolean addObject( PhysicsObject object, short key) {
 
-            if (!this.objects.containsKey(key)) {
+            if (!this.objects.containsKey(key) && key != 0) {
                 this.objects.put(key, object);
+                object.setId(key);
+                object.displayVisibleObject();
+                if (Stage.isServer()) {
+                    Updates.create(object);
+                }
                 return true;
             } else {
                 return false;
@@ -123,12 +130,20 @@ public class PhysicsEngine  {
         while (this.objects.values().remove(object));
         object.clearVisibleObject();
         collisions.removeAll(object.collisions);
+        if (Stage.isServer()) {
+            Updates.remove(object);
+        }
 
     }
 
     public synchronized void removeObject(short key) {
         if (objects.containsKey(key)) {
-            objects.remove(key).clearVisibleObject();
+            PhysicsObject object = objects.remove(key);
+            object.clearVisibleObject();
+            collisions.removeAll(object.collisions);
+            if (Stage.isServer()) {
+                Updates.remove(object);
+            }
         }
 
     }
@@ -162,6 +177,12 @@ public class PhysicsEngine  {
         collisionResponse(deltaTime);
         position(deltaTime, list);
         updateEnd(deltaTime, list);
+        if (Stage.isServer()) {
+            Updates.sync(list);
+        }
+        for (Communication communication : Updates.getUpdates()) {
+            UDPSocket.send(communication);
+        }
         graphics(list);
 
         oldTime = System.nanoTime();
@@ -438,8 +459,13 @@ public class PhysicsEngine  {
                 object1.collisions.clear();
                 object2.collisions.clear();
 
-                object1.physicsCollision();
-                object2.physicsCollision();
+                object1.physicsCollision(collision);
+                object2.physicsCollision(collision);
+
+                if (Stage.isServer()) {
+                    Updates.update(object1);
+                    Updates.update(object2);
+                }
 
                 detectCollisions(object2,
                         new LinkedList<PhysicsObject>(objects.values()),
@@ -541,8 +567,8 @@ public class PhysicsEngine  {
         updates.add(update);
     }
 
-    public synchronized PhysicsUpdate getUpdate(short id) {
-        return objects.get(id).getUpdate();
+    public synchronized void requestUpdate(short id) {
+        Updates.update(objects.get(id));
     }
 
     public synchronized void createObject(ObjectData data) {
@@ -553,8 +579,8 @@ public class PhysicsEngine  {
         return addObject(new PhysicsObject(data));
     }
 
-    public synchronized PhysicsData getData(short id) {
-        return objects.get(id).getData();
+    public synchronized void requestData(short id) {
+        Updates.create(objects.get(id));
     }
 
 }
