@@ -36,6 +36,7 @@ import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.TestUserObject;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsData;
+import projektarbete.physics.Player;
 import projektarbete.physics.UpdateTester;
 
 public class Stage {
@@ -79,9 +80,6 @@ public class Stage {
         jFrame = new JFrame();
 
         jFrame.setSize(500, 500);
-        jFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
-        jFrame.setUndecorated(true);
-        jFrame.setResizable(false);
         jFrame.setVisible(true);
 
         jFrame.addWindowListener(new WindowAdapter() {
@@ -102,7 +100,18 @@ public class Stage {
 
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ESCAPE) {
-                    System.exit(0);
+                    JFrame jframe = Stage._instance.jFrame;
+                    if (jframe.getExtendedState() != Frame.MAXIMIZED_BOTH) {
+                        jFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+                        jFrame.setUndecorated(true);
+                        jFrame.setResizable(false);
+                    } else {
+                        jFrame.setExtendedState(Frame.NORMAL);
+                        jFrame.setUndecorated(false);
+                        jFrame.setResizable(true);
+                    }
+                    
+                    //System.exit(0);
                 }
             }
         };
@@ -196,7 +205,8 @@ public class Stage {
         //resetter.start(2000);
         //UpdateTester resetter = new UpdateTester(updates, engine);
         //resetter.start(2000);
-        engine.addObject(new TestUserObject());
+        //engine.addObject(new TestUserObject());
+        engine.addObject(new Player("127.0.0.1"));
 
     }
 
