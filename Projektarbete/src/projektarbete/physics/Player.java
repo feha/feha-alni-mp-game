@@ -30,7 +30,9 @@ public class Player extends PhysicsObject {
 
         //Add the player to the player list and then a localplayer on its client
         Players.addPlayer(this);
-        UDPSocket.send(new Communication(clientAddress, Communication.writePlayerData(this)));
+        
+        ObjectData data = new ObjectData(this.getData(),this.getId());
+        UDPSocket.send(new Communication(clientAddress, Communication.writePlayerData(data)));
 
     }
 

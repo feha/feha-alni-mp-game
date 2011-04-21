@@ -10,6 +10,7 @@ import projektarbete.physics.PhysicsData;
 import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsEngine;
+import projektarbete.physics.Player;
 import projektarbete.physics.Updates;
 
 public class Communication {
@@ -18,8 +19,10 @@ public class Communication {
     public static final short MESSAGE_TYPE_CREATE_OBJECT = 10;
     public static final short MESSAGE_TYPE_REMOVE_OBJECT = 11;
     public static final short MESSAGE_TYPE_UPDATE_OBJECT = 12;
-    public static final short MESSAGE_TYPE_REQUEST_OBJECT_DATA = 13;
-    public static final short MESSAGE_TYPE_REQUEST_UPDATE = 14;
+    public static final short MESSAGE_TYPE_CREATE_PLAYER = 13;
+    public static final short MESSAGE_TYPE_UPDATE_PLAYER = 14;
+    public static final short MESSAGE_TYPE_REQUEST_OBJECT_DATA = 20;
+    public static final short MESSAGE_TYPE_REQUEST_UPDATE = 21;
 
     private String address = "";
     private byte[] data = new byte[0];
@@ -78,6 +81,12 @@ public class Communication {
             case MESSAGE_TYPE_UPDATE_OBJECT:
                 updateObject(input); break;
 
+            case MESSAGE_TYPE_CREATE_PLAYER:
+                createPlayer(input); break;
+
+            case MESSAGE_TYPE_UPDATE_PLAYER:
+                updateObject(input); break;
+
             case MESSAGE_TYPE_REQUEST_OBJECT_DATA:
                 requestObjectData(input); break;
 
@@ -87,6 +96,16 @@ public class Communication {
     }
 
     private static ObjectData readObjectData(InputData data) {
+        short id = data.readId();
+        PhysicsData newData = data.readPhysicsData();
+        if (newData != null) {
+            return new ObjectData(newData, id);
+        } else {
+            return null;
+        }
+    }
+
+    private static ObjectData readPlayerData(InputData data) {
         short id = data.readId();
         PhysicsData newData = data.readPhysicsData();
         if (newData != null) {
@@ -144,6 +163,18 @@ public class Communication {
         return output.getData();
     }
 
+    public static byte[] writePlayerData(ObjectData data) {
+        OutputData output = new OutputData();
+        short id = data.getId();
+        PhysicsData physicsData = data.getData();
+
+        output.writeMessageType(MESSAGE_TYPE_CREATE_PLAYER);
+        output.writeId(id);
+        output.writePhysicsData(physicsData);
+
+        return output.getData();
+    }
+
     public static byte[] writeRemoveObject(short id) {
         OutputData output = new OutputData();
 
@@ -179,6 +210,10 @@ public class Communication {
 
     private static void createObject(InputData data) {
         PhysicsEngine.getInstance().createObject(readObjectData(data));
+    }
+
+    private static void createPlayer(InputData data) {
+        PhysicsEngine.getInstance().createPlayer(readPlayerData(data));
     }
 
     private static void removeObject(InputData data) {

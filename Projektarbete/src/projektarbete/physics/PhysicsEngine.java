@@ -579,6 +579,11 @@ public class PhysicsEngine  {
         return addObject(new PhysicsObject(data));
     }
 
+    public synchronized void createPlayer(ObjectData data) {
+        addObject(new TestUserObject());
+        updates.add(new ObjectUpdate(data.getData().getUpdate(),data.getId()));
+    }
+
     public synchronized void requestData(short id) {
         Updates.create(objects.get(id));
     }
