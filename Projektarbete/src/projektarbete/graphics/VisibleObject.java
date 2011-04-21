@@ -63,7 +63,9 @@ public class VisibleObject {
     public final void removeFromParent(){
 
         //Tell the Stage to remove this instance from the display list.
-        parent.removeVisibleObject(this);
+        if (parent != null) {
+            parent.removeVisibleObject(this);
+        }
 
     }
 
