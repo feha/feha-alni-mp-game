@@ -102,13 +102,18 @@ public class Stage {
                 if (e.getKeyCode()==KeyEvent.VK_ESCAPE) {
                     JFrame jframe = Stage._instance.jFrame;
                     if (jframe.getExtendedState() != Frame.MAXIMIZED_BOTH) {
+                        jFrame.dispose();
                         jFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
                         jFrame.setUndecorated(true);
                         jFrame.setResizable(false);
+                        jFrame.setVisible(true);
                     } else {
+                        jFrame.dispose();
                         jFrame.setExtendedState(Frame.NORMAL);
+                        jFrame.setSize(500, 500);
                         jFrame.setUndecorated(false);
                         jFrame.setResizable(true);
+                        jFrame.setVisible(true);
                     }
                     
                     //System.exit(0);
