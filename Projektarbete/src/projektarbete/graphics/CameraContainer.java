@@ -18,8 +18,8 @@ public class CameraContainer {
     }
 
     VisibleObject parent;
-    Coordinate position;
-    public Coordinate offset;
+    Coordinate position = new Coordinate(0,0);
+    public Coordinate offset = new Coordinate(0,0);
     double angle;
     Coordinate scale;
 

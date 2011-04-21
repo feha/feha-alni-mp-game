@@ -611,7 +611,8 @@ public class PhysicsEngine  {
     }
 
     public synchronized void createPlayer(ObjectData data) {
-        addObject(new TestUserObject(data.getData()));
+        System.out.println(data.getId());
+        addObject(new TestUserObject(data.getData(), data.getId()));
     }
 
     public synchronized void requestData(short id) {

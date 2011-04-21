@@ -11,6 +11,7 @@ import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsEngine;
 import projektarbete.physics.Player;
+import projektarbete.physics.Players;
 import projektarbete.physics.Updates;
 
 public class Communication {
@@ -20,9 +21,9 @@ public class Communication {
     public static final short MESSAGE_TYPE_REMOVE_OBJECT = 11;
     public static final short MESSAGE_TYPE_UPDATE_OBJECT = 12;
     public static final short MESSAGE_TYPE_CREATE_PLAYER = 13;
-    public static final short MESSAGE_TYPE_UPDATE_PLAYER = 14;
     public static final short MESSAGE_TYPE_REQUEST_OBJECT_DATA = 20;
     public static final short MESSAGE_TYPE_REQUEST_UPDATE = 21;
+    public static final short MESSAGE_TYPE_UPDATE_PLAYER = 22;
 
     private String address = "";
     private byte[] data = new byte[0];
@@ -83,15 +84,15 @@ public class Communication {
 
             case MESSAGE_TYPE_CREATE_PLAYER:
                 createPlayer(input); break;
-
-            case MESSAGE_TYPE_UPDATE_PLAYER:
-                updateObject(input); break;
-
+                
             case MESSAGE_TYPE_REQUEST_OBJECT_DATA:
                 requestObjectData(input); break;
 
             case MESSAGE_TYPE_REQUEST_UPDATE:
                 requestUpdate(input); break;
+
+            case MESSAGE_TYPE_UPDATE_PLAYER:
+                updatePlayer(input); break;
         }
     }
 
@@ -135,6 +136,16 @@ public class Communication {
 
     private static short readRequestUpdate(InputData data) {
         return data.readId();
+    }
+
+    private static ObjectUpdate readUpdatePlayer(InputData data) {
+        short id = data.readId();
+        PhysicsUpdate update = data.readPhysicsUpdate();
+        if (update != null) {
+            return new ObjectUpdate(update, id);
+        } else {
+            return null;
+        }
     }
 
     //output
@@ -202,6 +213,18 @@ public class Communication {
         return output.getData();
     }
 
+    public static byte[] writeUpdatePlayer(ObjectUpdate update) {
+        OutputData output = new OutputData();
+        short id = update.getId();
+        PhysicsUpdate physicsUpdate = update.getUpdate();
+
+        output.writeMessageType(MESSAGE_TYPE_UPDATE_PLAYER);
+        output.writeId(id);
+        output.writePhysicsUpdate(physicsUpdate);
+
+        return output.getData();
+    }
+
     //response
 
     private static void control(InputData data) {
@@ -231,6 +254,10 @@ public class Communication {
         short id = Communication.readRequestUpdate(data);
         PhysicsEngine.getInstance().requestUpdate(id);
         //more code to be added here
+    }
+
+    private static void updatePlayer(InputData data) {
+        Players.updatePlayer(readUpdatePlayer(data));
     }
 
     private static void updateObject(InputData data) {

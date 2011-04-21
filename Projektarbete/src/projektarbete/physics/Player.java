@@ -32,34 +32,42 @@ public class Player extends PhysicsObject {
         Players.addPlayer(this);
         
         ObjectData data = new ObjectData(this.getData(),this.getId());
+        System.out.println(this.getId());
         UDPSocket.send(new Communication(clientAddress, Communication.writePlayerData(data)));
 
     }
 
     String clientAddress = "";
+    byte flags = 0;
+    public static final byte FLAG_UP = 1 << 0; //this is 0000 0001
+    public static final byte FLAG_DOWN = 1 << 1; //above except 1 step to left
+    public static final byte FLAG_LEFT = 1 << 2; //you know this by now... (4)
+    public static final byte FLAG_RIGHT = 1 << 3; //8
+    public static final byte FLAG_ENTER = 1 << 4; //16
+    public static final byte FLAG_MOUSE1 = 1 << 5; //Oh come on...
 
     @Override
     public void physicsForces() {
 
-        if (Flags.getFlag("up")) {
+        if ((flags & FLAG_UP) != 0) {
             applyForce(0, 20 * mass /* deltaTime*/);
         }
-        if (Flags.getFlag("down")) {
+        if ((flags & FLAG_DOWN) != 0) {
             applyForce(0, -5 * mass /* deltaTime*/);
         }
-        if (Flags.getFlag("left")) {
+        if ((flags & FLAG_LEFT) != 0) {
             applyForce(-20 * mass /* deltaTime*/, 0);
         }
-        if (Flags.getFlag("right")) {
-            applyForce(20 * mass/* * deltaTime*/, 0);
+        if ((flags & FLAG_RIGHT) != 0) {
+            applyForce(20 * mass /* deltaTime*/, 0);
         }
-        if (Flags.getFlag("enter")) {
-            Flags.setFlag("enter", false);
+        if ((flags & FLAG_ENTER) != 0) {
+            flags = (byte) (flags - FLAG_ENTER);
             this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
                     new Coordinate(0.5,0.10), 0, 0));
         }
-        if (Flags.getFlag("mouse1")) {
-            Flags.setFlag("mouse1", false);
+        if ((flags & FLAG_MOUSE1) != 0) {
+            flags = (byte) (flags - FLAG_MOUSE1);
 
             JFrame jFrame = Stage.getInstance().jFrame;
             Point mouse = MouseInfo.getPointerInfo().getLocation();

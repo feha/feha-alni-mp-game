@@ -77,4 +77,16 @@ public class Players {
         return playercount;
     }
 
+
+    public static synchronized void updatePlayer(ObjectUpdate update) {
+
+        int id = update.getId();
+        
+        ArrayList<PhysicsObject> all = getAll();
+        Player player = (Player) all.get(id);
+
+        player.applyUpdate(update.getUpdate());
+
+    }
+
 }
