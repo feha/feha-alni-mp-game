@@ -40,7 +40,6 @@ public class TestUserObject extends Player {
 
         //serverID = id;
 
-        System.out.println("Test user object created");
         container = new CameraContainer();
         container.setScale(Camera.getInstance().getScale());
         container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
@@ -59,7 +58,6 @@ public class TestUserObject extends Player {
     @Override
     public void physicsForces() {
         //super.physicsForces();
-        System.out.println("Physics forces running");
         //Updates.update(this);
         //ObjectUpdate data = new ObjectUpdate(this.getUpdate(),serverID);
         //UDPSocket.send(new Communication("83.227.204.241", Communication.writeUpdatePlayer(data)));

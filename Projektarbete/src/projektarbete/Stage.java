@@ -38,6 +38,8 @@ import projektarbete.physics.TestUserObject;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsData;
 import projektarbete.physics.Player;
+import projektarbete.physics.Players;
+import projektarbete.physics.Templates;
 import projektarbete.physics.UpdateTester;
 
 public class Stage {
@@ -199,6 +201,11 @@ public class Stage {
             System.out.println("Trying to connect to "+getConnection());
             UDPSocket.send(new Communication(getConnection(),
                     Communication.writeControlConnect()));
+
+            /*TestUserObject tuo = new TestUserObject(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1,
+                new PhysicsUpdate(-8, 0, 0, 0, 0, 0)));
+            engine.addObject(tuo, (short) 100);
+            Players.addPlayer(tuo, tuo.getId());*/
         }
         /*radius = 6;
         for (double t = 0; t <= Math.PI*2+2.0/radius; t += 1.0/radius) {
@@ -226,7 +233,6 @@ public class Stage {
         //resetter.start(2000);
         //UpdateTester resetter = new UpdateTester(updates, engine);
         //resetter.start(2000);
-        //engine.addObject(new TestUserObject());
         //engine.addObject(new Player("127.0.0.1"));
 
     }

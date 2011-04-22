@@ -55,7 +55,6 @@ public class PhysicsEngine  {
     LinkedList<ObjectUpdate> objectUpdates = new LinkedList<ObjectUpdate>();
     LinkedList<ObjectUpdate> playerUpdates = new LinkedList<ObjectUpdate>();
     int count = 0;
-    TestUserObject tuo = null;
 
     long oldTime = 0;//System.nanoTime();
 
@@ -116,7 +115,7 @@ public class PhysicsEngine  {
                 this.objects.put(key, object);
                 object.setId(key);
                 object.displayVisibleObject();
-                if (Stage.isServer()) {
+                if (Stage.isServer() && !(object instanceof Player)) {
                     Updates.create(object);
                 }
                 if (object instanceof TestUserObject) {
@@ -147,7 +146,6 @@ public class PhysicsEngine  {
 
     public synchronized void removeObject(short key) {
         if (objects.containsKey(key)) {
-            System.out.println("Removing "+key);
             PhysicsObject object = objects.remove(key);
             object.clearVisibleObject();
             collisions.removeAll(object.collisions);
@@ -179,12 +177,9 @@ public class PhysicsEngine  {
             getBasePhysics(i).physicsSimulate(deltaTime);
         }*/
         List<PhysicsObject> list = getPhysicsObjects();
-        if (tuo != null) {
-        System.out.println(list.contains((PhysicsObject)tuo));
-        }
         //list.addAll(Players.getAll());
-        applyUpdates();
         applyPlayerUpdates();
+        applyUpdates();
         updateStart(deltaTime, list);
         force(deltaTime, list);
         movement(list);
@@ -583,9 +578,7 @@ public class PhysicsEngine  {
         if (!Stage.isServer()) {
             for (ObjectUpdate update : objectUpdates) {
                 if (objects.containsKey(update.getId())) {
-                    if (!Players.isPlayer(update.getId())) {
-                        objects.get(update.getId()).applyUpdate(update.getUpdate());
-                    }
+                    objects.get(update.getId()).applyUpdate(update.getUpdate());
                 } else {
                     Updates.requestData(update.getId());
                 }
@@ -593,26 +586,24 @@ public class PhysicsEngine  {
         } else {
             for (ObjectUpdate update : objectUpdates) {
                 if (objects.containsKey(update.getId())) {
-                    if (!Players.isPlayer(update.getId())) {
-                        PhysicsObject object = objects.get(update.getId());
-                        PhysicsUpdate physicsUpdate = update.getUpdate();
-                        Coordinate oldPos = object.position;
-                        Coordinate newPos = physicsUpdate.getPosition();
-                        double size = object.size;
-                        for (PhysicsObject element : objects.values()){
-                            if (element != object && !isIntersecting(object, element, 0)) {
-                                Coordinate pos = element.position;
-                                if (Line2D.ptLineDistSq(oldPos.x(), oldPos.y(),
-                                                    newPos.x(), newPos.y(),
-                                                    pos.x(), pos.y())>=Math.pow(size+element.size, 2)) {
-                                    physicsUpdate.setPosition(oldPos);
-                                    break;
-                                }
+                    PhysicsObject object = objects.get(update.getId());
+                    PhysicsUpdate physicsUpdate = update.getUpdate();
+                    Coordinate oldPos = object.position;
+                    Coordinate newPos = physicsUpdate.getPosition();
+                    double size = object.size;
+                    for (PhysicsObject element : objects.values()){
+                        if (element != object && !isIntersecting(object, element, 0)) {
+                            Coordinate pos = element.position;
+                            if (Line2D.ptLineDistSq(oldPos.x(), oldPos.y(),
+                                                newPos.x(), newPos.y(),
+                                                pos.x(), pos.y())>=Math.pow(size+element.size, 2)) {
+                                physicsUpdate.setPosition(oldPos);
+                                break;
                             }
                         }
-                        Updates.update(object);
-                        object.applyUpdate(physicsUpdate);
                     }
+                    Updates.update(object);
+                    object.applyUpdate(physicsUpdate);
                 }
                 else {
                     PhysicsObject object = new PhysicsObject();
@@ -626,8 +617,12 @@ public class PhysicsEngine  {
 
     protected synchronized void applyPlayerUpdates() {
         for (Player player : Players.getAll()) {
-            player.applyNextUpdate();
-            player.clearNextUpdate();
+            PlayerUpdate update = player.getNextUpdate();
+            if (update != null) {
+                objectUpdates.add(update);
+                player.setFlags(update.getFlags());
+                player.clearNextUpdate();
+            }
         }
     }
 
@@ -636,7 +631,9 @@ public class PhysicsEngine  {
     }
 
     public synchronized void updateObject(ObjectUpdate update) {
-        objectUpdates.add(update);
+        if (!Players.isPlayer(update.getId())) {
+            objectUpdates.add(update);
+        }
     }
 
     public synchronized void requestUpdate(short id) {
@@ -652,11 +649,15 @@ public class PhysicsEngine  {
     }
 
     public synchronized void createPlayer(ObjectData data) {
+        System.out.println("Create player");
         if (!Stage.isServer()) {
-            TestUserObject player = new TestUserObject(data.getData());
-            tuo = player;
+            /*TestUserObject player = new TestUserObject(data.getData());
             Players.addPlayer(player, data.getId());
-            addObject(player, data.getId());
+            addObject(player, data.getId());*/
+            TestUserObject tuo = new TestUserObject(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1,
+                new PhysicsUpdate(-8, 0, 0, 0, 0, 0)));
+            addObject(tuo, data.getId());
+            Players.addPlayer(tuo, tuo.getId());
         }
     }
 
@@ -665,16 +666,16 @@ public class PhysicsEngine  {
             Player player = new Player(address);
             addObject(player);
             Players.addPlayer(player, player.getId());
+            UDPSocket.send(new Communication(address,
+                    Communication.writePlayerData(
+                    new ObjectData(player.getData(),
+                    player.getId()))));
             for (PhysicsObject object :
                 new LinkedList<PhysicsObject>(this.objects.values())) {
                 UDPSocket.send(new Communication(address,
                         Communication.writeObjectData(
                         new ObjectData(object.getData(), object.getId()))));
             }
-            UDPSocket.send(new Communication(address,
-                    Communication.writePlayerData(
-                    new ObjectData(player.getData(),
-                    player.getId()))));
         }
     }
 

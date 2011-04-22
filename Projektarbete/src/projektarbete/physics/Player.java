@@ -22,7 +22,7 @@ import projektarbete.UDPSocket;
 public class Player extends PhysicsObject {
 
     private String clientAddress = "";
-    byte flags = 0;
+    private byte flags = 0;
     public static final byte FLAG_UP = 1 << 0; //this is 0000 0001
     public static final byte FLAG_DOWN = 1 << 1; //above except 1 step to left
     public static final byte FLAG_LEFT = 1 << 2; //you know this by now... (4)
@@ -99,10 +99,8 @@ public class Player extends PhysicsObject {
         this.nextUpdate = update;
     }
 
-    public void applyNextUpdate() {
-        if (nextUpdate != null) {
-            applyPlayerUpdate(nextUpdate);
-        }
+    public PlayerUpdate getNextUpdate() {
+        return nextUpdate;
     }
 
     public void clearNextUpdate() {
@@ -124,6 +122,14 @@ public class Player extends PhysicsObject {
 
     public String getAddress() {
         return clientAddress;
+    }
+
+    public void setFlags(byte flags) {
+        this.flags = flags;
+    }
+
+    public byte getFlags() {
+        return flags;
     }
 
 }
