@@ -39,7 +39,6 @@ public class Flags {
             if (flags.get(i).getName().matches(name)) {
                 //sets the flag's value to the input value and breaks the loop
                 flags.get(i).setValue(value);
-                System.out.println(name+" "+value);
                 exists = true;
                 break;
             }

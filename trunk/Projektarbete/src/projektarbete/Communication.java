@@ -234,7 +234,7 @@ public class Communication {
         OutputData output = new OutputData();
 
         output.writeMessageType(MESSAGE_TYPE_CONTROL);
-        output.writeControlType(CONTROL_TYPE_CONNECT);
+        output.writeControlType(Communication.CONTROL_TYPE_CONNECT);
 
         return output.getData();
     }
@@ -248,7 +248,6 @@ public class Communication {
 
 
             case Communication.CONTROL_TYPE_CONNECT:
-                System.out.println("Connection from "+address);
                 PhysicsEngine.getInstance().createPlayer(address); break;
         }
     }
