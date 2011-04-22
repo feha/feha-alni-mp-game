@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class UDPSocket {
     private static DatagramSocket socket = getSocket();
     private static final int serverPort = 25565;
-    private static final int clientPort = 25565;
+    private static final int clientPort = 25566;
 
     public static Communication listen() {
         byte[] buffer = new byte[1024];

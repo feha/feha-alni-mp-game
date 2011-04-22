@@ -26,19 +26,21 @@ import projektarbete.graphics.MyImage;
  * @author niclas.alexandersso
  */
 
-public class TestUserObject extends PhysicsObject {
+public class TestUserObject extends Player {
 
     public TestUserObject() {
-        this(new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1, new PhysicsUpdate()), (short) 0);
+        this(new PhysicsData(
+                Templates.TYPE_PLAYER_OBJECT, 60, 1, new PhysicsUpdate()));
 
         //Initializing variables
     }
 
-    public TestUserObject(PhysicsData data, short id) {
-        super(data);
+    public TestUserObject(PhysicsData data) {
+        super("", data);
 
-        serverID = id;
+        //serverID = id;
 
+        System.out.println("Test user object created");
         container = new CameraContainer();
         container.setScale(Camera.getInstance().getScale());
         container.offset = new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2));
@@ -49,11 +51,18 @@ public class TestUserObject extends PhysicsObject {
     short serverID;
 
     @Override
+    public void physicsUpdate() {
+        super.physicsUpdate();
+    }
+
+
+    @Override
     public void physicsForces() {
+        //super.physicsForces();
+        System.out.println("Physics forces running");
         //Updates.update(this);
-        ObjectUpdate data = new ObjectUpdate(this.getUpdate(),serverID);
-        System.out.println(serverID);
-        UDPSocket.send(new Communication("127.0.0.1", Communication.writeUpdatePlayer(data)));
+        //ObjectUpdate data = new ObjectUpdate(this.getUpdate(),serverID);
+        //UDPSocket.send(new Communication("83.227.204.241", Communication.writeUpdatePlayer(data)));
 
         //Coordinate offset = new Coordinate(mouse.getX()/400,mouse.getY()/400).add(new Coordinate(-(5 - ((MyImage) visibleObject).getWidth()/2),-(5 - ((MyImage) visibleObject).getHeight()/2)));
         //container.offset.setPos(monitorSize.div(-100).add(size).add(mousePos.add(monitorSize.div(2)).div(100)));
@@ -90,7 +99,7 @@ public class TestUserObject extends PhysicsObject {
             mousePos = Coordinate.normalized(mousePos);
             PhysicsUpdate update = this.getUpdate();
             update.setVelocity(new Coordinate(mousePos.mul(60)));
-            PhysicsEngine.getInstance().addObject(new Bullet(update, 0.1, 0.1));
+            //PhysicsEngine.getInstance().addObject(new Bullet(update, 0.1, 0.1));
             this.applyImpulse(mousePos.mul(60).mul(0.1).mul(-1));
         }
 
@@ -101,6 +110,7 @@ public class TestUserObject extends PhysicsObject {
     @Override
     public void updateGraphic() {
         super.updateGraphic();
+        //System.out.println("Updating graphics");
 
         JFrame jFrame = Stage.getInstance().jFrame;
         Point mouse = MouseInfo.getPointerInfo().getLocation();
@@ -112,10 +122,11 @@ public class TestUserObject extends PhysicsObject {
 
         
         Coordinate center = new Coordinate(
-                ((this.position.x()))*-50+(monitorSize.x()/2),
-                ((this.position.y()))*50+(monitorSize.y()/2));
+                ((this.getPos().x()))*-50+(monitorSize.x()/2),
+                ((this.getPos().y()))*50+(monitorSize.y()/2));
         Coordinate mouseCenterDistance = monitorSize.div(2).sub(mousePos);
         container.setPos(center.add(mouseCenterDistance.mul(0.5)));
+        //Camera.getInstance().setPos(center.add(mouseCenterDistance.mul(0.5)));
     }
 
 

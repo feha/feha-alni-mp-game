@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import projektarbete.physics.PhysicsObject;
 import projektarbete.physics.Bouncer;
 import projektarbete.physics.Floor;
@@ -162,6 +163,16 @@ public class Stage {
     }
 
     public static void start() {
+        String ip = JOptionPane.showInputDialog(
+                "What ip do you wish to connect to? (Leave blank for starting a server)");
+        if (!(ip==null||ip.equals(""))) {
+            Stage.setServer(false);
+            Stage.setConnection(ip);
+            System.out.println("Started as client");
+        } else {
+            Stage.setServer(true);
+            System.out.println("Started as server");
+        }
         Camera camera = new Camera();
         camera.setScale(50);
         getInstance().initTesting();
@@ -178,11 +189,16 @@ public class Stage {
 
         //engine.addObject(new Bouncer(5, -2, 0, 0, 1), (short)5);
         //engine.addObject(new Bouncer(6.5, -2, 0, 0, 1), (short)6);
-
-        double radius = 11;
-        for (double m = 0; m <= Math.PI*2; m += 1.0/radius) {
-            engine.addObject(new Floor(radius*Math.sin(m),radius*Math.cos(m)));
-            //engine.addObject(new Floor(radius*-Math.sin(t),radius*-Math.cos(t)));
+        if (Stage.isServer()) {
+            double radius = 11;
+            for (double m = 0; m <= Math.PI*2; m += 1.0/radius) {
+                engine.addObject(new Floor(radius*Math.sin(m),radius*Math.cos(m)));
+                //engine.addObject(new Floor(radius*-Math.sin(t),radius*-Math.cos(t)));
+            }
+        } else {
+            System.out.println("Trying to connect to "+getConnection());
+            UDPSocket.send(new Communication(getConnection(),
+                    Communication.writeControlConnect()));
         }
         /*radius = 6;
         for (double t = 0; t <= Math.PI*2+2.0/radius; t += 1.0/radius) {
@@ -193,9 +209,9 @@ public class Stage {
 
         
 
-        StartMenu m0 = new StartMenu();
+        //StartMenu m0 = new StartMenu();
 
-        List<ObjectUpdate> updates = new ArrayList<ObjectUpdate>();
+        /*List<ObjectUpdate> updates = new ArrayList<ObjectUpdate>();
 
         updates.add(new ObjectUpdate(new PhysicsUpdate(5, -2, 0, 0, 0, 0), (short)5));
         updates.add(new ObjectUpdate(new PhysicsUpdate(5, -3.1, 0, 0, 0, 0), (short)6));
@@ -205,13 +221,13 @@ public class Stage {
 
 
         UpdateTester resetter = new UpdateTester(updates, engine);
-        UpdateTester resetter2 = new UpdateTester(dataz, engine, false);
+        UpdateTester resetter2 = new UpdateTester(dataz, engine, false);*/
         //resetter2.start(20000);
         //resetter.start(2000);
         //UpdateTester resetter = new UpdateTester(updates, engine);
         //resetter.start(2000);
         //engine.addObject(new TestUserObject());
-        engine.addObject(new Player("127.0.0.1"));
+        //engine.addObject(new Player("127.0.0.1"));
 
     }
 

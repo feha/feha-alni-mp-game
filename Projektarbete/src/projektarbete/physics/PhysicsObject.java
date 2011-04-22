@@ -164,7 +164,7 @@ public class PhysicsObject {
     }
 
     protected void updateStart(double deltaTime) {
-        
+        physicsUpdate();
     }
 
     protected void updateEnd(double deltaTime) {
@@ -173,7 +173,6 @@ public class PhysicsObject {
         velocity.setPos(this.getVel(deltaTime));
         acceleration.setPos(0, 0);
         force.setPos(0, 0);
-        physicsUpdate();
     }
 
     //Accerelation and forces

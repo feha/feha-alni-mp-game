@@ -11,6 +11,7 @@ import projektarbete.physics.PhysicsUpdate;
 import projektarbete.physics.ObjectUpdate;
 import projektarbete.physics.PhysicsEngine;
 import projektarbete.physics.Player;
+import projektarbete.physics.PlayerUpdate;
 import projektarbete.physics.Players;
 import projektarbete.physics.Updates;
 
@@ -24,6 +25,8 @@ public class Communication {
     public static final short MESSAGE_TYPE_REQUEST_OBJECT_DATA = 20;
     public static final short MESSAGE_TYPE_REQUEST_UPDATE = 21;
     public static final short MESSAGE_TYPE_UPDATE_PLAYER = 22;
+
+    public static final short CONTROL_TYPE_CONNECT = 5;
 
     private String address = "";
     private byte[] data = new byte[0];
@@ -57,7 +60,7 @@ public class Communication {
     }
 
     public void parse() {
-        parse(data);
+        parse(this);
     }
 
 
@@ -65,13 +68,13 @@ public class Communication {
 
     //input
 
-    public static void parse(byte[] data) {
-        InputData input = new InputData(data);
+    public static void parse(Communication communication) {
+        InputData input = new InputData(communication.getData());
         short messageType = input.readMessageType();
         
         switch (messageType) {
             case MESSAGE_TYPE_CONTROL:
-                control(input); break;
+                control(input, communication.getAddress()); break;
 
             case MESSAGE_TYPE_CREATE_OBJECT:
                 createObject(input); break;
@@ -138,11 +141,12 @@ public class Communication {
         return data.readId();
     }
 
-    private static ObjectUpdate readUpdatePlayer(InputData data) {
+    private static PlayerUpdate readUpdatePlayer(InputData data) {
         short id = data.readId();
         PhysicsUpdate update = data.readPhysicsUpdate();
+        byte flags = data.readFlags();
         if (update != null) {
-            return new ObjectUpdate(update, id);
+            return new PlayerUpdate(update, flags, id);
         } else {
             return null;
         }
@@ -213,7 +217,7 @@ public class Communication {
         return output.getData();
     }
 
-    public static byte[] writeUpdatePlayer(ObjectUpdate update) {
+    public static byte[] writeUpdatePlayer(PlayerUpdate update) {
         OutputData output = new OutputData();
         short id = update.getId();
         PhysicsUpdate physicsUpdate = update.getUpdate();
@@ -221,14 +225,32 @@ public class Communication {
         output.writeMessageType(MESSAGE_TYPE_UPDATE_PLAYER);
         output.writeId(id);
         output.writePhysicsUpdate(physicsUpdate);
+        output.writeFlags(update.getFlags());
+
+        return output.getData();
+    }
+
+    public static byte[] writeControlConnect() {
+        OutputData output = new OutputData();
+
+        output.writeMessageType(MESSAGE_TYPE_CONTROL);
+        output.writeControlType(CONTROL_TYPE_CONNECT);
 
         return output.getData();
     }
 
     //response
 
-    private static void control(InputData data) {
+    private static void control(InputData data, String address) {
         short controlType = data.readControlType();
+
+        switch (controlType) {
+
+
+            case Communication.CONTROL_TYPE_CONNECT:
+                System.out.println("Connection from "+address);
+                PhysicsEngine.getInstance().createPlayer(address); break;
+        }
     }
 
     private static void createObject(InputData data) {
@@ -257,7 +279,7 @@ public class Communication {
     }
 
     private static void updatePlayer(InputData data) {
-        Players.updatePlayer(readUpdatePlayer(data));
+        PhysicsEngine.getInstance().updatePlayer(readUpdatePlayer(data));
     }
 
     private static void updateObject(InputData data) {
@@ -327,6 +349,14 @@ public class Communication {
             return null;
         }
 
+        byte readFlags () {
+            try {
+                return dataInput.readByte();
+            } catch (IOException ex) {
+            }
+            return 0;
+        }
+
     }
 
     private static class OutputData {
@@ -381,6 +411,13 @@ public class Communication {
                 dataOutput.writeDouble(update.getVelocity().y());
                 dataOutput.writeDouble(update.getAngle());
                 dataOutput.writeDouble(update.getAngularVelocity());
+            } catch (IOException ex) {
+            }
+        }
+
+        void writeFlags (byte flags) {
+            try {
+                dataOutput.writeByte(flags);
             } catch (IOException ex) {
             }
         }

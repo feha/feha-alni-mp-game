@@ -10,6 +10,8 @@ public class Updates {
     private static List<PhysicsObject> create = new LinkedList<PhysicsObject>();
     private static List<PhysicsObject> update = new LinkedList<PhysicsObject>();
     private static LinkedList<PhysicsObject> sync = new LinkedList<PhysicsObject>();
+
+    
     private static List<Short> dataRequest = new LinkedList<Short>();
     private static List<Short> updateRequest = new LinkedList<Short>();
     private static int syncOffset;
