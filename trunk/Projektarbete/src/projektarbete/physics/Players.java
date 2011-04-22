@@ -6,6 +6,9 @@
 package projektarbete.physics;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -17,14 +20,11 @@ public class Players {
 
     }
 
-    private static ArrayList<PhysicsObject> players = new ArrayList<PhysicsObject>();
-    private static int playercount = 0;
+    private static Map<Short, Player> players = new TreeMap<Short, Player>();
 
-    public static void addPlayer( PhysicsObject player ) {
+    public static synchronized void addPlayer( Player player, short id ) {
 
-        players.add(player);
-
-        playercount++;
+        players.put(id, player);
 
         //Add more code to make this shit work over the network (maybe elsewhere)
         /*
@@ -48,45 +48,56 @@ public class Players {
         */
     }
 
-    public static void removePlayer( PhysicsObject player ) {
+    public static synchronized void removePlayer( Player player ) {
 
-        players.remove(player);
-
-        playercount--;
+        players.values().remove(player);
 
     }
 
-    public static void clearPlayers() {
+    public static synchronized void removePlayer( short id ) {
+
+        players.remove(id);
+
+    }
+
+    public static synchronized void clearPlayers() {
 
         players.clear();
 
-        playercount = 0;
 
     }
 
-    public static ArrayList<PhysicsObject> getAll() {
-        ArrayList<PhysicsObject> all = new ArrayList<PhysicsObject>(players);
+    public static synchronized List<Player> getAll() {
+        List<Player> all = new ArrayList<Player>(players.values());
         return all;
     }
 
-    public static PhysicsObject findPlayerByID(int id) {
+    public static synchronized Player findPlayerByID(short id) {
         return players.get(id);
     }
 
-    public static int getCount(int id) {
-        return playercount;
+    public static synchronized int getCount() {
+        return players.size();
+    }
+
+    public static synchronized boolean isPlayer(short id) {
+        return players.containsKey(id);
+    }
+
+    public static synchronized boolean isPlayer(PhysicsObject object) {
+        return object instanceof Player && players.containsValue((Player) object);
     }
 
 
-    public static synchronized void updatePlayer(ObjectUpdate update) {
+    /*public static synchronized void updatePlayer(ObjectUpdate update) {
 
         int id = update.getId();
         
-        ArrayList<PhysicsObject> all = getAll();
+        ArrayList<Player> all = getAll();
         Player player = (Player) all.get(id);
 
         player.applyUpdate(update.getUpdate());
 
-    }
+    }*/
 
 }

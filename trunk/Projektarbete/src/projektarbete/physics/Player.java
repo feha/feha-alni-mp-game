@@ -21,23 +21,7 @@ import projektarbete.UDPSocket;
  */
 public class Player extends PhysicsObject {
 
-    public Player(String ip) {
-        super(Templates.TYPE_PLAYER_OBJECT, 60, 1);
-
-        //Initializing variables
-        clientAddress = ip;
-        position = new Coordinate(-8,0);
-
-        //Add the player to the player list and then a localplayer on its client
-        Players.addPlayer(this);
-        
-        ObjectData data = new ObjectData(this.getData(),this.getId());
-        System.out.println(this.getId());
-        UDPSocket.send(new Communication(clientAddress, Communication.writePlayerData(data)));
-
-    }
-
-    String clientAddress = "";
+    private String clientAddress = "";
     byte flags = 0;
     public static final byte FLAG_UP = 1 << 0; //this is 0000 0001
     public static final byte FLAG_DOWN = 1 << 1; //above except 1 step to left
@@ -45,6 +29,29 @@ public class Player extends PhysicsObject {
     public static final byte FLAG_RIGHT = 1 << 3; //8
     public static final byte FLAG_ENTER = 1 << 4; //16
     public static final byte FLAG_MOUSE1 = 1 << 5; //Oh come on...
+    private PlayerUpdate nextUpdate;
+
+    public Player(String address) {
+        this(address, new PhysicsData(Templates.TYPE_PLAYER_OBJECT, 60, 1,
+                new PhysicsUpdate(-8, 0, 0, 0, 0, 0)));
+    }
+
+    public Player(String address, PhysicsData data) {
+        super(data);
+
+        //Initializing variables
+        clientAddress = address;
+        //position = new Coordinate(-8,0);
+
+        //Add the player to the player list and then a localplayer on its client
+        //Players.addPlayer(this);
+        
+        //ObjectData data = new ObjectData(this.getData(),this.getId());
+        //System.out.println(this.getId());
+        //UDPSocket.send(new Communication(clientAddress, Communication.writePlayerData(data)));
+
+    }
+
 
     @Override
     public void physicsForces() {
@@ -86,6 +93,37 @@ public class Player extends PhysicsObject {
 
         angle = (angle*3+this.velocity.x()/20)/4/*+Math.PI*/;
 
+    }
+
+    public void setNextUpdate(PlayerUpdate update) {
+        this.nextUpdate = update;
+    }
+
+    public void applyNextUpdate() {
+        if (nextUpdate != null) {
+            applyPlayerUpdate(nextUpdate);
+        }
+    }
+
+    public void clearNextUpdate() {
+        nextUpdate = null;
+    }
+
+    public void applyPlayerUpdate(PlayerUpdate update) {
+        applyUpdate(update.getUpdate());
+        flags = update.getFlags();
+    }
+
+    public PlayerUpdate getPlayerUpdate() {
+        return new PlayerUpdate(getUpdate(), flags, getId());
+    }
+
+    public void setAddress(String address) {
+        clientAddress = address;
+    }
+
+    public String getAddress() {
+        return clientAddress;
     }
 
 }

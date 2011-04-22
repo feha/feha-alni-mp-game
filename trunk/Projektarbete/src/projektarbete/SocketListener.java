@@ -19,7 +19,6 @@ public class SocketListener {
             public void run() {
                 while(isListening()) {
                     UDPSocket.listen().parse();
-                    //System.out.println("Received Packet");
                 }
             }
 
