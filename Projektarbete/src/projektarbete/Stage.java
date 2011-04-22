@@ -131,6 +131,9 @@ public class Stage {
             }
 
             public void mousePressed(MouseEvent e) {
+                if (e.getButton()==MouseEvent.BUTTON1) {
+                    Flags.setFlag("mouse1", true);
+                }
             }
 
             public void mouseReleased(MouseEvent e) {

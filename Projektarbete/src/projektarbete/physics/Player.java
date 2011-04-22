@@ -23,6 +23,8 @@ public class Player extends PhysicsObject {
 
     private String clientAddress = "";
     private byte flags = 0;
+    private Coordinate aim = new Coordinate(0, 0);
+    private boolean fired;
     public static final byte FLAG_UP = 1 << 0; //this is 0000 0001
     public static final byte FLAG_DOWN = 1 << 1; //above except 1 step to left
     public static final byte FLAG_LEFT = 1 << 2; //you know this by now... (4)
@@ -69,26 +71,24 @@ public class Player extends PhysicsObject {
             applyForce(20 * mass /* deltaTime*/, 0);
         }
         if ((flags & FLAG_ENTER) != 0) {
-            flags = (byte) (flags - FLAG_ENTER);
+            //flags = (byte) (flags - FLAG_ENTER);
+            if (Stage.isServer()) {
             this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
                     new Coordinate(0.5,0.10), 0, 0));
+            }
         }
-        if ((flags & FLAG_MOUSE1) != 0) {
-            flags = (byte) (flags - FLAG_MOUSE1);
-
-            JFrame jFrame = Stage.getInstance().jFrame;
-            Point mouse = MouseInfo.getPointerInfo().getLocation();
-            SwingUtilities.convertPointFromScreen(mouse,Stage.getInstance().jFrame);
-            Coordinate mousePos = new Coordinate(mouse.getX(), mouse.getY());
-            mousePos = mousePos.mul(new Coordinate(1, -1));
-            Coordinate monitorSize = new Coordinate(jFrame.getWidth(), jFrame.getHeight());
-            monitorSize = monitorSize.mul(new Coordinate(1, -1));
-            mousePos = mousePos.sub(monitorSize.div(2));
-            mousePos = Coordinate.normalized(mousePos);
+        if (Stage.isServer() && !fired && (flags & FLAG_MOUSE1) != 0) {
+            //flags = (byte) (flags - FLAG_MOUSE1);
+            //System.out.println("Fire!");
             PhysicsUpdate update = this.getUpdate();
-            update.setVelocity(new Coordinate(mousePos.mul(60)));
+            Coordinate bulletVel = new Coordinate(aim);
+            update.setVelocity(bulletVel.mul(60).add(velocity));
             PhysicsEngine.getInstance().addObject(new Bullet(update, 0.1, 0.1));
-            this.applyImpulse(mousePos.mul(60).mul(0.1).mul(-1));
+            this.applyImpulse(bulletVel.mul(0.1).mul(-1));
+            fired = true;
+        }
+        if (Stage.isServer() && fired && (flags & FLAG_MOUSE1) == 0) {
+            fired = false;
         }
 
         angle = (angle*3+this.velocity.x()/20)/4/*+Math.PI*/;
@@ -110,10 +110,11 @@ public class Player extends PhysicsObject {
     public void applyPlayerUpdate(PlayerUpdate update) {
         applyUpdate(update.getUpdate());
         flags = update.getFlags();
+        aim = update.getAim();
     }
 
     public PlayerUpdate getPlayerUpdate() {
-        return new PlayerUpdate(getUpdate(), flags, getId());
+        return new PlayerUpdate(getUpdate(), flags, aim, getId());
     }
 
     public void setAddress(String address) {
@@ -130,6 +131,14 @@ public class Player extends PhysicsObject {
 
     public byte getFlags() {
         return flags;
+    }
+
+    public Coordinate getAim() {
+        return aim;
+    }
+
+    public void setAim(Coordinate aim) {
+        this.aim = aim;
     }
 
 }

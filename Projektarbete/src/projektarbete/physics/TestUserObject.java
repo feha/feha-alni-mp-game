@@ -52,12 +52,47 @@ public class TestUserObject extends Player {
     @Override
     public void physicsUpdate() {
         super.physicsUpdate();
+
+        this.setAim(calculateAim());
+
+        byte flags = 0;
+
+        if (Flags.getFlag("up")) {
+            //applyForce(0, 20 * mass /* deltaTime*/);
+            flags += FLAG_UP;
+        }
+        if (Flags.getFlag("down")) {
+            //applyForce(0, -5 * mass /* deltaTime*/);
+            flags += FLAG_DOWN;
+        }
+        if (Flags.getFlag("left")) {
+            //applyForce(-20 * mass /* deltaTime*/, 0);
+            flags += FLAG_LEFT;
+        }
+        if (Flags.getFlag("right")) {
+            //applyForce(20 * mass/* * deltaTime*/, 0);
+            flags += FLAG_RIGHT;
+        }
+        if (Flags.getFlag("enter")) {
+            Flags.setFlag("enter", false);
+            /*this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
+                    new Coordinate(0.5,0.10), 0, 0));*/
+            flags += FLAG_ENTER;
+        }
+        if (Flags.getFlag("mouse1")) {
+            if ((getFlags() & FLAG_MOUSE1) != 0) {
+                Flags.setFlag("mouse1", false);
+            }
+            flags += FLAG_MOUSE1;
+
+        }
+        setFlags(flags);
     }
 
 
     @Override
     public void physicsForces() {
-        //super.physicsForces();
+        super.physicsForces();
         //Updates.update(this);
         //ObjectUpdate data = new ObjectUpdate(this.getUpdate(),serverID);
         //UDPSocket.send(new Communication("83.227.204.241", Communication.writeUpdatePlayer(data)));
@@ -66,40 +101,7 @@ public class TestUserObject extends Player {
         //container.offset.setPos(monitorSize.div(-100).add(size).add(mousePos.add(monitorSize.div(2)).div(100)));
         //container.offset.setPos(offset);
 
-        if (Flags.getFlag("up")) {
-            applyForce(0, 20 * mass /* deltaTime*/);
-        }
-        if (Flags.getFlag("down")) {
-            applyForce(0, -5 * mass /* deltaTime*/);
-        }
-        if (Flags.getFlag("left")) {
-            applyForce(-20 * mass /* deltaTime*/, 0);
-        }
-        if (Flags.getFlag("right")) {
-            applyForce(20 * mass/* * deltaTime*/, 0);
-        }
-        if (Flags.getFlag("enter")) {
-            Flags.setFlag("enter", false);
-            this.applyUpdate(new PhysicsUpdate(new Coordinate(0,0),
-                    new Coordinate(0.5,0.10), 0, 0));
-        }
-        if (Flags.getFlag("mouse1")) {
-            Flags.setFlag("mouse1", false);
-            
-            JFrame jFrame = Stage.getInstance().jFrame;
-            Point mouse = MouseInfo.getPointerInfo().getLocation();
-            SwingUtilities.convertPointFromScreen(mouse,Stage.getInstance().jFrame);
-            Coordinate mousePos = new Coordinate(mouse.getX(), mouse.getY());
-            mousePos = mousePos.mul(new Coordinate(1, -1));
-            Coordinate monitorSize = new Coordinate(jFrame.getWidth(), jFrame.getHeight());
-            monitorSize = monitorSize.mul(new Coordinate(1, -1));
-            mousePos = mousePos.sub(monitorSize.div(2));
-            mousePos = Coordinate.normalized(mousePos);
-            PhysicsUpdate update = this.getUpdate();
-            update.setVelocity(new Coordinate(mousePos.mul(60)));
-            //PhysicsEngine.getInstance().addObject(new Bullet(update, 0.1, 0.1));
-            this.applyImpulse(mousePos.mul(60).mul(0.1).mul(-1));
-        }
+        
 
         angle = (angle*3+this.velocity.x()/20)/4/*+Math.PI*/;
 
@@ -125,6 +127,19 @@ public class TestUserObject extends Player {
         Coordinate mouseCenterDistance = monitorSize.div(2).sub(mousePos);
         container.setPos(center.add(mouseCenterDistance.mul(0.5)));
         //Camera.getInstance().setPos(center.add(mouseCenterDistance.mul(0.5)));
+    }
+
+    private Coordinate calculateAim() {
+        JFrame jFrame = Stage.getInstance().jFrame;
+        Point mouse = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(mouse,Stage.getInstance().jFrame);
+        Coordinate aim = new Coordinate(mouse.getX(), mouse.getY());
+        aim = aim.mul(new Coordinate(1, -1));
+        Coordinate monitorSize = new Coordinate(jFrame.getWidth(), jFrame.getHeight());
+        monitorSize = monitorSize.mul(new Coordinate(1, -1));
+        aim = aim.sub(monitorSize.div(2));
+        aim = Coordinate.normalized(aim);
+        return aim;
     }
 
 

@@ -9,6 +9,7 @@ public class Updates {
     private static List<PhysicsObject> remove = new LinkedList<PhysicsObject>();
     private static List<PhysicsObject> create = new LinkedList<PhysicsObject>();
     private static List<PhysicsObject> update = new LinkedList<PhysicsObject>();
+    private static List<Player> playerUpdate = new LinkedList<Player>();
     private static LinkedList<PhysicsObject> sync = new LinkedList<PhysicsObject>();
 
     
