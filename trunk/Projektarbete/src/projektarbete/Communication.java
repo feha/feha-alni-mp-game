@@ -145,8 +145,9 @@ public class Communication {
         short id = data.readId();
         PhysicsUpdate update = data.readPhysicsUpdate();
         byte flags = data.readFlags();
+        Coordinate aim = data.readAim();
         if (update != null) {
-            return new PlayerUpdate(update, flags, id);
+            return new PlayerUpdate(update, flags, aim, id);
         } else {
             return null;
         }
@@ -217,7 +218,7 @@ public class Communication {
         return output.getData();
     }
 
-    public static byte[] writeUpdatePlayer(PlayerUpdate update) {
+    public static byte[] writePlayerUpdate(PlayerUpdate update) {
         OutputData output = new OutputData();
         short id = update.getId();
         PhysicsUpdate physicsUpdate = update.getUpdate();
@@ -226,6 +227,7 @@ public class Communication {
         output.writeId(id);
         output.writePhysicsUpdate(physicsUpdate);
         output.writeFlags(update.getFlags());
+        output.writeAim(update.getAim());
 
         return output.getData();
     }
@@ -356,6 +358,16 @@ public class Communication {
             return 0;
         }
 
+        Coordinate readAim () {
+            try {
+                double xAim = dataInput.readDouble();
+                double yAim = dataInput.readDouble();
+                return new Coordinate(xAim, yAim);
+            } catch (IOException ex) {
+            }
+            return new Coordinate(0, 0);
+        }
+
     }
 
     private static class OutputData {
@@ -417,6 +429,14 @@ public class Communication {
         void writeFlags (byte flags) {
             try {
                 dataOutput.writeByte(flags);
+            } catch (IOException ex) {
+            }
+        }
+
+        void writeAim(Coordinate aim) {
+            try {
+                dataOutput.writeDouble(aim.x());
+                dataOutput.writeDouble(aim.y());
             } catch (IOException ex) {
             }
         }

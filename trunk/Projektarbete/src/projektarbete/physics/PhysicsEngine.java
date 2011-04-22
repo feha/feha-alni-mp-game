@@ -53,7 +53,8 @@ public class PhysicsEngine  {
     Map<Short, PhysicsObject> objects = new TreeMap<Short, PhysicsObject>();
     LinkedList<Collision> collisions = new LinkedList<Collision>();
     LinkedList<ObjectUpdate> objectUpdates = new LinkedList<ObjectUpdate>();
-    LinkedList<ObjectUpdate> playerUpdates = new LinkedList<ObjectUpdate>();
+    List<Player> playersForUpdating = new LinkedList<Player>();
+
     int count = 0;
 
     long oldTime = 0;//System.nanoTime();
@@ -199,12 +200,18 @@ public class PhysicsEngine  {
                     UDPSocket.send(communication);
                 }
             }
+            for (Player player : playersForUpdating) {
+                UDPSocket.send(new Communication(player.getAddress(),
+                        Communication.writePlayerUpdate(
+                        player.getPlayerUpdate())));
+            }
+            playersForUpdating.clear();
         } else {
             for (Player player : Players.getAll()) {
                     UDPSocket.send(new Communication(Stage.getConnection(),
-                            Communication.writeUpdatePlayer(
+                            Communication.writePlayerUpdate(
                             player.getPlayerUpdate())));
-                }
+            }
         }
         graphics(list);
         graphics(new LinkedList<PhysicsObject>(Players.getAll()));
@@ -598,6 +605,9 @@ public class PhysicsEngine  {
                                                 newPos.x(), newPos.y(),
                                                 pos.x(), pos.y())>=Math.pow(size+element.size, 2)) {
                                 physicsUpdate.setPosition(oldPos);
+                                if (Players.isPlayer(object)) {
+                                    playersForUpdating.add((Player) object);
+                                }
                                 break;
                             }
                         }
@@ -621,6 +631,7 @@ public class PhysicsEngine  {
             if (update != null) {
                 objectUpdates.add(update);
                 player.setFlags(update.getFlags());
+                player.setAim(update.getAim());
                 player.clearNextUpdate();
             }
         }
@@ -649,7 +660,6 @@ public class PhysicsEngine  {
     }
 
     public synchronized void createPlayer(ObjectData data) {
-        System.out.println("Create player");
         if (!Stage.isServer()) {
             /*TestUserObject player = new TestUserObject(data.getData());
             Players.addPlayer(player, data.getId());
@@ -676,6 +686,8 @@ public class PhysicsEngine  {
                         Communication.writeObjectData(
                         new ObjectData(object.getData(), object.getId()))));
             }
+            UDPSocket.send(new Communication(player.getAddress(),
+                    Communication.writePlayerUpdate(player.getPlayerUpdate())));
         }
     }
 
