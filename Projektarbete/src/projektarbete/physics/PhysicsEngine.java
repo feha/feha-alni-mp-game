@@ -172,6 +172,8 @@ public class PhysicsEngine  {
         long deltaNanoTime;
         deltaNanoTime = (System.nanoTime()-oldTime);
         double deltaTime = (double)deltaNanoTime/1000000000;
+        
+        oldTime = System.nanoTime();
 
         //code to manage delays between updating the picture
         /*for (int i = 0; i < getBasePhysicsCount(); i++) {
@@ -215,8 +217,6 @@ public class PhysicsEngine  {
         }
         graphics(list);
         graphics(new LinkedList<PhysicsObject>(Players.getAll()));
-
-        oldTime = System.nanoTime();
         //}
     }
 
