@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 
 public class UDPSocket {
     private static DatagramSocket socket = getSocket();
-    private static final int serverPort = 25565;
-    private static final int clientPort = 25566;
+    private static final int serverPort = 6666;
+    private static final int clientPort = 6667;
 
     public static Communication listen() {
         byte[] buffer = new byte[1024];
