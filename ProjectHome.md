@@ -1,0 +1,1 @@
+In this school project we will code in java to create a multiplayer game, which should be 2d and contain physics.
